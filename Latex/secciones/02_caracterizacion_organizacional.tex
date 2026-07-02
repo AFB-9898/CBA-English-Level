@@ -1,0 +1,51 @@
+\begin{IHBoxInfo}{Consigna - Fase A: Caracterización y Diagnóstico (El ``Por qué'')}
+    \begin{enumerate}
+        \item \textbf{Descripción de la Organización:} Nombre, sector, tamaño, misión, visión y visión tecnológica de la empresa.
+        \item \textbf{Problema Socioformativo:} Identificar un reto real que enfrenta la organización en su infraestructura o gobierno de TI.
+    \end{enumerate}
+\end{IHBoxInfo}
+\vspace{0.5cm}
+
+\section{Descripción de la Organización}
+
+\subsection{Ficha Técnica de la Organización}
+\begin{itemize}
+    \item \textbf{Nombre de la Empresa:} Clínica Médica Andaluz S.R.L.
+    \item \textbf{Sector:} Salud / Servicios Médicos Privados.
+    \item \textbf{Tamaño:} Mediana Empresa (aproximadamente 120 colaboradores).
+\end{itemize}
+
+\subsection{Descripción Institucional Detallada}
+Establecida en la ciudad de Tarija, Bolivia, la Clínica Médica Andaluz S.R.L. ofrece servicios integrales de atención médica ambulatoria, internación hospitalaria, cirugías de mediana complejidad, emergencias las 24 horas y servicios de diagnóstico auxiliar (laboratorio clínico, farmacia e imagenología). La institución mantiene convenios estratégicos con las principales aseguradoras de salud del país y atiende una base de pacientes que abarca tanto la capital tarijeña como sus provincias aledañas. Su infraestructura física se compone de un edificio de tres niveles que integra consultorios de especialidades, quirófanos equipados, salas de internación y el área administrativa y de dirección de sistemas.
+
+\subsection{Misión}
+Brindar servicios de salud integrales y especializados con calidez humana, excelencia médica y tecnología avanzada, asegurando el bienestar y la seguridad de nuestros pacientes y sus familias.
+
+\subsection{Visión}
+Ser el centro hospitalario privado líder y de referencia en el departamento de Tarija y el sur de Bolivia, reconocido por su calidad asistencial, seguridad clínica, ética profesional y constante innovación en la gestión de servicios de salud.
+
+\subsection{Visión Tecnológica}
+La clínica aspira a la transformación digital completa de sus procesos asistenciales y administrativos. El pilar central de esta estrategia es la adopción e implementación de un sistema de \textbf{Historia Clínica Electrónica (HCE)} integrado, hospedado en un entorno de nube segura (SaaS). Este sistema facilitará la interoperabilidad en tiempo real entre médicos, laboratorios, farmacia y facturación, disminuyendo la dependencia del papel y garantizando la disponibilidad inmediata de los registros clínicos para el personal autorizado, desde cualquier dispositivo y en cualquier momento, mejorando así la toma de decisiones clínicas y la eficiencia organizativa.
+
+\section{Problema Socioformativo: Diagnóstico de Gobierno y Seguridad de TI}
+El proceso de digitalización apresurado y la adopción de la telemedicina en la clínica se han ejecutado sin un marco formal de gobierno de TI ni políticas claras de seguridad de la información. Esto ha derivado en un escenario de alta vulnerabilidad operativa y técnica caracterizado por los siguientes fallos de control:
+
+\subsection{Diagnóstico Técnico de los Fallos de Control}
+
+\subsubsection{Accesos Remotos Vulnerables al Sistema de Historia Clínica Electrónica (HCE)}
+Para dar soporte a la telemedicina y al personal administrativo que realiza teletrabajo (facturación, cobranzas y auditoría médica), el acceso al servidor local donde reside el sistema HCE se realiza directamente a través de internet (exponiendo puertos en el firewall de borde). No se requiere el uso de una Red Privada Virtual (VPN) cifrada.
+    
+Asimismo, el control de acceso descansa únicamente en un esquema básico de usuario y contraseña sin requerimientos de complejidad y sin exigir autenticación de doble factor (MFA). Adicionalmente, los usuarios externos acceden desde equipos personales que carecen de auditoría técnica; no se cuenta con una solución de Gestión de Dispositivos Móviles (MDM) que certifique la presencia de antivirus actualizados o parches del sistema operativo, aumentando el riesgo de robos de credenciales por spyware o malware local.
+
+\subsubsection{Ausencia de Segmentación de Red Lógica en la Infraestructura Local}
+La infraestructura de red de la clínica no está segmentada lógicamente mediante VLANs. La red inalámbrica de cortesía para pacientes y visitantes comparte el mismo dominio de difusión y direccionamiento IP que las terminales de los quirófanos, las estaciones de enfermería, los equipos médicos de imagenología (como los de rayos X y ecografía) y el servidor de base de datos de HCE.
+    
+Un atacante conectado a la red Wi-Fi pública de pacientes puede escanear y visualizar el tráfico y los puertos de los servidores críticos de salud debido a la falta de aislamiento de red básica y la ausencia de listas de control de acceso (ACL) en los switches de core.
+
+\subsection{Análisis del Impacto Organizacional y de Seguridad}
+\begin{itemize}
+    \item \textbf{Riesgo Legal y Sancionatorio:} La posible filtración de datos confidenciales de los pacientes (información sensible protegida por leyes del sector salud de Bolivia y normativas éticas) expone a la clínica a costosas demandas civiles y sanciones del ente regulador de salud.
+    \item \textbf{Interrupción Operativa por Malware (Ransomware):} La falta de controles perimetrales facilita que un dispositivo personal infectado introduzca malware a la red de la clínica. Un ataque de ransomware podría paralizar por completo el acceso a la HCE, deteniendo cirugías, laboratorio y el servicio de urgencias.
+    \item \textbf{Daño Reputacional:} Un incidente público de seguridad informática mermaría la confianza de los pacientes y las aseguradoras en la solidez de la clínica, forzándolos a desviar su preferencia hacia competidores del mercado privado.
+    \item \textbf{Desalineación de Inversiones:} La falta de priorización de riesgos informáticos bajo un marco de gobierno corporativo genera gastos ineficientes en hardware de TI sin resolver las brechas críticas de seguridad y disponibilidad del negocio.
+\end{itemize}

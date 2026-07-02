@@ -1,0 +1,49 @@
+# ── React / Vite ─────────────────────────────────────────
+node_modules/
+dist/
+build/
+.vite/
+*.tsbuildinfo
+
+# ── Entorno ──────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+
+# ── Supabase ─────────────────────────────────────────────
+supabase/.temp
+supabase/.branches
+
+# ── LaTeX build artifacts ────────────────────────────────
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.log
+*.lot
+*.nav
+*.out
+*.pdf
+*.run.xml
+*.snm
+*.synctex.gz
+*.toc
+*.vrb
+*.xdv
+
+# ── IDE / OS ─────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.vscode/settings.json
+.idea/
+
+# ── Node / npm ───────────────────────────────────────────
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*

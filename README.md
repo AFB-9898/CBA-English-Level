@@ -1,49 +1,69 @@
 # CBA English Level
 
-Sistema de Exámenes de Colocación para el Centro Boliviano Americano (CBA).
+**Placement exam system for the Centro Boliviano Americano (CBA).**
 
-Determina automáticamente el nivel de inglés de nuevos estudiantes mediante exámenes en línea.
+Automatically determines the English level of new students through online placement tests.
 
-## Tecnologías
+## Stack
 
-- **Frontend:** React + Vite
-- **Backend:** Supabase (PostgreSQL, API REST, Auth)
-- **Base de datos:** PostgreSQL (Supabase)
-- **Control de versiones:** Git + GitHub
+| Category | Technology |
+|---|---|
+| Frontend | React 19 — TypeScript — Vite |
+| Styling | Tailwind CSS 4 |
+| Backend | Supabase (BaaS) |
+| Database | PostgreSQL |
+| Auth | Supabase Auth |
+| Deploy | Vercel |
 
-## Estructura del proyecto
+## Project Structure
 
 ```
-CBA-English-Level/
-├── frontend/           → Aplicación React
-├── supabase/           → Migraciones y configuración
-├── docs/               → Documentación
-│   └── latex/          → Informe LaTeX
-├── AGENTS.md           → Documento maestro del proyecto
-├── requerimientos.md   → PRD del sistema
-└── .env.example        → Variables de entorno requeridas
+├── database/
+│   └── migrations/      # SQL migrations
+├── docs/
+│   └── latex/           # LaTeX documentation
+├── public/              # Static assets
+├── scripts/             # Helper scripts
+├── src/
+│   ├── components/
+│   │   ├── atoms/       # Base components
+│   │   ├── molecules/   # Composite components
+│   │   ├── organisms/   # Feature components
+│   │   └── screens/     # Page views
+│   ├── hooks/           # Custom hooks
+│   ├── lib/             # Supabase client
+│   ├── services/        # Business logic
+│   ├── types/           # TypeScript interfaces
+│   └── utils/           # Utility functions
+├── .env.example
+├── AGENTS.md            # Project master document
+├── requerimientos.md    # PRD (Spanish)
+├── package.json
+└── vite.config.ts
 ```
 
-## Instalación local
+## Local Setup
 
 ```bash
-# Clonar el repo
-git clone https://github.com/tu-usuario/CBA-English-Level.git
-
-# Instalar dependencias del frontend
-cd frontend
 npm install
-
-# Configurar variables de entorno
-cp ../.env.example ../.env
-# Editar .env con las credenciales de Supabase
-
-# Iniciar desarrollo
+cp .env.example .env.local
+# Edit .env.local with your Supabase credentials
 npm run dev
 ```
 
-## Ramas
+## Environment Variables
 
-- `main` — producción
-- `develop` — integración
-- `feature/*` — ramas de trabajo
+```
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key-here
+```
+
+## Branches
+
+- `main` — production
+- `develop` — integration
+- `feature/*` — working branches
+
+## License
+
+MIT

@@ -129,17 +129,28 @@ No incluye
 
 # Arquitectura del Proyecto
 
-Se seguirá una arquitectura por capas.
+Se seguirá una arquitectura Frontend + BaaS (Backend as a Service).
 
-Frontend
-↓
-Backend (API)
-↓
+Frontend (React + Supabase SDK)
+    ↓
+Supabase (PostgreSQL + RLS + Edge Functions)
+    ↓
 Base de Datos
 
-Toda la lógica de negocio estará en el backend.
+No hay un servidor REST intermedio. El frontend consume Supabase directamente mediante su SDK oficial.
 
-El frontend únicamente consumirá la API.
+La lógica de negocio se implementa según el tipo de regla:
+
+| Regla | Implementación |
+|---|---|
+| Control de acceso y autorización | Row Level Security (RLS) |
+| Reglas de negocio críticas (ej: no modificar históricos) | Triggers SQL |
+| Cálculos y operaciones complejas (ej: calcular nivel) | Funciones SQL |
+| Validaciones de integridad | Constraints y funciones SQL |
+| Configuración dinámica del examen | Tablas en Base de Datos |
+| Lógica de UI y temporizador | Frontend (React) |
+| Reportes CSV / Excel | Frontend con librerías |
+| Lógica compleja fuera de SQL (opcional) | Supabase Edge Functions |
 
 ---
 
@@ -178,19 +189,32 @@ La base de datos deberá cumplir como mínimo:
 
 ## Backend
 
-Pendiente de definir.
+Supabase (BaaS)
 
-Debe ser una API REST.
+Se utiliza Supabase como Backend as a Service. No hay una API REST independiente.
 
-Toda validación crítica deberá ejecutarse aquí.
+Incluye:
+- **Base de datos**: PostgreSQL administrado
+- **Autenticación**: Supabase Auth (email/contraseña, manejo de sesiones)
+- **Autorización**: Row Level Security (RLS) a nivel de fila
+- **Reglas de negocio**: Funciones SQL y triggers
+- **Lógica adicional**: Edge Functions (opcional)
+- **Archivos**: Supabase Storage (si se requiere)
+
+Toda validación crítica se ejecuta mediante RLS policies, funciones SQL y constraints de base de datos.
 
 ---
 
 ## Frontend
 
-Pendiente de definir.
+React + Vite + TypeScript + Tailwind CSS
 
-Debe ser Responsive.
+- **React 19+** con TypeScript
+- **Vite** como build tool
+- **Tailwind CSS** para estilos
+- **Supabase SDK** (@supabase/supabase-js) para conectar con backend
+- **Atomic Design** para organizar componentes (atoms, molecules, organisms, screens)
+- **Responsive** obligatorio, mobile-first
 
 ---
 
@@ -254,8 +278,8 @@ Y mostrar estadísticas mediante Dashboard.
 3. Diseño ER
 4. Modelo Relacional
 5. Base de Datos
-6. Backend
-7. Frontend
+6. Backend (Supabase — RLS policies, funciones SQL, triggers)
+7. Frontend (React + Vite + Atomic Design)
 8. Testing
 9. Documentación
 10. Presentación

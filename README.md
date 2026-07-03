@@ -22,8 +22,7 @@
 
 ## Preview
 
-> 🖼️ *Placeholder — add your mockup image here*  
-> *(see image prompts below)*
+> 🖼️ *Add your mockup image here — generate it with the prompts in `docs/image-prompts.md`*
 
 ---
 
@@ -255,8 +254,4 @@ To deploy your own instance:
 
 [MIT](LICENSE)
 
----
 
-## Image Prompts
-
-Check the [image prompts](docs/image-prompts.md) to generate mockups and screenshots for this README.

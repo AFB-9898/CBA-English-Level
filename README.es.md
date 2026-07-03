@@ -22,8 +22,7 @@
 
 ## Vista Previa
 
-> 🖼️ *Placeholder — agregá tu imagen mockup acá*  
-> *(ver prompts de imágenes abajo)*
+> 🖼️ *Agregá tu mockup acá — generalo con los prompts en `docs/image-prompts.md`*
 
 ---
 
@@ -253,8 +252,4 @@ Para deployar tu propia instancia:
 
 [MIT](LICENSE)
 
----
 
-## Prompts de Imágenes
-
-Mirá [docs/image-prompts.md](docs/image-prompts.md) para generar mockups y capturas para este README.

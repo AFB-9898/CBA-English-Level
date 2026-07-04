@@ -1,6 +1,12 @@
-[![Logo CBA](docs/assets/brand/Logo%20del%20Sistema.png)](docs/assets/brand/Logo%20del%20Sistema.png)
+<p align="center">
+  <a href="docs/assets/brand/Logo%20del%20Sistema.png">
+    <img src="docs/assets/brand/Logo%20del%20Sistema.png" alt="Logo CBA">
+  </a>
+</p>
 
-# CBA — Sistema de Exámenes de Colocación
+<h1 align="center">CBA — Sistema de Exámenes de Colocación</h1>
+
+<div align="center">
 
 ![React](https://img.shields.io/badge/React_19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![TypeScript](https://img.shields.io/badge/TypeScript_6-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
@@ -11,10 +17,14 @@
 
 ![Estado](https://img.shields.io/badge/Estado-Desarrollo-7C3AED?style=for-the-badge)
 
+</div>
+
 ---
 
-> **Plataforma de exámenes de colocación en línea para el Centro Boliviano Americano (CBA).**  
-> Determina automáticamente el nivel de inglés de nuevos estudiantes mediante exámenes temporizados.
+<p align="center">
+  <strong>Plataforma de exámenes de colocación en línea para el Centro Boliviano Americano (CBA).</strong><br>
+  Determina automáticamente el nivel de inglés de nuevos estudiantes mediante exámenes temporizados.
+</p>
 
 ---
 

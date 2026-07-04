@@ -1,6 +1,12 @@
-[![CBA Logo](docs/assets/brand/Logo%20del%20Sistema.png)](docs/assets/brand/Logo%20del%20Sistema.png)
+<p align="center">
+  <a href="docs/assets/brand/Logo%20del%20Sistema.png">
+    <img src="docs/assets/brand/Logo%20del%20Sistema.png" alt="CBA Logo">
+  </a>
+</p>
 
-# CBA English Level
+<h1 align="center">CBA English Level</h1>
+
+<div align="center">
 
 ![React](https://img.shields.io/badge/React_19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![TypeScript](https://img.shields.io/badge/TypeScript_6-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
@@ -11,10 +17,14 @@
 
 ![Status](https://img.shields.io/badge/Status-Development-7C3AED?style=for-the-badge)
 
+</div>
+
 ---
 
-> **Online placement exam system for the Centro Boliviano Americano (CBA).**  
-> Automatically determines the English level of new students through timed online tests.
+<p align="center">
+  <strong>Online placement exam system for the Centro Boliviano Americano (CBA).</strong><br>
+  Automatically determines the English level of new students through timed online tests.
+</p>
 
 ---
 

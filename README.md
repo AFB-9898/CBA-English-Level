@@ -22,7 +22,9 @@
 
 ## Preview
 
-> 🖼️ *Add your mockup image here — generate it with the prompts in `docs/image-prompts.md`*
+[![CBA — Mockup Principal](docs/assets/Mockup%20Principal.png)](docs/assets/Mockup%20Principal.png)
+
+[![CBA — Dashboard Administrativo](docs/assets/Dashboard%20Administrativo.png)](docs/assets/Dashboard%20Administrativo.png)
 
 ---
 
@@ -38,6 +40,7 @@
 - [Installation](#installation)
 - [Environment Variables](#environment-variables)
 - [Deployment](#deployment)
+- [Team](#team)
 - [License](#license)
 
 ---
@@ -250,8 +253,16 @@ To deploy your own instance:
 
 ---
 
-## License
+## Team
 
-[MIT](LICENSE)
+| Member | Role | Responsibilities |
+|---|---|---|
+| Abraham Flores Barrionuevo | Frontend Developer + Supabase Backend | Application architecture, Atomic Design system, Supabase setup (Auth, RLS policies, Storage), database schema design, exam logic, reports |
+
+- Abraham Flores Barrionuevo — [@AFB-9898](https://github.com/AFB-9898)
+
+---
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
 
 

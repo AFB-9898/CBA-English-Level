@@ -1,3 +1,5 @@
+[![CBA Logo](docs/assets/brand/Logo%20del%20Sistema.png)](docs/assets/brand/Logo%20del%20Sistema.png)
+
 # CBA English Level
 
 ![React](https://img.shields.io/badge/React_19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
@@ -60,6 +62,9 @@ CBA English Level is a web-based placement testing platform that streamlines the
 ### Student Module
 
 - **Online Registration** — Students sign up with personal data and contact info
+
+[![Student Registration](docs/assets/Pantalla%20de%20Registro%20de%20Estudiante.png)](docs/assets/Pantalla%20de%20Registro%20de%20Estudiante.png)
+
 - **Timed Exam** — Configurable countdown timer with automatic submission
 - **Random Questions** — Each exam draws from a pool, preventing memorization
 - **Instant Results** — Level assigned immediately after submission
@@ -68,6 +73,9 @@ CBA English Level is a web-based placement testing platform that streamlines the
 ### Admin Module
 
 - **Secure Login** — Authentication via Supabase Auth (email/password)
+
+[![Admin Login](docs/assets/Pantalla%20de%20Login.png)](docs/assets/Pantalla%20de%20Login.png)
+
 - **Question Management** — Full CRUD with categories, options, and correct answers
 - **Level Management** — Define non-overlapping score ranges per level
 - **Exam Configuration** — Set time limits, question count, and passing scores
@@ -85,6 +93,8 @@ Student registration → Exam initiation → Timed questions
                 → Instant result display
                      → Historical record kept
 ```
+
+[![Exam Result](docs/assets/Resultado%20del%20Examen.png)](docs/assets/Resultado%20del%20Examen.png)
 
 ---
 

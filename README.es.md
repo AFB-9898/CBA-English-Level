@@ -1,3 +1,5 @@
+[![Logo CBA](docs/assets/brand/Logo%20del%20Sistema.png)](docs/assets/brand/Logo%20del%20Sistema.png)
+
 # CBA — Sistema de Exámenes de Colocación
 
 ![React](https://img.shields.io/badge/React_19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
@@ -60,6 +62,9 @@ CBA English Level es una plataforma web que moderniza todo el proceso de evaluac
 ### Módulo Estudiante
 
 - **Registro en línea** — Los estudiantes se registran con sus datos personales
+
+[![Registro de Estudiante](docs/assets/Pantalla%20de%20Registro%20de%20Estudiante.png)](docs/assets/Pantalla%20de%20Registro%20de%20Estudiante.png)
+
 - **Examen temporizado** — Temporizador configurable con envío automático
 - **Preguntas aleatorias** — Cada examen es único, evitando memorización
 - **Resultado inmediato** — Nivel asignado automáticamente al finalizar
@@ -68,6 +73,9 @@ CBA English Level es una plataforma web que moderniza todo el proceso de evaluac
 ### Módulo Administrador
 
 - **Login seguro** — Autenticación via Supabase Auth
+
+[![Login Administrador](docs/assets/Pantalla%20de%20Login.png)](docs/assets/Pantalla%20de%20Login.png)
+
 - **Gestión de preguntas** — CRUD completo con categorías y respuestas
 - **Gestión de niveles** — Rangos de puntaje no superpuestos
 - **Configuración del examen** — Tiempo, cantidad de preguntas, puntaje mínimo
@@ -85,6 +93,8 @@ Registro del estudiante → Inicio del examen → Preguntas temporizadas
                 → Resultado instantáneo
                      → Historial guardado
 ```
+
+[![Resultado del Examen](docs/assets/Resultado%20del%20Examen.png)](docs/assets/Resultado%20del%20Examen.png)
 
 ---
 

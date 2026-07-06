@@ -1,6 +1,6 @@
 <p align="center">
-  <a href="docs/assets/brand/Logo%20del%20Sistema.png">
-    <img src="docs/assets/brand/Logo%20del%20Sistema.png" alt="CBA Logo">
+  <a href="docs/assets/brand/logo.png">
+    <img src="docs/assets/brand/logo.png" alt="CBA Logo" width="200">
   </a>
 </p>
 
@@ -34,9 +34,9 @@
 
 ## Preview
 
-[![CBA — Mockup Principal](docs/assets/Mockup%20Principal.png)](docs/assets/Mockup%20Principal.png)
+[![CBA — Mockup Principal](docs/assets/mockup.png)](docs/assets/mockup.png)
 
-[![CBA — Dashboard Administrativo](docs/assets/Dashboard%20Administrativo.png)](docs/assets/Dashboard%20Administrativo.png)
+[![CBA — Dashboard Administrativo](docs/assets/dashboard.png)](docs/assets/dashboard.png)
 
 ---
 
@@ -73,7 +73,7 @@ CBA English Level is a web-based placement testing platform that streamlines the
 
 - **Online Registration** — Students sign up with personal data and contact info
 
-[![Student Registration](docs/assets/Pantalla%20de%20Registro%20de%20Estudiante.png)](docs/assets/Pantalla%20de%20Registro%20de%20Estudiante.png)
+[![Student Registration](docs/assets/registro.png)](docs/assets/registro.png)
 
 - **Timed Exam** — Configurable countdown timer with automatic submission
 - **Random Questions** — Each exam draws from a pool, preventing memorization
@@ -84,7 +84,7 @@ CBA English Level is a web-based placement testing platform that streamlines the
 
 - **Secure Login** — Authentication via Supabase Auth (email/password)
 
-[![Admin Login](docs/assets/Pantalla%20de%20Login.png)](docs/assets/Pantalla%20de%20Login.png)
+[![Admin Login](docs/assets/login.png)](docs/assets/login.png)
 
 - **Question Management** — Full CRUD with categories, options, and correct answers
 - **Level Management** — Define non-overlapping score ranges per level
@@ -104,7 +104,7 @@ Student registration → Exam initiation → Timed questions
                      → Historical record kept
 ```
 
-[![Exam Result](docs/assets/Resultado%20del%20Examen.png)](docs/assets/Resultado%20del%20Examen.png)
+[![Exam Result](docs/assets/resultado.png)](docs/assets/resultado.png)
 
 ---
 

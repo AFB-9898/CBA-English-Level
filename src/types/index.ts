@@ -1,16 +1,26 @@
-// Interfaces globales del sistema
+// ============================================================
+// Sistema de Exámenes de Colocación CBA — TypeScript Interfaces
+// ============================================================
+
+// --- Enums ---
+
+export type ExamStatus = 'pending' | 'in_progress' | 'completed'
+
+// --- Tables ---
 
 export interface Student {
   id: string
+  ci: string
   full_name: string
   email: string
-  phone?: string
+  phone: string | null
   created_at: string
 }
 
 export interface Admin {
   id: string
   email: string
+  full_name: string
   created_at: string
 }
 
@@ -19,26 +29,7 @@ export interface Level {
   name: string
   min_score: number
   max_score: number
-  description?: string
-}
-
-export interface Question {
-  id: string
-  text: string
-  options: string[]
-  correct_answer: number
-  level_id: string
-  category?: string
-}
-
-export interface Exam {
-  id: string
-  student_id: string
-  started_at: string
-  completed_at?: string
-  score?: number
-  level_id?: string
-  status: 'pending' | 'in_progress' | 'completed'
+  description: string | null
 }
 
 export interface ExamConfig {
@@ -46,4 +37,80 @@ export interface ExamConfig {
   time_limit_minutes: number
   questions_per_exam: number
   passing_score: number
+  updated_at: string
+}
+
+export interface Question {
+  id: string
+  text: string
+  level_id: string
+  category: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface QuestionOption {
+  id: string
+  question_id: string
+  text: string
+  is_correct: boolean
+  order: number
+}
+
+export interface Exam {
+  id: string
+  student_id: string
+  started_at: string | null
+  completed_at: string | null
+  score: number | null
+  level_id: string | null
+  status: ExamStatus
+  created_at: string
+}
+
+export interface ExamQuestion {
+  id: string
+  exam_id: string
+  question_id: string
+  order: number
+}
+
+export interface StudentAnswer {
+  id: string
+  exam_id: string
+  question_id: string
+  selected_option_id: string | null
+  is_correct: boolean | null
+  answered_at: string | null
+}
+
+export interface AuditLog {
+  id: string
+  admin_id: string | null
+  action: string
+  entity: string
+  entity_id: string | null
+  details: Record<string, unknown> | null
+  created_at: string
+}
+
+// --- Payloads (request/response) ---
+
+export interface ExamResult {
+  score: number
+  level_id: string
+  level_name: string
+}
+
+export interface LoginPayload {
+  identifier: string  // CI or email
+  password: string
+}
+
+export interface StudentRegistrationPayload {
+  ci: string
+  full_name: string
+  email: string
+  password: string
+  phone?: string
 }

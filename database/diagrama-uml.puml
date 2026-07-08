@@ -1,0 +1,143 @@
+@startuml
+' ============================================================
+' Diagrama Entidad-Relación — Sistema de Exámenes de Colocación
+' Centro Boliviano Americano (CBA)
+' 
+' PEGÁ ESTO EN https://www.plantuml.com
+' ============================================================
+
+skinparam backgroundColor #FEFEFE
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+skinparam packageStyle rectangle
+skinparam shadowing true
+
+' ── TABLAS ─────────────────────────────────────────────────
+
+entity "student" as student {
+  id: UUID [PK]
+  --
+  ci: VARCHAR(20) [UNIQUE, NOT NULL]
+  full_name: VARCHAR(200) [NOT NULL]
+  email: VARCHAR(200) [UNIQUE, NOT NULL]
+  phone: VARCHAR(20) [NULL]
+  created_at: TIMESTAMPTZ
+}
+
+entity "admin" as admin {
+  id: UUID [PK]
+  --
+  email: VARCHAR(200) [UNIQUE, NOT NULL]
+  full_name: VARCHAR(200) [NOT NULL]
+  created_at: TIMESTAMPTZ
+}
+
+entity "level" as level {
+  id: UUID [PK]
+  --
+  name: VARCHAR(100) [NOT NULL]
+  min_score: INTEGER [NOT NULL]
+  max_score: INTEGER [NOT NULL]
+  description: TEXT [NULL]
+}
+
+entity "exam_config" as exam_config {
+  id: UUID [PK]
+  --
+  time_limit_minutes: INTEGER [NOT NULL]
+  questions_per_exam: INTEGER [NOT NULL]
+  passing_score: INTEGER [NOT NULL]
+  updated_at: TIMESTAMPTZ
+}
+
+entity "question" as question {
+  id: UUID [PK]
+  --
+  text: TEXT [NOT NULL]
+  level_id: UUID [FK]
+  category: VARCHAR(100) [NULL]
+  created_at: TIMESTAMPTZ
+  updated_at: TIMESTAMPTZ
+}
+
+entity "question_option" as question_option {
+  id: UUID [PK]
+  --
+  question_id: UUID [FK]
+  text: TEXT [NOT NULL]
+  is_correct: BOOLEAN
+  order: INTEGER
+}
+
+entity "exam" as exam {
+  id: UUID [PK]
+  --
+  student_id: UUID [FK]
+  started_at: TIMESTAMPTZ [NULL]
+  completed_at: TIMESTAMPTZ [NULL]
+  score: INTEGER [NULL]
+  level_id: UUID [FK]
+  status: exam_status
+  created_at: TIMESTAMPTZ
+}
+
+entity "exam_question" as exam_question {
+  id: UUID [PK]
+  --
+  exam_id: UUID [FK]
+  question_id: UUID [FK]
+  order: INTEGER
+}
+
+entity "student_answer" as student_answer {
+  id: UUID [PK]
+  --
+  exam_id: UUID [FK]
+  question_id: UUID [FK]
+  selected_option_id: UUID [FK]
+  is_correct: BOOLEAN [NULL]
+  answered_at: TIMESTAMPTZ
+}
+
+entity "audit_log" as audit_log {
+  id: UUID [PK]
+  --
+  admin_id: UUID [FK]
+  action: VARCHAR(100)
+  entity: VARCHAR(100)
+  entity_id: UUID [NULL]
+  details: JSONB [NULL]
+  created_at: TIMESTAMPTZ
+}
+
+' ── RELACIONES ─────────────────────────────────────────────
+
+' level → question
+level ||--o{ question : "tiene"
+question ||--o{ question_option : "tiene"
+
+' student → exam
+student ||--o{ exam : "rinde"
+
+' exam → exam_question
+exam ||--o{ exam_question : "contiene"
+
+' question → exam_question
+question ||--o{ exam_question : "aparece en"
+
+' exam → student_answer
+exam ||--o{ student_answer : "tiene"
+
+' question → student_answer
+question ||--o{ student_answer : "responde"
+
+' question_option → student_answer
+question_option ||--o{ student_answer : "selecciona"
+
+' level → exam
+level ||--o{ exam : "asigna"
+
+' admin → audit_log
+admin ||--o{ audit_log : "genera"
+
+@enduml

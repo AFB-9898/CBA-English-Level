@@ -14,130 +14,132 @@ skinparam shadowing true
 
 ' ── TABLAS ─────────────────────────────────────────────────
 
-entity "student" as student {
+entity "estudiante" as student {
   id: UUID [PK]
   --
-  ci: VARCHAR(20) [UNIQUE, NOT NULL]
-  full_name: VARCHAR(200) [NOT NULL]
-  email: VARCHAR(200) [UNIQUE, NOT NULL]
-  phone: VARCHAR(20) [NULL]
-  created_at: TIMESTAMPTZ
+  ci: VARCHAR(20) [ÚNICO, OBLIGATORIO]
+  nombre_completo: VARCHAR(200) [OBLIGATORIO]
+  correo: VARCHAR(200) [ÚNICO, OBLIGATORIO]
+  telefono: VARCHAR(20) [OPCIONAL]
+  creado_en: TIMESTAMPTZ
 }
 
-entity "admin" as admin {
+entity "administrador" as admin {
   id: UUID [PK]
   --
-  email: VARCHAR(200) [UNIQUE, NOT NULL]
-  full_name: VARCHAR(200) [NOT NULL]
-  created_at: TIMESTAMPTZ
+  correo: VARCHAR(200) [ÚNICO, OBLIGATORIO]
+  nombre_completo: VARCHAR(200) [OBLIGATORIO]
+  creado_en: TIMESTAMPTZ
 }
 
-entity "level" as level {
+entity "nivel" as level {
   id: UUID [PK]
   --
-  name: VARCHAR(100) [NOT NULL]
-  min_score: INTEGER [NOT NULL]
-  max_score: INTEGER [NOT NULL]
-  description: TEXT [NULL]
+  nombre: VARCHAR(100) [OBLIGATORIO]
+  puntaje_minimo: INTEGER [OBLIGATORIO]
+  puntaje_maximo: INTEGER [OBLIGATORIO]
+  descripcion: TEXT [OPCIONAL]
 }
 
-entity "exam_config" as exam_config {
+entity "config_examen" as exam_config {
   id: UUID [PK]
   --
-  time_limit_minutes: INTEGER [NOT NULL]
-  questions_per_exam: INTEGER [NOT NULL]
-  passing_score: INTEGER [NOT NULL]
-  updated_at: TIMESTAMPTZ
+  tiempo_limite_min: INTEGER [OBLIGATORIO]
+  preguntas_por_examen: INTEGER [OBLIGATORIO]
+  puntaje_aprobacion: INTEGER [OBLIGATORIO]
+  actualizado_en: TIMESTAMPTZ
 }
 
-entity "question" as question {
+entity "pregunta" as question {
   id: UUID [PK]
   --
-  text: TEXT [NOT NULL]
-  level_id: UUID [FK]
-  category: VARCHAR(100) [NULL]
-  created_at: TIMESTAMPTZ
-  updated_at: TIMESTAMPTZ
+  enunciado: TEXT [OBLIGATORIO]
+  nivel_id: UUID [FK]
+  categoria: VARCHAR(100) [OPCIONAL]
+  creado_en: TIMESTAMPTZ
+  actualizado_en: TIMESTAMPTZ
 }
 
-entity "question_option" as question_option {
+entity "opcion_pregunta" as question_option {
   id: UUID [PK]
   --
-  question_id: UUID [FK]
-  text: TEXT [NOT NULL]
-  is_correct: BOOLEAN
-  order: INTEGER
+  pregunta_id: UUID [FK]
+  texto: TEXT [OBLIGATORIO]
+  es_correcta: BOOLEAN
+  orden: INTEGER
 }
 
-entity "exam" as exam {
+entity "examen" as exam {
   id: UUID [PK]
   --
-  student_id: UUID [FK]
-  started_at: TIMESTAMPTZ [NULL]
-  completed_at: TIMESTAMPTZ [NULL]
-  score: INTEGER [NULL]
-  level_id: UUID [FK]
-  status: exam_status
-  created_at: TIMESTAMPTZ
+  estudiante_id: UUID [FK]
+  iniciado_en: TIMESTAMPTZ [OPCIONAL]
+  completado_en: TIMESTAMPTZ [OPCIONAL]
+  puntaje: INTEGER [OPCIONAL]
+  nivel_id: UUID [FK]
+  estado: exam_status
+  creado_en: TIMESTAMPTZ
 }
 
-entity "exam_question" as exam_question {
+entity "examen_pregunta" as exam_question {
   id: UUID [PK]
   --
-  exam_id: UUID [FK]
-  question_id: UUID [FK]
-  order: INTEGER
+  examen_id: UUID [FK]
+  pregunta_id: UUID [FK]
+  orden: INTEGER
 }
 
-entity "student_answer" as student_answer {
+entity "respuesta_estudiante" as student_answer {
   id: UUID [PK]
   --
-  exam_id: UUID [FK]
-  question_id: UUID [FK]
-  selected_option_id: UUID [FK]
-  is_correct: BOOLEAN [NULL]
-  answered_at: TIMESTAMPTZ
+  examen_id: UUID [FK]
+  pregunta_id: UUID [FK]
+  opcion_seleccionada_id: UUID [FK]
+  es_correcta: BOOLEAN [OPCIONAL]
+  respondido_en: TIMESTAMPTZ
 }
 
-entity "audit_log" as audit_log {
+entity "registro_auditoria" as audit_log {
   id: UUID [PK]
   --
-  admin_id: UUID [FK]
-  action: VARCHAR(100)
-  entity: VARCHAR(100)
-  entity_id: UUID [NULL]
-  details: JSONB [NULL]
-  created_at: TIMESTAMPTZ
+  administrador_id: UUID [FK]
+  accion: VARCHAR(100)
+  entidad: VARCHAR(100)
+  entidad_id: UUID [OPCIONAL]
+  detalles: JSONB [OPCIONAL]
+  creado_en: TIMESTAMPTZ
 }
 
 ' ── RELACIONES ─────────────────────────────────────────────
 
-' level → question
-level ||--o{ question : "tiene"
+' nivel → pregunta
+level ||--o{ question : "contiene"
+
+' pregunta → opcion_pregunta
 question ||--o{ question_option : "tiene"
 
-' student → exam
+' estudiante → examen
 student ||--o{ exam : "rinde"
 
-' exam → exam_question
+' examen → examen_pregunta
 exam ||--o{ exam_question : "contiene"
 
-' question → exam_question
+' pregunta → examen_pregunta
 question ||--o{ exam_question : "aparece en"
 
-' exam → student_answer
+' examen → respuesta_estudiante
 exam ||--o{ student_answer : "tiene"
 
-' question → student_answer
+' pregunta → respuesta_estudiante
 question ||--o{ student_answer : "responde"
 
-' question_option → student_answer
+' opcion_pregunta → respuesta_estudiante
 question_option ||--o{ student_answer : "selecciona"
 
-' level → exam
+' nivel → examen
 level ||--o{ exam : "asigna"
 
-' admin → audit_log
+' administrador → registro_auditoria
 admin ||--o{ audit_log : "genera"
 
 @enduml

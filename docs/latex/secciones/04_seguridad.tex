@@ -1,0 +1,118 @@
+\section{Principios de Seguridad}
+
+El sistema implementa seguridad en múltiples capas, siguiendo el principio de \textbf{defense in depth}. Todas las validaciones críticas se ejecutan en el backend (base de datos), no en el frontend.
+
+\section{Autenticación}
+
+La autenticación se gestiona mediante \textbf{Supabase Auth}, que proporciona:
+
+\begin{itemize}
+    \item Registro e inicio de sesión con email y contraseña.
+    \item Contraseñas cifradas con bcrypt (gestionado por Supabase).
+    \item Manejo seguro de sesiones mediante JSON Web Tokens (JWT).
+    \item Renovación automática de tokens.
+    \item Protección contra ataques de fuerza bruta (rate limiting).
+\end{itemize}
+
+\subsection{Login Dual (CI / Email)}
+
+El sistema permite el inicio de sesión mediante CI (Carnet de Identidad) o correo electrónico:
+
+\begin{enumerate}
+    \item El estudiante ingresa su identificador (CI o email) y contraseña.
+    \item Si el identificador contiene ``@'', se trata como email y se autentica directamente.
+    \item Si no contiene ``@'', se busca el CI en la tabla \texttt{student} para obtener el email asociado.
+    \item Se autentica contra Supabase Auth con ese email y la contraseña proporcionada.
+\end{enumerate}
+
+\section{Control de Acceso (RLS)}
+
+\textbf{Row Level Security} (RLS) es el mecanismo principal de autorización. Cada tabla tiene políticas que definen qué filas puede leer, insertar, actualizar o eliminar cada usuario según su rol.
+
+\subsection{Políticas para Estudiantes}
+
+\begin{itemize}
+    \item \textbf{student}: SELECT y UPDATE solo de su propio registro. INSERT permitido (registro público).
+    \item \textbf{exam}: SELECT de sus propios exámenes. INSERT con \texttt{student\_id = auth.uid()}.
+    \item \textbf{exam\_question}: SELECT de preguntas de sus propios exámenes.
+    \item \textbf{student\_answer}: INSERT y UPDATE solo en exámenes en progreso.
+    \item \textbf{level}: SELECT de todos los niveles (para visualizar resultado).
+    \item \textbf{question}: SELECT de todas las preguntas (para responder el examen).
+\end{itemize}
+
+\subsection{Políticas para Administradores}
+
+\begin{itemize}
+    \item \textbf{admin}: SELECT de su propio registro.
+    \item \textbf{level, question, question\_option}: CRUD completo.
+    \item \textbf{exam}: SELECT de todos los exámenes (para reportes y dashboard).
+    \item \textbf{exam\_config}: SELECT y UPDATE.
+    \item \textbf{audit\_log}: SELECT de todos los registros de auditoría.
+\end{itemize}
+
+\section{Protección de Datos Históricos}
+
+Una de las reglas de negocio más críticas establece que \textbf{los resultados históricos nunca pueden modificarse}. Esto se implementa mediante un trigger SQL:
+
+\begin{lstlisting}[language=PostgreSQL, caption=Trigger de protección de históricos]
+CREATE OR REPLACE FUNCTION fn_prevent_historical_change()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF OLD.exam_id IS NOT NULL AND EXISTS (
+        SELECT 1 FROM exam WHERE id = OLD.exam_id AND status = 'completed'
+    ) THEN
+        RAISE EXCEPTION 'No se pueden modificar respuestas de un examen completado'
+            USING HINT = 'Los resultados históricos nunca pueden modificarse';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_prevent_historical_change
+    BEFORE UPDATE ON student_answer
+    FOR EACH ROW
+    EXECUTE FUNCTION fn_prevent_historical_change();
+\end{lstlisting}
+
+\section{Auditoría}
+
+Todas las acciones administrativas quedan registradas en la tabla \texttt{audit\_log}. Cada registro incluye:
+
+\begin{itemize}
+    \item Administrador que realizó la acción.
+    \item Tipo de acción (CREATE, UPDATE, DELETE).
+    \item Tabla y registro afectado.
+    \item Detalles en formato JSONB.
+    \item Fecha y hora exacta.
+\end{itemize}
+
+\section{Validaciones en Base de Datos}
+
+Además de RLS y triggers, se utilizan constraints de base de datos para garantizar la integridad:
+
+\begin{itemize}
+    \item \textbf{CHECK constraints}: Validación de rangos de puntaje, límites de tiempo, valores positivos.
+    \item \textbf{NOT NULL}: Campos obligatorios.
+    \item \textbf{UNIQUE}: CI y email únicos en \texttt{student}, combinaciones únicas en tablas relacionales.
+    \item \textbf{FOREIGN KEY}: Integridad referencial entre todas las tablas relacionadas.
+    \item \textbf{ON DELETE RESTRICT}: Evita eliminaciones que dejarían datos huérfanos.
+\end{itemize}
+
+\section{Protección contra Ataques Comunes}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{l Y}
+\toprule
+\textbf{Amenaza} & \textbf{Mitigación} \\
+\midrule
+SQL Injection & Consultas parametrizadas mediante Supabase SDK \\
+XSS & React escapea automáticamente el contenido HTML \\
+CSRF & Tokens JWT en cada solicitud \\
+Fuerza Bruta & Rate limiting de Supabase Auth \\
+Acceso no autorizado a datos & RLS policies a nivel de fila \\
+Modificación de datos históricos & Trigger SQL de protección \\
+\bottomrule
+\end{tabularx}
+\caption{Mitigación de amenazas de seguridad}
+\end{table}

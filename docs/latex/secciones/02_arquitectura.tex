@@ -1,0 +1,109 @@
+\section{Vista General}
+
+El sistema adopta una arquitectura \textbf{Frontend + BaaS} (Backend as a Service) utilizando Supabase como plataforma de backend. Esta arquitectura elimina la necesidad de un servidor REST intermedio, reduciendo la complejidad operativa y los puntos de fallo.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.8\textwidth}
+\centering
+\ttfamily\footnotesize
+\begin{tabular}{c}
+\textbf{Cliente (Navegador)} \\
+React 19 + TypeScript + Tailwind CSS \\
+$\updownarrow$ Supabase SDK \\
+\textbf{Supabase (BaaS)} \\
+$\left\{\begin{tabular}{c}
+PostgreSQL \\ Auth \\
+Edge Functions
+\end{tabular}\right.$
+\end{tabular}
+\end{minipage}
+\caption{Arquitectura general del sistema}
+\end{figure}
+
+\section{Frontend}
+
+El frontend está desarrollado con \textbf{React 19} y \textbf{TypeScript}, utilizando \textbf{Vite 8} como herramienta de construcción. Los estilos se implementan con \textbf{Tailwind CSS 4} siguiendo un enfoque \textit{mobile-first} y responsive.
+
+\subsection{Organización de Componentes}
+
+Los componentes se organizan siguiendo el patrón \textbf{Atomic Design}, que permite una jerarquía clara y reutilizable:
+
+\begin{itemize}
+    \item \textbf{Atoms}: Componentes básicos e indivisibles (botones, inputs, etiquetas, iconos).
+    \item \textbf{Molecules}: Combinación de átomos con una función específica (campo de formulario, tarjeta de pregunta).
+    \item \textbf{Organisms}: Bloques funcionales complejos (barra de navegación, lista de preguntas).
+    \item \textbf{Screens}: Páginas completas que combinan organismos (Login, Dashboard, Examen).
+\end{itemize}
+
+\subsection{Estructura del Proyecto}
+
+\begin{verbatim}
+src/
+├── components/
+│   ├── atoms/           # Botones, inputs, badges
+│   ├── molecules/       # Formularios, tarjetas
+│   └── organisms/       # Navbar, tablas, paneles
+├── hooks/               # Custom hooks (useExam, useAuth)
+├── lib/                 # Configuración (supabase.ts)
+├── screens/             # Páginas completas
+├── services/            # Llamadas a Supabase
+├── types/               # Interfaces TypeScript
+└── utils/               # Utilidades y helpers
+\end{verbatim}
+
+\subsection{Principales Screens}
+
+\begin{itemize}
+    \item \textbf{LoginScreen}: Autenticación con CI o email + contraseña.
+    \item \textbf{RegisterScreen}: Registro de nuevos estudiantes.
+    \item \textbf{ExamScreen}: Rendir examen con temporizador y auto-envío.
+    \item \textbf{ResultScreen}: Resultado inmediato con nivel asignado.
+    \item \textbf{AdminDashboard}: Panel de administración con estadísticas.
+    \item \textbf{QuestionManager}: CRUD de preguntas y opciones.
+    \item \textbf{ReportScreen}: Exportación de reportes CSV/Excel.
+\end{itemize}
+
+\section{Supabase (Backend)}
+
+Supabase actúa como \textbf{Backend as a Service}, proporcionando los siguientes servicios:
+
+\subsection{Base de Datos (PostgreSQL)}
+
+Base de datos relacional que almacena toda la información del sistema. Incluye:
+
+\begin{itemize}
+    \item 10 tablas normalizadas (3FN) con claves primarias, foráneas y restricciones.
+    \item Funciones SQL para lógica de negocio (cálculo de nivel, selección aleatoria de preguntas).
+    \item Triggers para reglas críticas (límite diario de exámenes, protección de históricos).
+    \item Row Level Security (RLS) para control de acceso a nivel de fila.
+\end{itemize}
+
+\subsection{Autenticación (Auth)}
+
+Supabase Auth gestiona el registro e inicio de sesión de usuarios. El sistema soporta dos modalidades de inicio de sesión para estudiantes:
+
+\begin{itemize}
+    \item \textbf{Por email}: Autenticación directa con Supabase Auth.
+    \item \textbf{Por CI (Carnet de Identidad)}: El frontend busca el email asociado al CI en la tabla \texttt{student} y autentica contra Supabase Auth con ese email.
+\end{itemize}
+
+\subsection{Edge Functions (Opcional)}
+
+Para lógica compleja que no puede expresarse eficientemente en SQL, se pueden implementar Edge Functions en TypeScript/Deno, desplegadas en Supabase.
+
+\section{Flujo de Datos}
+
+\begin{enumerate}
+    \item El estudiante se registra en el sistema (datos personales + credenciales).
+    \item El administrador configura el examen (tiempo, cantidad de preguntas, puntaje mínimo).
+    \item El administrador da de alta preguntas con sus opciones y las asigna a niveles.
+    \item El estudiante inicia sesión (CI o email + contraseña).
+    \item El estudiante solicita un nuevo examen.
+    \item El sistema verifica que no haya rendido examen en el día (trigger SQL).
+    \item El sistema selecciona preguntas aleatorias (función SQL) y crea el examen.
+    \item El estudiante responde las preguntas dentro del tiempo límite.
+    \item Al finalizar, el sistema calcula el puntaje y asigna el nivel (función SQL).
+    \item El resultado se muestra inmediatamente y queda registrado en el historial.
+    \item El administrador puede visualizar estadísticas y exportar reportes.
+\end{enumerate}

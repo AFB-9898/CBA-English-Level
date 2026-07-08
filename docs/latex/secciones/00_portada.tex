@@ -1,6 +1,6 @@
 % ==========================================================
 % 00_portada.tex — PORTADA
-% Actividad 7 — Auditoría de Sistemas
+% Manual Técnico — Sistema de Exámenes de Colocación CBA
 % ==========================================================
 
 \thispagestyle{empty}
@@ -8,11 +8,22 @@
 \begin{center}
   \vspace*{0.3cm}
 
-  \IfFileExists{\DocLogoUPDS}{%
-    \includegraphics[width=4.2cm]{\DocLogoUPDS}
-  }{}
+  % ── LOGOS: UPDS (izquierda) + CBA (derecha) ──────────
+  \begin{minipage}{0.45\textwidth}
+    \centering
+    \IfFileExists{\DocLogoUPDS}{%
+      \includegraphics[width=4.2cm]{\DocLogoUPDS}
+    }{}
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.45\textwidth}
+    \centering
+    \IfFileExists{\DocLogoCBA}{%
+      \includegraphics[width=4.2cm]{\DocLogoCBA}
+    }{}
+  \end{minipage}
 
-  \vspace{0.6cm}
+  \vspace{0.8cm}
 
   {\sffamily\bfseries\Large \DocInstitucion \par}
   \vspace{0.2cm}
@@ -29,11 +40,11 @@
   \vspace{2cm}
 
   \begin{flushleft}
-    {\sffamily\normalsize \textbf{Materia:} \\ \DocMateria \par}
+    {\sffamily\normalsize \textbf{Modalidad:} \\ \DocModalidad \par}
     \vspace{0.3cm}
-    {\sffamily\normalsize \textbf{Docente:} \\ \DocTutor \par}
+    {\sffamily\normalsize \textbf{Supervisor:} \\ \DocSupervisor \par}
     \vspace{0.3cm}
-    {\sffamily\normalsize \textbf{Estudiantes:} \\ \DocAutores \par}
+    {\sffamily\normalsize \textbf{Autor:} \\ \DocAutores \par}
   \end{flushleft}
 
   \vspace{1.5cm}

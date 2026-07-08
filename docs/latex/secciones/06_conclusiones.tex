@@ -1,0 +1,22 @@
+\section{Conclusiones}
+
+El desarrollo del Sistema de Exámenes de Colocación para el Centro Boliviano Americano representa un avance significativo en la digitalización de los procesos académicos de la institución. A continuación se presentan las principales conclusiones:
+
+\begin{itemize}
+    \item La arquitectura Frontend + BaaS (Supabase) demostró ser una solución eficiente, eliminando la necesidad de un servidor REST intermedio y reduciendo la complejidad operativa del sistema.
+    \item El diseño de la base de datos en Tercera Forma Normal (3FN) garantiza la integridad y consistencia de los datos, mientras que las funciones SQL y triggers automatizan las reglas de negocio críticas directamente en la base de datos.
+    \item La implementación de Row Level Security (RLS) proporciona un control de acceso granular a nivel de fila, asegurando que cada usuario solo pueda acceder a los datos que le corresponden.
+    \item El sistema de autenticación dual (CI o email) facilita el acceso a los estudiantes, eliminando la necesidad de recordar un correo electrónico institucional.
+    \item La protección de resultados históricos mediante triggers SQL garantiza la integridad de las evaluaciones, cumpliendo con uno de los requisitos más críticos del sistema.
+\end{itemize}
+
+\section{Recomendaciones}
+
+\begin{itemize}
+    \item \textbf{Despliegue en producción}: Se recomienda configurar correctamente las variables de entorno en el entorno de producción, incluyendo las claves de Supabase y las URLs de la aplicación.
+    \item \textbf{Carga de preguntas}: Para una operatividad completa, se recomienda que el administrador cargue un número suficiente de preguntas distribuidas equitativamente entre los niveles antes de poner el sistema en producción.
+    \item \textbf{Migración de datos históricos}: Si el CBA cuenta con datos de evaluaciones anteriores, se recomienda diseñar un proceso de migración para incorporarlos al nuevo sistema.
+    \item \textbf{Backup periódico}: Configurar backups automáticos de la base de datos en Supabase para garantizar la disponibilidad de la información.
+    \item \textbf{Monitoreo}: Implementar monitoreo de rendimiento y alertas para detectar posibles cuellos de botella cuando el sistema alcance su capacidad máxima de 30 estudiantes simultáneos.
+    \item \textbf{Ampliación futura}: El diseño modular del sistema permite incorporar nuevas funcionalidades en el futuro, como la reproducción de audio para exámenes de listening, integración con LMS institucional, o generación de certificados automáticos.
+\end{itemize}

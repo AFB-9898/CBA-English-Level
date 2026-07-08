@@ -1,7 +1,7 @@
 % !TeX program = lualatex
 % ==========================================================
-% MAIN.TEX — AUDITORÍA DE CALIDAD — PRUEBAS ESTÁTICAS IEEE 1028
-% Actividad 10 — Auditoría de Sistemas
+% MAIN.TEX — MANUAL TÉCNICO
+% Sistema de Exámenes de Colocación — Centro Boliviano Americano
 % Motor: LuaLaTeX + BibTeX
 % ==========================================================
 
@@ -87,23 +87,34 @@
 
 % ── LISTINGS DE CÓDIGO ───────────────────────────────────
 \usepackage{listings}
-\lstdefinelanguage{PowerShell}{
-  keywords={function,param,if,else,foreach,for,while,do,switch,break,
-    continue,return,throw,try,catch,finally,begin,process,end,filter,
-    ForEach-Object,Where-Object,Write-Host,Write-Output,Get-Content,
-    Set-Content,Test-Path,Join-Path,Get-ChildItem,New-Object},
-  comment=[l]{\#},
-  morestring=[d]{"},
-  morestring=[d]{'}
-}
-\lstdefinelanguage{yaml}{
-  sensitive=true,
-  comment=[l]{\#},
+\usepackage{textcomp}
+\lstdefinelanguage{PostgreSQL}{
+  keywords={CREATE,ALTER,DROP,TABLE,INDEX,VIEW,FUNCTION,TRIGGER,
+    PROCEDURE,INSERT,UPDATE,DELETE,SELECT,FROM,WHERE,INNER,LEFT,
+    RIGHT,JOIN,ON,GROUP,BY,ORDER,ASC,DESC,HAVING,LIMIT,OFFSET,
+    AS,IN,NOT,NULL,IS,AND,OR,TRUE,FALSE,EXISTS,UNION,ALL,
+    DISTINCT,CASE,WHEN,THEN,ELSE,END,BEGIN,DECLARE,RETURN,
+    RAISE,EXCEPTION,INTEGER,VARCHAR,TEXT,BOOLEAN,UUID,
+    TIMESTAMPTZ,NUMERIC,DEFAULT,CHECK,UNIQUE,PRIMARY,KEY,
+    REFERENCES,FOREIGN,CONSTRAINT,ENUM,TYPE,ROW,COUNT,
+    LANGUAGE,plpgsql,STABLE,SECURITY,DEFINER,EXECUTE,
+    FUNCTION,TRIGGER,NEW,OLD},
+  sensitive=false,
+  comment=[l]{--},
   morestring=[b]',
+  morestring=[b]"
+}
+\lstdefinelanguage{TypeScript}{
+  keywords={export,import,from,interface,type,const,let,var,
+    function,return,if,else,for,while,do,switch,case,break,
+    default,async,await,new,this,true,false,null,undefined,
+    typeof,instanceof,void,never,string,number,boolean,
+    Record,Partial,Required,Pick,Omit,Promise},
+  sensitive=true,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
   morestring=[b]",
-  morekeywords={name,on,push,pull_request,jobs,runs-on,steps,uses,with,
-    run,env,permissions,contents,id-token,actions,needs,if,
-    timeout-minutes,continue-on-error,working-directory}
+  morestring=[b]'
 }
 \lstset{
   basicstyle=\footnotesize\ttfamily,
@@ -111,7 +122,7 @@
   breaklines=true,
   numbers=left,
   numberstyle=\tiny,
-  language=Python
+  tabsize=2
 }
 
 % ── INTERLINEADO ─────────────────────────────────────────
@@ -129,7 +140,7 @@
   \begin{minipage}{\textwidth}
     \centering
     {\sffamily\bfseries\color{IHBlue}\DocInstitucion\ \textemdash\ \DocFacultad}\\[-1pt]
-    {\sffamily\small\color{IHGray}\DocCarrera\ \textemdash\ \DocMateria}
+    {\sffamily\small\color{IHGray}\DocSubtitulo}
   \end{minipage}
 }
 
@@ -186,30 +197,28 @@
 \onehalfspacing
 
 \chapter{Introducción y Objetivos}
-\label{chap:introduccion_y_objetivos}
-\InputIfExists{secciones/01_introduccion_y_objetivos.tex}
+\label{chap:introduccion}
+\InputIfExists{secciones/01_introduccion.tex}
 
-\chapter{Fase A: Caracterización y Diagnóstico (El ``Por qué'')}
-\label{chap:fase_a}
-\InputIfExists{secciones/02_caracterizacion_organizacional.tex}
+\chapter{Arquitectura del Sistema}
+\label{chap:arquitectura}
+\InputIfExists{secciones/02_arquitectura.tex}
 
-\chapter{Fase B: Propuesta Técnica (El ``Qué'')}
-\label{chap:fase_b}
-\InputIfExists{secciones/03_diagnostico_y_metodologia.tex}
-\InputIfExists{secciones/04_analisis_riesgos_y_controles.tex}
-\InputIfExists{secciones/05_propuesta_auditoria_integral.tex}
+\chapter{Diseño de Base de Datos}
+\label{chap:base_datos}
+\InputIfExists{secciones/03_base_datos.tex}
 
-\chapter{Fase C: Alineación con Marcos de Referencia}
-\label{chap:fase_c}
-\InputIfExists{secciones/06_alineacion_marcos_referencia.tex}
+\chapter{Seguridad}
+\label{chap:seguridad}
+\InputIfExists{secciones/04_seguridad.tex}
 
-\chapter{Fase D: Gestión Ágil (La Planificación)}
-\label{chap:fase_d}
-\InputIfExists{secciones/07_planificacion_y_gestion_agil.tex}
+\chapter{Manual de Usuario}
+\label{chap:manual_usuario}
+\InputIfExists{secciones/05_manual_usuario.tex}
 
 \chapter{Conclusiones y Recomendaciones}
-\label{chap:conclusiones_y_recomendaciones}
-\InputIfExists{secciones/08_conclusiones_y_recomendaciones.tex}
+\label{chap:conclusiones}
+\InputIfExists{secciones/06_conclusiones.tex}
 
 % ── REFERENCIAS ───────────────────────────────────────────
 \cleardoublepage

@@ -1,0 +1,111 @@
+\section{Descripción del Proyecto}
+
+El Centro Boliviano Americano (CBA) es una institución dedicada a la enseñanza del idioma inglés en la ciudad de Tarija, Bolivia. Actualmente, el proceso de evaluación de nuevos estudiantes se realiza de forma manual, lo que implica tiempo y recursos administrativos significativos.
+
+El presente proyecto consiste en el desarrollo de una aplicación web que permita administrar y rendir exámenes de colocación (\textit{placement tests}) de forma automatizada. El sistema determina el nivel de inglés del estudiante de manera inmediata, basándose en sus respuestas y en una configuración predefinida de niveles y puntajes.
+
+\subsection{Institución Beneficiaria}
+
+\begin{itemize}
+    \item \textbf{Nombre:} Centro Boliviano Americano (CBA)
+    \item \textbf{Área Responsable:} Área Académica
+    \item \textbf{Supervisor Técnico:} Área de Sistemas
+    \item \textbf{Supervisor del Proyecto:} Ing. Omar Mancilla
+\end{itemize}
+
+\section{Objetivos}
+
+\subsection{Objetivo General}
+
+Desarrollar una aplicación web que permita administrar y rendir exámenes de colocación para determinar automáticamente el nivel de inglés de nuevos estudiantes del Centro Boliviano Americano.
+
+\subsection{Objetivos Específicos}
+
+\begin{itemize}
+    \item Diseñar e implementar una base de datos relacional que cumpla con la Tercera Forma Normal (3FN) para almacenar la información de estudiantes, administradores, preguntas, exámenes y resultados.
+    \item Implementar un módulo de autenticación que permita el ingreso al sistema mediante CI (Carnet de Identidad) o correo electrónico.
+    \item Desarrollar un módulo de administración para la gestión completa de preguntas, niveles y configuración del examen.
+    \item Implementar un sistema de generación aleatoria de exámenes con tiempo límite configurable.
+    \item Calcular automáticamente el nivel de inglés del estudiante en función del puntaje obtenido.
+    \item Generar reportes descargables en formato CSV y Excel.
+    \item Asegurar que los resultados históricos no puedan ser modificados.
+\end{itemize}
+
+\section{Alcance}
+
+\subsection{Incluye}
+
+\begin{itemize}
+    \item Módulo Estudiante: registro, inicio de sesión, rendir examen, ver resultado.
+    \item Módulo Administrador: gestión de preguntas, niveles, configuración, dashboard, reportes.
+    \item Base de datos relacional con funciones SQL, triggers y Row Level Security.
+    \item Autenticación mediante Supabase Auth con soporte para CI o email.
+    \item Documentación técnica y manual de usuario.
+\end{itemize}
+
+\subsection{No Incluye}
+
+\begin{itemize}
+    \item Sistemas de pagos o facturación.
+    \item Integraciones con sistemas externos (SSO institucional, LMS).
+    \item Aplicación móvil nativa (la web es responsive).
+\end{itemize}
+
+\section{Tecnologías Utilizadas}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{l Y}
+\toprule
+\textbf{Tecnología} & \textbf{Propósito} \\
+\midrule
+React 19 + TypeScript & Framework de frontend \\
+Vite 8 & Build tool y dev server \\
+Tailwind CSS 4 & Estilos y diseño responsive \\
+Supabase (BaaS) & Backend como Servicio (PostgreSQL, Auth, RLS) \\
+PostgreSQL 15 & Base de datos relacional \\
+Supabase SDK (\texttt{@supabase/supabase-js}) & Conexión frontend-backend \\
+Git + GitHub & Control de versiones \\
+Vercel & Despliegue del frontend \\
+LuaLaTeX & Documentación técnica \\
+\bottomrule
+\end{tabularx}
+\caption{Tecnologías del proyecto}
+\end{table}
+
+\section{Arquitectura General}
+
+El sistema sigue una arquitectura \textbf{Frontend + BaaS} (Backend as a Service). No existe un servidor REST intermedio. El frontend en React consume directamente los servicios de Supabase mediante su SDK oficial.
+
+\begin{figure}[H]
+\centering
+\begin{lstlisting}[frame=none, numbers=none, basicstyle=\ttfamily\small]
+Frontend (React + Supabase SDK)
+        |
+        v
+   Supabase
+   ├── PostgreSQL (datos + RLS)
+   ├── Auth (autenticación)
+   └── Edge Functions (lógica adicional)
+\end{lstlisting}
+\caption{Diagrama de arquitectura general}
+\end{figure}
+
+\section{Reglas de Negocio}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{l Y}
+\toprule
+\textbf{Regla} & \textbf{Implementación} \\
+\midrule
+Un estudiante solo puede rendir un examen por día & Trigger SQL \\
+El examen tiene tiempo límite configurable & Tabla \texttt{exam\_config} \\
+Las preguntas son aleatorias por examen & Función SQL \\
+El nivel se calcula automáticamente & Función SQL \\
+Los resultados históricos no pueden modificarse & Trigger SQL \\
+Validaciones críticas en backend & RLS + Constraints \\
+\bottomrule
+\end{tabularx}
+\caption{Reglas de negocio y su implementación}
+\end{table}

@@ -21,11 +21,9 @@ VALUES (60, 30, 41);
 -- 3. Admin inicial (el usuario debe crear una cuenta en Supabase Auth
 --    y luego insertar el registro aquí con el mismo ID de auth.users)
 -- ============================================================
--- NOTA: Ya se creó el usuario admin via Management API.
---   ID:   b89b6371-cfd0-4c09-8c52-b760590762b9
---   Email: admin@cba.edu.bo
---   Full name: Administrador CBA
--- Para recrear en otro entorno:
---   1. Crear usuario en Supabase Auth con email_confirm=true
---   2. INSERT INTO admin (id, email, full_name)
---      VALUES ('<uuid_de_auth.users>', 'admin@cba.edu.bo', 'Administrador CBA');
+-- NOTA: Este INSERT se ejecuta DESPUÉS de crear el usuario en Supabase Auth.
+-- Reemplazar 'ADMIN_AUTH_USER_ID' con el UUID real de auth.users.
+--
+-- Ejemplo:
+-- INSERT INTO admin (id, email, full_name)
+-- VALUES ('<uuid_de_auth.users>', 'admin@cba.edu.bo', 'Administrador CBA');

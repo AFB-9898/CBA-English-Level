@@ -1,0 +1,40 @@
+schema: spec-driven
+
+context: |
+  Project: CBA English Level — placement exam system for Centro Boliviano Americano
+  Stack: React 19 + TypeScript 6 + Vite 8 + Tailwind CSS 4 (frontend)
+         Supabase BaaS (PostgreSQL 17 + RLS + Auth + Edge Functions)
+  Architecture: Frontend + BaaS, no REST middleware; direct Supabase SDK consumption
+  Code org: Atomic Design (atoms/molecules/organisms/screens) + services/hooks/types/utils
+  Linter: oxlint | Type checker: tsc -b | Formatter: none detected
+  Testing: no test runner installed (strict_tdd disabled)
+  Language: Spanish (project docs), English (code identifiers)
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes
+    - Consider RLS policy impact for any data-layer change
+  specs:
+    - Use Given/When/Then for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+    - Separate frontend specs from Supabase/RLS specs when changes touch both
+  design:
+    - Include sequence diagrams for complex flows
+    - Document architecture decisions with rationale
+    - Prefer SQL functions/triggers over Edge Functions when possible
+  tasks:
+    - Group by phase, use hierarchical numbering
+    - Keep tasks completable in one session
+    - Tag tasks with layer: frontend | supabase | database | docs
+  apply:
+    - Follow existing Atomic Design patterns
+    - All critical validations MUST be in backend (RLS / SQL)
+    - Table names singular, columns snake_case, PKs = id, FKs = {table}_id
+    tdd: false
+    test_command: ""
+  verify:
+    test_command: ""
+    build_command: "npm run build"
+    coverage_threshold: 0
+  archive:
+    - Warn before merging destructive deltas

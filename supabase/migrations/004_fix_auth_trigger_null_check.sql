@@ -1,11 +1,11 @@
 -- ============================================================
 -- Sistema de Exámenes de Colocación CBA
--- Migration: 003_auth_triggers
--- Descripción: Trigger para auto-crear student al registrarse
+-- Migration: 004_fix_auth_trigger_null_check
+-- Descripción: Fix del trigger — NULL != 'admin' no funciona
+--              en PostgreSQL (NULL != anything = NULL, no TRUE).
+--              Se reemplaza con IS DISTINCT FROM.
 -- ============================================================
 
--- 1. Función que se ejecuta al crear un nuevo usuario en Auth
--- ============================================================
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -13,6 +13,7 @@ SECURITY DEFINER SET search_path = ''
 AS $$
 BEGIN
   -- Solo crear registro si NO es admin
+  -- Usamos IS DISTINCT FROM para manejar NULL correctamente
   IF NEW.raw_user_meta_data ->> 'role' IS DISTINCT FROM 'admin' THEN
     INSERT INTO public.student (id, ci, full_name, email, phone)
     VALUES (
@@ -26,12 +27,3 @@ BEGIN
   RETURN NEW;
 END;
 $$;
-
--- 2. Trigger sobre auth.users
--- ============================================================
-DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
-
-CREATE TRIGGER on_auth_user_created
-  AFTER INSERT ON auth.users
-  FOR EACH ROW
-  EXECUTE FUNCTION public.handle_new_user();

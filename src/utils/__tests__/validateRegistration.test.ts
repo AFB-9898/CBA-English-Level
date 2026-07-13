@@ -1,5 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { validateRegistration, type RegistrationFields } from '../validateRegistration'
+import i18n from '../../i18n'
+
+const t = i18n.t
 
 const validFields: RegistrationFields = {
   full_name: 'Juan Pérez',
@@ -11,79 +14,79 @@ const validFields: RegistrationFields = {
 
 describe('validateRegistration', () => {
   it('returns no errors for valid data', () => {
-    const errors = validateRegistration(validFields)
+    const errors = validateRegistration(validFields, t)
     expect(Object.keys(errors)).toHaveLength(0)
   })
 
   it('returns no errors when phone is empty (optional)', () => {
-    const errors = validateRegistration({ ...validFields, phone: '' })
+    const errors = validateRegistration({ ...validFields, phone: '' }, t)
     expect(Object.keys(errors)).toHaveLength(0)
   })
 
   it('returns full_name error when empty', () => {
-    const errors = validateRegistration({ ...validFields, full_name: '' })
-    expect(errors.full_name).toBe('Full name is required')
+    const errors = validateRegistration({ ...validFields, full_name: '' }, t)
+    expect(errors.full_name).toBe(t('validation.fullNameRequired'))
   })
 
   it('returns full_name error when over 200 chars', () => {
     const longName = 'A'.repeat(201)
-    const errors = validateRegistration({ ...validFields, full_name: longName })
-    expect(errors.full_name).toBe('Full name is too long')
+    const errors = validateRegistration({ ...validFields, full_name: longName }, t)
+    expect(errors.full_name).toBe(t('validation.fullNameTooLong'))
   })
 
   it('returns ci error when empty', () => {
-    const errors = validateRegistration({ ...validFields, ci: '' })
-    expect(errors.ci).toBe('CI is required')
+    const errors = validateRegistration({ ...validFields, ci: '' }, t)
+    expect(errors.ci).toBe(t('validation.ciRequired'))
   })
 
   it('returns ci error when too short', () => {
-    const errors = validateRegistration({ ...validFields, ci: '12' })
-    expect(errors.ci).toBe('CI must be 3–20 characters')
+    const errors = validateRegistration({ ...validFields, ci: '12' }, t)
+    expect(errors.ci).toBe(t('validation.ciLength'))
   })
 
   it('returns ci error when too long', () => {
-    const errors = validateRegistration({ ...validFields, ci: 'A'.repeat(21) })
-    expect(errors.ci).toBe('CI must be 3–20 characters')
+    const errors = validateRegistration({ ...validFields, ci: 'A'.repeat(21) }, t)
+    expect(errors.ci).toBe(t('validation.ciLength'))
   })
 
   it('returns ci error for invalid characters', () => {
-    const errors = validateRegistration({ ...validFields, ci: '@@invalid@@' })
-    expect(errors.ci).toBe('CI contains invalid characters')
+    const errors = validateRegistration({ ...validFields, ci: '@@invalid@@' }, t)
+    expect(errors.ci).toBe(t('validation.ciInvalid'))
   })
 
   it('accepts CI with spaces and hyphens', () => {
-    const errors = validateRegistration({ ...validFields, ci: 'AB-12 34' })
+    const errors = validateRegistration({ ...validFields, ci: 'AB-12 34' }, t)
     expect(errors.ci).toBeUndefined()
   })
 
   it('returns email error when empty', () => {
-    const errors = validateRegistration({ ...validFields, email: '' })
-    expect(errors.email).toBe('Email is required')
+    const errors = validateRegistration({ ...validFields, email: '' }, t)
+    expect(errors.email).toBe(t('validation.emailRequired'))
   })
 
   it('returns email error for invalid format', () => {
-    const errors = validateRegistration({ ...validFields, email: 'not-an-email' })
-    expect(errors.email).toBe('Invalid email format')
+    const errors = validateRegistration({ ...validFields, email: 'not-an-email' }, t)
+    expect(errors.email).toBe(t('validation.emailInvalid'))
   })
 
   it('returns password error when empty', () => {
-    const errors = validateRegistration({ ...validFields, password: '' })
-    expect(errors.password).toBe('Password is required')
+    const errors = validateRegistration({ ...validFields, password: '' }, t)
+    expect(errors.password).toBe(t('validation.passwordRequired'))
   })
 
   it('returns password error when too short', () => {
-    const errors = validateRegistration({ ...validFields, password: '1234567' })
-    expect(errors.password).toBe('Password must be at least 8 characters')
+    const errors = validateRegistration({ ...validFields, password: '1234567' }, t)
+    expect(errors.password).toBe(t('validation.passwordTooShort'))
   })
 
   it('returns phone error for invalid format', () => {
-    const errors = validateRegistration({ ...validFields, phone: '123' })
-    expect(errors.phone).toBe('Phone must be 7–15 digits')
+    const errors = validateRegistration({ ...validFields, phone: '123' }, t)
+    expect(errors.phone).toBe(t('validation.phoneInvalid'))
   })
 
   it('returns phone error for non-numeric input', () => {
-    const errors = validateRegistration({ ...validFields, phone: 'abcdefg' })
-    expect(errors.phone).toBe('Phone must be 7–15 digits')
+    const errors = validateRegistration({ ...validFields, phone: 'abcdefg' }, t)
+    expect(errors.phone).toBe(t('validation.phoneInvalid'))
   })
 
   it('returns multiple errors for multiple invalid fields', () => {
@@ -93,7 +96,7 @@ describe('validateRegistration', () => {
       email: 'bad',
       phone: '123',
       password: 'short',
-    })
+    }, t)
     expect(errors.full_name).toBeDefined()
     expect(errors.ci).toBeDefined()
     expect(errors.email).toBeDefined()

@@ -1,7 +1,9 @@
 import { Outlet, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../components/auth/AuthContext'
 
 export default function AdminLayout() {
+  const { t } = useTranslation()
   const { logout, user, adminName } = useAuth()
   const navigate = useNavigate()
 
@@ -16,7 +18,7 @@ export default function AdminLayout() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <h1 className="text-lg font-semibold text-gray-800">
-              CBA — Admin Panel
+              {t('adminPanel.title')}
             </h1>
 
             <div className="flex items-center gap-4">
@@ -29,7 +31,7 @@ export default function AdminLayout() {
                 onClick={handleLogout}
                 className="text-sm text-gray-600 hover:text-red-600 transition-colors"
               >
-                Logout
+                {t('common.logout')}
               </button>
             </div>
           </div>

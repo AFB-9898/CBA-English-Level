@@ -1,32 +1,42 @@
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import RegisterForm from '../components/organisms/RegisterForm'
+import Toast from '../components/atoms/Toast'
+import LanguageSwitcher from '../components/atoms/LanguageSwitcher'
 
 export default function RegisterPage() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
-  const location = useLocation()
+  const [showToast, setShowToast] = useState(false)
 
-  const registered = (location.state as { registered?: boolean } | null)?.registered === true
+  function handleSuccess() {
+    setShowToast(true)
+    setTimeout(() => navigate('/login'), 2500)
+  }
 
   return (
     <PageShell>
-      {registered && (
-        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded text-sm mb-4" role="status">
-          Registration successful! Please sign in.
-        </div>
+      {showToast && (
+        <Toast message={t('registerPage.successMessage')} onClose={() => setShowToast(false)} />
       )}
 
-      <RegisterForm onSuccess={() => navigate('/login', { state: { registered: true } })} />
+      <RegisterForm onSuccess={handleSuccess} />
     </PageShell>
   )
 }
 
 function PageShell({ children }: { children: React.ReactNode }) {
+  const { t } = useTranslation()
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-800">CBA — Student Registration</h1>
-          <p className="text-sm text-gray-500 mt-1">Create an account to take placement exams</p>
+          <div className="flex items-center justify-center gap-3">
+            <h1 className="text-2xl font-bold text-gray-800">{t('registerPage.title')}</h1>
+            <LanguageSwitcher />
+          </div>
+          <p className="text-sm text-gray-500 mt-1">{t('registerPage.subtitle')}</p>
         </div>
         <div className="bg-white rounded-lg shadow-md p-6">{children}</div>
       </div>

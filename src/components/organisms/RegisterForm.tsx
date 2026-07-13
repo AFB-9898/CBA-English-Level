@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { supabase } from '../../lib/supabase'
 import { validateRegistration } from '../../utils/validateRegistration'
 import type { FieldErrors, RegistrationFields } from '../../utils/validateRegistration'
@@ -10,6 +11,7 @@ export interface RegisterFormProps {
 }
 
 export default function RegisterForm({ onSuccess }: RegisterFormProps) {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [fields, setFields] = useState<RegistrationFields>({
     full_name: '',
@@ -38,7 +40,7 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
     e.preventDefault()
     setGeneralError(null)
 
-    const fieldErrors = validateRegistration(fields)
+    const fieldErrors = validateRegistration(fields, t)
     if (Object.keys(fieldErrors).length > 0) {
       setErrors(fieldErrors)
       return
@@ -61,7 +63,7 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
     setSubmitting(false)
 
     if (error) {
-      const mapped = mapAuthError(error)
+      const mapped = mapAuthError(error, t)
       if (mapped.field) {
         setErrors({ [mapped.field]: mapped.message })
       } else {
@@ -86,7 +88,7 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
       {/* Full Name */}
       <div>
         <label htmlFor="full_name" className="block text-sm font-medium text-gray-700 mb-1">
-          Full Name
+          {t('common.fullName')}
         </label>
         <input
           id="full_name"
@@ -108,7 +110,7 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
       {/* CI */}
       <div>
         <label htmlFor="ci" className="block text-sm font-medium text-gray-700 mb-1">
-          CI (Identity Card)
+          {t('common.ci')}
         </label>
         <input
           id="ci"
@@ -129,7 +131,7 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
       {/* Email */}
       <div>
         <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-          Email
+          {t('common.email')}
         </label>
         <input
           id="email"
@@ -151,7 +153,7 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
       {/* Phone */}
       <div>
         <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-          Phone <span className="text-gray-400">(optional)</span>
+          {t('common.phone')} <span className="text-gray-400">(optional)</span>
         </label>
         <input
           id="phone"
@@ -173,7 +175,7 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
       {/* Password */}
       <div>
         <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-          Password
+          {t('common.password')}
         </label>
         <input
           id="password"
@@ -205,14 +207,14 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
         disabled={submitting}
         className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
-        {submitting ? 'Registering…' : 'Register'}
+        {submitting ? t('common.registering') : t('common.register')}
       </button>
 
       {/* Link to login */}
       <p className="text-sm text-center text-gray-500 mt-4">
-        Already have an account?{' '}
+        {t('registerForm.alreadyHaveAccount')}{' '}
         <Link to="/login" className="text-blue-600 hover:underline">
-          Login
+          {t('registerForm.loginLink')}
         </Link>
       </p>
     </form>

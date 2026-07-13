@@ -43,7 +43,7 @@ describe('App — Auth Flow Integration', () => {
     render(<App />)
 
     await waitFor(() => {
-      expect(screen.getByText('CBA — Admin Login')).toBeInTheDocument()
+      expect(screen.getByText('CBA — Login')).toBeInTheDocument()
     })
   })
 
@@ -56,7 +56,7 @@ describe('App — Auth Flow Integration', () => {
     render(<App />)
 
     await waitFor(() => {
-      expect(screen.getByText('CBA — Admin Login')).toBeInTheDocument()
+      expect(screen.getByText('CBA — Login')).toBeInTheDocument()
     })
   })
 
@@ -71,7 +71,7 @@ describe('App — Auth Flow Integration', () => {
     render(<App />)
 
     await waitFor(() => {
-      expect(screen.getByText('CBA — Admin Login')).toBeInTheDocument()
+      expect(screen.getByText('CBA — Login')).toBeInTheDocument()
     })
   })
 

@@ -1,0 +1,60 @@
+{
+  "common": {
+    "email": "Email",
+    "password": "Password",
+    "fullName": "Full Name",
+    "ci": "CI (Identity Card)",
+    "phone": "Phone",
+    "phoneOptional": "Phone (optional)",
+    "register": "Register",
+    "registering": "Registering…",
+    "login": "Login",
+    "signIn": "Sign In",
+    "signingIn": "Signing in…",
+    "logout": "Logout"
+  },
+  "loginPage": {
+    "title": "CBA — Login",
+    "subtitle": "Sign in to the placement exam system",
+    "emptyFieldsError": "Please enter both email and password.",
+    "accessDenied": "Access denied: not an admin",
+    "dontHaveAccount": "Don't have an account?",
+    "registerLink": "Register"
+  },
+  "registerPage": {
+    "title": "CBA — Student Registration",
+    "subtitle": "Create an account to take placement exams",
+    "successMessage": "Registration successful! Please sign in."
+  },
+  "registerForm": {
+    "alreadyHaveAccount": "Already have an account?",
+    "loginLink": "Login"
+  },
+  "adminPanel": {
+    "title": "CBA — Admin Panel"
+  },
+  "auth": {
+    "invalidCredentials": "Invalid email or password",
+    "emailNotConfirmed": "Please confirm your email before logging in",
+    "networkError": "Network error. Please try again."
+  },
+  "validation": {
+    "fullNameRequired": "Full name is required",
+    "fullNameTooLong": "Full name is too long",
+    "ciRequired": "CI is required",
+    "ciLength": "CI must be 3–20 characters",
+    "ciInvalid": "CI contains invalid characters",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Invalid email format",
+    "phoneInvalid": "Phone must be 7–15 digits",
+    "passwordRequired": "Password is required",
+    "passwordTooShort": "Password must be at least 8 characters"
+  },
+  "errors": {
+    "registrationDisabled": "Registration is currently disabled",
+    "emailAlreadyRegistered": "This email is already registered",
+    "ciAlreadyRegistered": "This CI is already registered",
+    "emailInvalidFormat": "Invalid email format",
+    "networkError": "Network error. Please try again."
+  }
+}

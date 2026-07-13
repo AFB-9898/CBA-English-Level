@@ -1,11 +1,13 @@
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react'
 import type { User, Session } from '@supabase/supabase-js'
+import { useTranslation } from 'react-i18next'
 import { supabase } from '../../lib/supabase'
 import type { AuthContextValue } from '../../types/auth'
 
 const AuthContext = createContext<AuthContextValue | null>(null)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const { t } = useTranslation()
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
@@ -72,16 +74,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Map Supabase error messages to user-friendly ones
       const message =
         error.message === 'Invalid login credentials'
-          ? 'Invalid email or password'
+          ? t('auth.invalidCredentials')
           : error.message === 'Email not confirmed'
-            ? 'Please confirm your email before logging in'
-            : 'Network error. Please try again.'
+            ? t('auth.emailNotConfirmed')
+            : t('auth.networkError')
 
       return { error: message }
     }
 
     return {}
-  }, [])
+  }, [t])
 
   const logout = useCallback(async () => {
     await supabase.auth.signOut()

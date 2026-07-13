@@ -135,6 +135,25 @@ describe('RegisterForm', () => {
     expect(mockSignUp).not.toHaveBeenCalled()
   })
 
+  it('renders all fields and button at 320px viewport width', () => {
+    // Simulate mobile viewport (320px)
+    Object.defineProperty(window, 'innerWidth', { value: 320, writable: true })
+    window.dispatchEvent(new Event('resize'))
+
+    renderForm()
+
+    // All 5 fields must be in the document
+    expect(screen.getByLabelText(/full name/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/ci/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/email/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/phone/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/password/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /register/i })).toBeInTheDocument()
+
+    // Body should not have overflow-x hidden (no horizontal scroll needed)
+    expect(document.body.style.overflowX).not.toBe('hidden')
+  })
+
   it('links to login page', () => {
     renderForm()
 

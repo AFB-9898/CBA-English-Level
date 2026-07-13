@@ -119,6 +119,14 @@ describe('LoginPage', () => {
     expect(screen.getByText('Access denied: not an admin')).toBeInTheDocument()
   })
 
+  it("shows a Register link that navigates to /register", () => {
+    renderLoginPage()
+
+    const registerLink = screen.getByRole('link', { name: /register/i })
+    expect(registerLink).toBeInTheDocument()
+    expect(registerLink).toHaveAttribute('href', '/register')
+  })
+
   it("disables the submit button while submitting", async () => {
     mockLogin.mockImplementation(() => new Promise(() => {}))
     renderLoginPage()

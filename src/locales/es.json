@@ -1,0 +1,60 @@
+{
+  "common": {
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "fullName": "Nombre completo",
+    "ci": "CI (Cédula de Identidad)",
+    "phone": "Teléfono",
+    "phoneOptional": "Teléfono (opcional)",
+    "register": "Registrarse",
+    "registering": "Registrando…",
+    "login": "Iniciar sesión",
+    "signIn": "Iniciar sesión",
+    "signingIn": "Iniciando sesión…",
+    "logout": "Cerrar sesión"
+  },
+  "loginPage": {
+    "title": "CBA — Iniciar sesión",
+    "subtitle": "Ingresá al sistema de exámenes de colocación",
+    "emptyFieldsError": "Ingresá tu correo y contraseña.",
+    "accessDenied": "Acceso denegado: no sos administrador",
+    "dontHaveAccount": "¿No tenés cuenta?",
+    "registerLink": "Registrarse"
+  },
+  "registerPage": {
+    "title": "CBA — Registro de estudiante",
+    "subtitle": "Creá una cuenta para rendir exámenes de colocación",
+    "successMessage": "¡Registro exitoso! Iniciá sesión para continuar."
+  },
+  "registerForm": {
+    "alreadyHaveAccount": "¿Ya tenés cuenta?",
+    "loginLink": "Iniciar sesión"
+  },
+  "adminPanel": {
+    "title": "CBA — Panel de Administración"
+  },
+  "auth": {
+    "invalidCredentials": "Correo o contraseña incorrectos",
+    "emailNotConfirmed": "Confirmá tu correo electrónico antes de iniciar sesión",
+    "networkError": "Error de red. Intentá de nuevo."
+  },
+  "validation": {
+    "fullNameRequired": "El nombre completo es obligatorio",
+    "fullNameTooLong": "El nombre completo es demasiado largo",
+    "ciRequired": "El CI es obligatorio",
+    "ciLength": "El CI debe tener 3–20 caracteres",
+    "ciInvalid": "El CI contiene caracteres inválidos",
+    "emailRequired": "El correo electrónico es obligatorio",
+    "emailInvalid": "Formato de correo inválido",
+    "phoneInvalid": "El teléfono debe tener 7–15 dígitos",
+    "passwordRequired": "La contraseña es obligatoria",
+    "passwordTooShort": "La contraseña debe tener al menos 8 caracteres"
+  },
+  "errors": {
+    "registrationDisabled": "El registro está actualmente deshabilitado",
+    "emailAlreadyRegistered": "Este correo ya está registrado",
+    "ciAlreadyRegistered": "Este CI ya está registrado",
+    "emailInvalidFormat": "Formato de correo inválido",
+    "networkError": "Error de red. Intentá de nuevo."
+  }
+}

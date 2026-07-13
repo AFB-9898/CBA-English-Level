@@ -50,6 +50,37 @@
     "passwordRequired": "La contraseña es obligatoria",
     "passwordTooShort": "La contraseña debe tener al menos 8 caracteres"
   },
+  "dashboard": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "students": "Estudiantes",
+      "questions": "Preguntas",
+      "auditLog": "Registro de Auditoría"
+    },
+    "stats": {
+      "totalStudents": "Total de Estudiantes",
+      "totalExams": "Total de Exámenes",
+      "examsToday": "Exámenes Hoy",
+      "avgScore": "Promedio"
+    },
+    "distribution": {
+      "title": "Distribución por Nivel",
+      "empty": "No hay datos disponibles",
+      "count": "{{count}} exámenes"
+    },
+    "recentExams": {
+      "title": "Exámenes Recientes",
+      "student": "Estudiante",
+      "score": "Puntaje",
+      "level": "Nivel",
+      "status": "Estado",
+      "date": "Fecha",
+      "empty": "No hay exámenes registrados aún"
+    },
+    "error": "Error al cargar los datos del dashboard",
+    "welcome": "Bienvenido al Panel de Administración",
+    "subtitle": "Usá la navegación para gestionar exámenes, preguntas y reportes."
+  },
   "errors": {
     "registrationDisabled": "El registro está actualmente deshabilitado",
     "emailAlreadyRegistered": "Este correo ya está registrado",

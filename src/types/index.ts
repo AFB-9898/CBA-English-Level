@@ -94,6 +94,32 @@ export interface AuditLog {
   created_at: string
 }
 
+// --- Dashboard ---
+
+export interface DashboardStats {
+  totalStudents: number
+  totalExams: number
+  examsToday: number
+  avgScore: number
+}
+
+export interface LevelDistributionItem {
+  level_id: string
+  name: string
+  count: number
+  percentage: number
+}
+
+export interface RecentExam {
+  id: string
+  student: { full_name: string } | null
+  level: { name: string } | null
+  score: number | null
+  status: ExamStatus
+  completed_at: string | null
+  created_at: string
+}
+
 // --- Payloads (request/response) ---
 
 export interface ExamResult {

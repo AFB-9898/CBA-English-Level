@@ -50,6 +50,37 @@
     "passwordRequired": "Password is required",
     "passwordTooShort": "Password must be at least 8 characters"
   },
+  "dashboard": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "students": "Students",
+      "questions": "Questions",
+      "auditLog": "Audit Log"
+    },
+    "stats": {
+      "totalStudents": "Total Students",
+      "totalExams": "Total Exams",
+      "examsToday": "Exams Today",
+      "avgScore": "Average Score"
+    },
+    "distribution": {
+      "title": "Level Distribution",
+      "empty": "No data available",
+      "count": "{{count}} exams"
+    },
+    "recentExams": {
+      "title": "Recent Exams",
+      "student": "Student",
+      "score": "Score",
+      "level": "Level",
+      "status": "Status",
+      "date": "Date",
+      "empty": "No exams recorded yet"
+    },
+    "error": "Failed to load dashboard data",
+    "welcome": "Welcome to the Admin Panel",
+    "subtitle": "Use the navigation to manage exams, questions, and reports."
+  },
   "errors": {
     "registrationDisabled": "Registration is currently disabled",
     "emailAlreadyRegistered": "This email is already registered",

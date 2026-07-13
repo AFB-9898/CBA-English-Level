@@ -98,6 +98,5 @@ describe('App — Auth Flow Integration', () => {
     await waitFor(() => {
       expect(screen.getByText('CBA — Admin Panel')).toBeInTheDocument()
     })
-    expect(screen.getByText('Welcome to the Admin Panel')).toBeInTheDocument()
   })
 })

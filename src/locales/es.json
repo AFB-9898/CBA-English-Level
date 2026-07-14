@@ -81,6 +81,56 @@
     "welcome": "Bienvenido al Panel de Administración",
     "subtitle": "Usá la navegación para gestionar exámenes, preguntas y reportes."
   },
+  "questions": {
+    "title": "Banco de Preguntas",
+    "newQuestion": "Nueva Pregunta",
+    "table": {
+      "text": "Texto",
+      "level": "Nivel",
+      "category": "Categoría",
+      "date": "Fecha",
+      "actions": "Acciones",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "empty": "No hay preguntas registradas aún"
+    },
+    "form": {
+      "questionText": "Texto de la pregunta",
+      "questionTextPlaceholder": "Ingresá el texto de la pregunta",
+      "level": "Nivel",
+      "levelRequired": "Seleccioná un nivel",
+      "category": "Categoría",
+      "categoryPlaceholder": "ej. gramática, vocabulario",
+      "options": "Opciones",
+      "addOption": "Agregar opción",
+      "correctAnswer": "Respuesta correcta",
+      "removeOption": "Eliminar opción",
+      "save": "Guardar",
+      "cancel": "Cancelar"
+    },
+    "validation": {
+      "textRequired": "El texto de la pregunta es obligatorio",
+      "levelRequired": "El nivel es obligatorio",
+      "minOptions": "Se requieren al menos 4 opciones",
+      "maxOptions": "Máximo 10 opciones permitidas",
+      "correctRequired": "Se requiere exactamente una respuesta correcta",
+      "categoryTooLong": "La categoría debe tener 100 caracteres o menos"
+    },
+    "errors": {
+      "fetchFailed": "Error al cargar las preguntas",
+      "createFailed": "Error al crear la pregunta",
+      "updateFailed": "Error al actualizar la pregunta",
+      "deleteFailed": "Error al eliminar la pregunta",
+      "fkRestrict": "No se puede eliminar: esta pregunta está asociada a exámenes existentes",
+      "levelDeleted": "El nivel seleccionado ya no existe"
+    },
+    "confirm": {
+      "deleteTitle": "Eliminar pregunta",
+      "deleteMessage": "¿Estás seguro de que querés eliminar esta pregunta? Esta acción no se puede deshacer."
+    }
+  },
   "errors": {
     "registrationDisabled": "El registro está actualmente deshabilitado",
     "emailAlreadyRegistered": "Este correo ya está registrado",

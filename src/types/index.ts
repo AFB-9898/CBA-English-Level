@@ -140,3 +140,22 @@ export interface StudentRegistrationPayload {
   password: string
   phone?: string
 }
+
+// --- Question Management ---
+
+export interface QuestionWithLevel extends Question {
+  level: Level | null
+}
+
+export interface QuestionFormData {
+  text: string
+  level_id: string
+  category: string
+  options: QuestionOptionFormData[]
+}
+
+export interface QuestionOptionFormData {
+  id?: string          // present only in edit mode
+  text: string
+  is_correct: boolean
+}

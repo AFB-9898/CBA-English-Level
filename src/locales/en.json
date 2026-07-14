@@ -81,6 +81,56 @@
     "welcome": "Welcome to the Admin Panel",
     "subtitle": "Use the navigation to manage exams, questions, and reports."
   },
+  "questions": {
+    "title": "Question Bank",
+    "newQuestion": "New Question",
+    "table": {
+      "text": "Text",
+      "level": "Level",
+      "category": "Category",
+      "date": "Date",
+      "actions": "Actions",
+      "edit": "Edit",
+      "delete": "Delete",
+      "previous": "Previous",
+      "next": "Next",
+      "empty": "No questions registered yet"
+    },
+    "form": {
+      "questionText": "Question text",
+      "questionTextPlaceholder": "Enter the question text",
+      "level": "Level",
+      "levelRequired": "Select a level",
+      "category": "Category",
+      "categoryPlaceholder": "e.g. grammar, vocabulary",
+      "options": "Options",
+      "addOption": "Add option",
+      "correctAnswer": "Correct answer",
+      "removeOption": "Remove option",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "validation": {
+      "textRequired": "Question text is required",
+      "levelRequired": "Level is required",
+      "minOptions": "At least 4 options are required",
+      "maxOptions": "Maximum 10 options allowed",
+      "correctRequired": "Exactly one correct answer is required",
+      "categoryTooLong": "Category must be 100 characters or fewer"
+    },
+    "errors": {
+      "fetchFailed": "Failed to load questions",
+      "createFailed": "Failed to create question",
+      "updateFailed": "Failed to update question",
+      "deleteFailed": "Failed to delete question",
+      "fkRestrict": "Cannot delete: this question is linked to existing exams",
+      "levelDeleted": "The selected level no longer exists"
+    },
+    "confirm": {
+      "deleteTitle": "Delete question",
+      "deleteMessage": "Are you sure you want to delete this question? This action cannot be undone."
+    }
+  },
   "errors": {
     "registrationDisabled": "Registration is currently disabled",
     "emailAlreadyRegistered": "This email is already registered",

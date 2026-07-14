@@ -1,0 +1,221 @@
+/// <reference types="vitest" />
+import { render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import QuestionsScreen from '../QuestionsScreen'
+
+// ── Mock useQuestions ─────────────────────────────────────────
+vi.mock('../../hooks/useQuestions', () => ({
+  useQuestions: vi.fn(),
+}))
+
+// ── Mock useLevels ────────────────────────────────────────────
+vi.mock('../../hooks/useLevels', () => ({
+  useLevels: vi.fn(),
+}))
+
+import { useQuestions } from '../../hooks/useQuestions'
+import { useLevels } from '../../hooks/useLevels'
+
+const mockUseQuestions = vi.mocked(useQuestions)
+const mockUseLevels = vi.mocked(useLevels)
+
+beforeEach(() => {
+  vi.clearAllMocks()
+})
+
+function renderScreen() {
+  return render(
+    <MemoryRouter>
+      <QuestionsScreen />
+    </MemoryRouter>,
+  )
+}
+
+describe('QuestionsScreen', () => {
+  it('renders title and new question button', () => {
+    mockUseQuestions.mockReturnValue({
+      questions: [],
+      total: 0,
+      loading: false,
+      error: null,
+      createQuestion: vi.fn(),
+      updateQuestion: vi.fn(),
+      deleteQuestion: vi.fn(),
+      refetch: vi.fn(),
+    })
+    mockUseLevels.mockReturnValue({ levels: [], loading: false, error: null })
+
+    renderScreen()
+    expect(screen.getByText('Question Bank')).toBeInTheDocument()
+    expect(screen.getByText('New Question')).toBeInTheDocument()
+  })
+
+  it('shows empty state when no questions', () => {
+    mockUseQuestions.mockReturnValue({
+      questions: [],
+      total: 0,
+      loading: false,
+      error: null,
+      createQuestion: vi.fn(),
+      updateQuestion: vi.fn(),
+      deleteQuestion: vi.fn(),
+      refetch: vi.fn(),
+    })
+    mockUseLevels.mockReturnValue({ levels: [], loading: false, error: null })
+
+    renderScreen()
+    expect(screen.getByText('No questions registered yet')).toBeInTheDocument()
+  })
+
+  it('renders questions in both table and card views', () => {
+    mockUseQuestions.mockReturnValue({
+      questions: [
+        {
+          id: 'q1',
+          text: 'What is 2+2?',
+          level_id: 'l1',
+          category: 'math',
+          created_at: '2025-07-10T12:00:00Z',
+          updated_at: '2025-07-10T12:00:00Z',
+          level: { id: 'l1', name: 'A1', min_score: 0, max_score: 30, description: null },
+        },
+      ],
+      total: 1,
+      loading: false,
+      error: null,
+      createQuestion: vi.fn(),
+      updateQuestion: vi.fn(),
+      deleteQuestion: vi.fn(),
+      refetch: vi.fn(),
+    })
+    mockUseLevels.mockReturnValue({ levels: [], loading: false, error: null })
+
+    renderScreen()
+
+    // Text appears twice: once in table row, once in card
+    const textElements = screen.getAllByText('What is 2+2?')
+    expect(textElements.length).toBe(2)
+
+    // Level appears in both views
+    const levelElements = screen.getAllByText('A1')
+    expect(levelElements.length).toBe(2)
+  })
+
+  it('shows error message when hook returns an error', () => {
+    mockUseQuestions.mockReturnValue({
+      questions: [],
+      total: 0,
+      loading: false,
+      error: 'connection refused',
+      createQuestion: vi.fn(),
+      updateQuestion: vi.fn(),
+      deleteQuestion: vi.fn(),
+      refetch: vi.fn(),
+    })
+    mockUseLevels.mockReturnValue({ levels: [], loading: false, error: null })
+
+    renderScreen()
+    expect(screen.getByText('Failed to load questions')).toBeInTheDocument()
+    expect(screen.getByText('connection refused')).toBeInTheDocument()
+  })
+
+  it('renders skeleton when loading', () => {
+    mockUseQuestions.mockReturnValue({
+      questions: [],
+      total: 0,
+      loading: true,
+      error: null,
+      createQuestion: vi.fn(),
+      updateQuestion: vi.fn(),
+      deleteQuestion: vi.fn(),
+      refetch: vi.fn(),
+    })
+    mockUseLevels.mockReturnValue({ levels: [], loading: false, error: null })
+
+    const { container } = renderScreen()
+    expect(container.querySelectorAll('.animate-pulse').length).toBeGreaterThan(0)
+  })
+
+  it('renders filter bar with level dropdown and category input', () => {
+    mockUseQuestions.mockReturnValue({
+      questions: [],
+      total: 0,
+      loading: false,
+      error: null,
+      createQuestion: vi.fn(),
+      updateQuestion: vi.fn(),
+      deleteQuestion: vi.fn(),
+      refetch: vi.fn(),
+    })
+    mockUseLevels.mockReturnValue({
+      levels: [
+        { id: 'l1', name: 'A1', min_score: 0, max_score: 30, description: null },
+        { id: 'l2', name: 'B1', min_score: 31, max_score: 60, description: null },
+      ],
+      loading: false,
+      error: null,
+    })
+
+    renderScreen()
+    expect(screen.getByText('Select a level')).toBeInTheDocument()
+    expect(screen.getByText('A1')).toBeInTheDocument()
+    expect(screen.getByText('B1')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('e.g. grammar, vocabulary')).toBeInTheDocument()
+  })
+
+  it('shows pagination when totalPages > 1', () => {
+    mockUseQuestions.mockReturnValue({
+      questions: Array.from({ length: 10 }, (_, i) => ({
+        id: `q${i}`,
+        text: `Question ${i}`,
+        level_id: 'l1',
+        category: null,
+        created_at: '2025-07-10T12:00:00Z',
+        updated_at: '2025-07-10T12:00:00Z',
+        level: { id: 'l1', name: 'A1', min_score: 0, max_score: 30, description: null },
+      })),
+      total: 25,
+      loading: false,
+      error: null,
+      createQuestion: vi.fn(),
+      updateQuestion: vi.fn(),
+      deleteQuestion: vi.fn(),
+      refetch: vi.fn(),
+    })
+    mockUseLevels.mockReturnValue({ levels: [], loading: false, error: null })
+
+    renderScreen()
+    expect(screen.getByText('1')).toBeInTheDocument()
+    expect(screen.getByText('2')).toBeInTheDocument()
+    expect(screen.getByText('3')).toBeInTheDocument()
+    expect(screen.getByText('Next')).toBeInTheDocument()
+    expect(screen.getByText('Previous')).toBeInTheDocument()
+  })
+
+  it('disables Previous button on first page', () => {
+    mockUseQuestions.mockReturnValue({
+      questions: Array.from({ length: 10 }, (_, i) => ({
+        id: `q${i}`,
+        text: `Question ${i}`,
+        level_id: 'l1',
+        category: null,
+        created_at: '2025-07-10T12:00:00Z',
+        updated_at: '2025-07-10T12:00:00Z',
+        level: { id: 'l1', name: 'A1', min_score: 0, max_score: 30, description: null },
+      })),
+      total: 25,
+      loading: false,
+      error: null,
+      createQuestion: vi.fn(),
+      updateQuestion: vi.fn(),
+      deleteQuestion: vi.fn(),
+      refetch: vi.fn(),
+    })
+    mockUseLevels.mockReturnValue({ levels: [], loading: false, error: null })
+
+    renderScreen()
+    const prevBtn = screen.getByText('Previous')
+    expect(prevBtn).toBeDisabled()
+  })
+})

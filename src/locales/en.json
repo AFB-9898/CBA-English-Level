@@ -116,7 +116,8 @@
       "minOptions": "At least 4 options are required",
       "maxOptions": "Maximum 10 options allowed",
       "correctRequired": "Exactly one correct answer is required",
-      "categoryTooLong": "Category must be 100 characters or fewer"
+      "categoryTooLong": "Category must be 100 characters or fewer",
+      "optionTextRequired": "Option text is required"
     },
     "errors": {
       "fetchFailed": "Failed to load questions",

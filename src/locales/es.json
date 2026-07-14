@@ -116,7 +116,8 @@
       "minOptions": "Se requieren al menos 4 opciones",
       "maxOptions": "Máximo 10 opciones permitidas",
       "correctRequired": "Se requiere exactamente una respuesta correcta",
-      "categoryTooLong": "La categoría debe tener 100 caracteres o menos"
+      "categoryTooLong": "La categoría debe tener 100 caracteres o menos",
+      "optionTextRequired": "El texto de la opción es obligatorio"
     },
     "errors": {
       "fetchFailed": "Error al cargar las preguntas",

@@ -1,148 +1,96 @@
-# Diseño: Admin Question CRUD
+# Diseño: Admin Question CRUD — Enmienda
 
-## Enfoque Técnico
+## Motivo
 
-Implementación del CRUD completo de preguntas MCQ en el frontend, siguiendo la arquitectura existente: Atomic Design, hooks directos a Supabase (sin capa de servicios), i18n bilingüe, y rutas anidadas bajo `/admin`. El cambio se divide en **3 PRs encadenados** para respetar el presupuesto de 400 líneas por review.
+`QuestionForm.tsx` (401 líneas) + test (360 líneas) = 761 líneas combinadas excede el budget de 400 por PR. Usuario autorizó reestructurar en unidades ≤400 líneas incluyendo tests.
+
+## Estado de Archivos
+
+| Archivo | Líneas | Estado |
+|---------|--------|--------|
+| `hooks/useQuestions.ts` + test | 194 + 220 | ✅ Committed |
+| `hooks/useLevels.ts` + test | 53 + 96 | ✅ Committed |
+| `molecules/QuestionRow.tsx` + test | 79 + 155 | ✅ Committed |
+| `pages/QuestionsScreen.tsx` + test | 203 + 221 | ✅ Committed |
+| `organisms/QuestionForm.tsx` | **401** | ❌ NO COMMIT |
+| `organisms/__tests__/QuestionForm.test.tsx` | **360** | ❌ NO COMMIT |
 
 ## Decisiones de Arquitectura
 
-| Decisión | Opción Elegida | Alternativas | Justificación |
-|----------|----------------|--------------|---------------|
-| Organización de rutas | Rutas anidadas en `App.tsx` | Lazy loading con `React.lazy` | Consistente con `DashboardScreen`; el lazy loading se implementará en un futuro change transversal |
-| Hook CRUD vs servicios | Hook directo con Supabase client | Capa de servicios intermedia | Sigue el patrón de `useDashboardStats` — no hay servicios en el proyecto actual |
-| Estado del formulario | `useState` local en `QuestionForm` | React Hook Form / Zustand | Sin dependencias nuevas; el formulario es lo suficientemente simple para un `useState` controlado |
-| Confirmación de eliminación | Modal inline con `confirm()` nativo | Componente modal custom | Para esta fase, `window.confirm()` reduce líneas. Un modal accesible se puede añadir después |
-| Paginación | Paginación server-side con Supabase `range()` y count exacto | Paginación client-side con 10 items/página | Server-side es más escalable; el hook `useQuestions` usa `range()` + `count: 'exact'` para paginar en la base de datos |
+| Decisión | Elección | Justificación |
+|----------|----------|---------------|
+| Decomposición | Extraer `useQuestionForm` hook + `QuestionOptionList` molécula | create/edit comparten 90% de lógica; un hook + molécula reduce más |
+| QuestionForm usa useQuestions | Hook delega a `useQuestions.createQuestion/updateQuestion` | Elimina llamadas Supabase directas duplicadas |
+| FK RESTRICT mapping | `deleteQuestion` retorna `{ error, code? }`; caller mapea `'23503'` → i18n | Hook no es componente — no puede usar `useTranslation` |
+| Mitigación no-atómica | Save old options en memoria; re-insert si new insert falla | Frontend-only; consistencia estricta requiere Edge Function futura |
+| ConfirmDelete | `window.confirm()` nativo | Issue separado para modal accesible |
 
 ## Flujo de Datos
 
 ```
-QuestionsScreen
-  ├── useQuestions(filters, page)  ──→  supabase.from('question').select(...)
-  │     └── return { questions, total, loading, error, ... }
-  ├── useLevels()                  ──→  supabase.from('level').select('*')
-  │     └── return { levels, loading }
-  │
-  ├── [List View]
-  │     ├── FilterBar (level dropdown, category input)
-  │     ├── QuestionRow[] ──→ onEdit → navigate
-  │     └── Pagination
-  │
-  ├── [Create] /admin/questions/new
-  │     └── QuestionForm (mode="create")
-  │           ├── Supabase: insert question + options (Promise.all)
-  │           └── navigate('/admin/questions')
-  │
-  └── [Edit] /admin/questions/:id/edit
-        └── QuestionForm (mode="edit", questionId)
-              ├── useEffect: fetch question + options by id
-              ├── Supabase: update question, delete old options, insert new options
-              └── navigate('/admin/questions')
+QuestionForm → useQuestionForm(mode, questionId)
+                  ├── validate()
+                  ├── [edit] useEffect: fetch question + options
+                  ├── [create] useQuestions.createQuestion()
+                  │     └── si options insert falla → delete orphan
+                  ├── [edit] save oldOptions → updateQuestion()
+                  │     └── si new insert falla → re-insert oldOptions
+                  └── option mgmt (add/remove/select)
+
+QuestionOptionList ← options, errors, disabled, callbacks
 ```
 
 ## Cambios de Archivos
 
 | Archivo | Acción | Descripción |
 |---------|--------|-------------|
-| `src/types/index.ts` | Modificar | Agregar `QuestionWithLevel`, `QuestionFormData`, `QuestionOptionFormData` |
-| `src/hooks/useQuestions.ts` | Crear | Hook CRUD: `fetchQuestions`, `createQuestion`, `updateQuestion`, `deleteQuestion` |
-| `src/hooks/useLevels.ts` | Crear | Hook reutilizable: fetch de tabla `level` |
-| `src/components/molecules/QuestionRow.tsx` | Crear | Fila de tabla con texto, nivel, categoría, acciones (editar/eliminar) |
-| `src/components/organisms/QuestionForm.tsx` | Crear | Formulario create/edit con opciones dinámicas, validación, submit |
-| `src/pages/QuestionsScreen.tsx` | Crear | Screen principal: listado con filtros + routing a create/edit |
-| `src/components/organisms/ConfirmModal.tsx` | Crear | Modal de confirmación reutilizable para eliminación |
-| `src/App.tsx` | Modificar | Reemplazar `PlaceholderPage` con `QuestionsScreen`, agregar rutas anidadas `new` y `:id/edit` |
-| `src/locales/en.json` | Modificar | Agregar namespace `questions.*` |
-| `src/locales/es.json` | Modificar | Agregar namespace `questions.*` |
+| `hooks/useQuestionForm.ts` | Crear | Estado form, validación, fetch edit, submit, option mgmt (~100 líneas) |
+| `hooks/__tests__/useQuestionForm.test.tsx` | Crear | Tests: validación, submit, error paths, FK RESTRICT, rollback (~80 líneas) |
+| `molecules/QuestionOptionList.tsx` | Crear | Lista dinámica opciones: radio + text + add/remove (~70 líneas) |
+| `molecules/__tests__/QuestionOptionList.test.tsx` | Crear | Tests: add/remove, radio, min/max, disabled (~50 líneas) |
+| `organisms/QuestionForm.tsx` | **Reescribir** | Reducir a ~80 líneas: componer hook + molécula + campos |
+| `organisms/__tests__/QuestionForm.test.tsx` | **Reescribir** | Reducir a ~60 líneas: test integración |
+| `hooks/useQuestions.ts` | Modificar | `deleteQuestion` retorna `{ error, code? }` |
+| `App.tsx` | Modificar | Reemplazar PlaceholderPage + rutas anidadas |
 
-## Interfaces / Contratos
-
-```typescript
-// src/types/index.ts — nuevas interfaces
-interface QuestionWithLevel extends Question {
-  level: Level | null
-}
-
-interface QuestionFormData {
-  text: string
-  level_id: string
-  category: string
-  options: QuestionOptionFormData[]
-}
-
-interface QuestionOptionFormData {
-  id?: string          // presente solo en modo edit
-  text: string
-  is_correct: boolean
-}
-```
-
-```typescript
-// src/hooks/useQuestions.ts — retorno
-interface UseQuestionsResult {
-  questions: QuestionWithLevel[]
-  total: number
-  loading: boolean
-  error: string | null
-  createQuestion: (data: QuestionFormData) => Promise<{ error: string | null }>
-  updateQuestion: (id: string, data: QuestionFormData) => Promise<{ error: string | null }>
-  deleteQuestion: (id: string) => Promise<{ error: string | null }>
-  refetch: () => void
-}
-```
-
-```typescript
-// src/hooks/useLevels.ts — retorno
-interface UseLevelsResult {
-  levels: Level[]
-  loading: boolean
-  error: string | null
-}
-```
-
-## Estrategia de PRs Encadenados
-
-**Cadena**: Feature Branch Chain con tracker.
+## Unidades de Trabajo
 
 ```
-main
- └── feat/admin-question-crud           ← tracker (draft)
-      └── PR #1: Types + Hooks + i18n   ← 📍 base
-           └── PR #2: List + Row + Screen
-                └── PR #3: Form + Routes + Delete
+PR #1: Types + Hooks + i18n       ← ✅ COMMITTED
+PR #2: List + Row + Screen        ← ✅ COMMITTED
+PR #3: useQuestionForm + OptionList  ← 📍 ~300 líneas
+PR #4: Form rewrite + Routes + Delete  ← ~200 líneas
 ```
 
-| PR | Alcance | Líneas Est. | Dependencia |
-|----|---------|-------------|-------------|
-| PR 1 | `types/index.ts`, `useQuestions.ts`, `useLevels.ts`, `en.json`, `es.json` | ~180 | Ninguna |
-| PR 2 | `QuestionRow.tsx`, `QuestionsScreen.tsx` (solo listado), `ConfirmModal.tsx` | ~220 | PR 1 |
-| PR 3 | `QuestionForm.tsx`, `App.tsx` rutas, `QuestionsScreen.tsx` (create/edit routing) | ~300 | PR 2 |
+| PR | Alcance | Est. | Dependencia |
+|----|---------|------|-------------|
+| PR 3 | `useQuestionForm.ts` + test, `QuestionOptionList.tsx` + test | ~300 | PR 2 |
+| PR 4 | `QuestionForm.tsx` rewrite + test, `App.tsx`, delete flow, FK RESTRICT, `useQuestions.ts` update | ~200 | PR 3 |
 
-**Total estimado**: ~700 líneas → 3 PRs dentro del budget de 400.
+## Corrección de Gaps
 
-### Autonomía de Cada PR
+### Edit-submit test faltante
+`useQuestionForm.test.tsx` incluirá: edit submit exitoso, error en update, error en insert opciones, rollback de opciones viejas.
 
-- **PR 1**: Compila, no rompe nada, agrega tipos e hooks sin uso aún. Verificación: `npm run build`.
-- **PR 2**: Renderiza listado en `/admin/questions`. Verificación: navegar a `/admin/questions`, ver tabla vacía/con datos, filtros funcionan.
-- **PR 3**: CRUD completo funcional. Verificación: crear, editar, eliminar preguntas desde la UI.
+### Error-path coverage
+Tests para: Supabase error en create (pregunta + opciones), edit (update + delete + insert), network error.
 
-## Estrategia de Testing
+### FK RESTRICT mapping
+`deleteQuestion` retorna `{ error, code? }`. Caller verifica `code === '23503'` → `t('questions.errors.fkRestrict')`. Key i18n ya existe.
 
-| Capa | Qué Probar | Enfoque |
-|------|------------|---------|
-| Unit | `useQuestions` — estados de carga, error, CRUD success | Vitest + mock chain (patrón de `useDashboardStats.test.tsx`) |
-| Unit | `useLevels` — carga de niveles | Vitest + mock chain |
-| Unit | `QuestionRow` — renderiza texto, nivel, acciones | `@testing-library/react` |
-| Unit | `QuestionForm` — validación (min 4 opciones, 1 correcta) | `@testing-library/react` + fireEvent |
-| Integration | `QuestionsScreen` — routing create → list → edit → list | `@testing-library/react` + MemoryRouter |
-| E2E | N/A | No hay runner E2E configurado actualmente |
+### No-atómico create/edit
+- **Create**: Si insert opciones falla → delete pregunta huérfana (cleanup best-effort)
+- **Edit**: Guardar `savedOptions` antes de delete. Si insert nuevas falla → re-insert `savedOptions` con IDs originales
+- **Ambos**: Nunca navegar hasta éxito total
 
-## Migración / Rollout
+## Archivos que DEBEN ser reescritos
 
-No se requiere migración. Todos los cambios son frontend-only — la capa de base de datos (tablas, RLS, triggers, tipos) ya existe desplegada.
+- `QuestionForm.tsx` (401 líneas) → versión ~80 líneas delegando a hook + molécula
+- `QuestionForm.test.tsx` (360 líneas) → versión ~60 líneas de integración
 
-## Preguntas Abiertas
+## Preguntas Cerradas
 
-- [ ] **Modal de confirmación**: ¿`window.confirm()` es aceptable para esta fase, o se necesita un modal accesible (aria-dialog) desde el inicio? Recomendación: usar `window.confirm()` para mantener bajo el budget, y crear un issue separado para un modal accesible.
-- [ ] **Paginación server-side**: ¿Se anticipa más de 1000 preguntas en el corto plazo? Si no, client-side es suficiente.
-- [ ] **Error FK RESTRICT**: ¿El error de Supabase para FK RESTRICT tiene un `code` específico que podamos detectar, o solo comprobamos el mensaje? Necesario para el mapeo amigable en `deleteQuestion`.
+- [x] Confirmación: `window.confirm()` mantenido
+- [x] FK RESTRICT: mapeo `23503` → i18n documentado
+- [x] No-atómico: mitigación frontend documentada
+- [x] QuestionForm debe usar `useQuestions`, no Supabase directo

@@ -112,7 +112,7 @@ export function useQuestions(options: UseQuestionsOptions = {}): UseQuestionsRes
           .from('question_option')
           .insert(optionsPayload)
 
-        if (oError) return { error: oError.message }
+        if (oError) { await supabase.from('question').delete().eq('id', question.id); return { error: oError.message } }
 
         refetch()
         return { error: null }
@@ -139,6 +139,8 @@ export function useQuestions(options: UseQuestionsOptions = {}): UseQuestionsRes
 
         if (qError) return { error: qError.message }
 
+        const { data: savedOptions } = await supabase.from('question_option').select('*').eq('question_id', id).order('order')
+
         // Delete old options
         const { error: dError } = await supabase
           .from('question_option')
@@ -159,7 +161,10 @@ export function useQuestions(options: UseQuestionsOptions = {}): UseQuestionsRes
           .from('question_option')
           .insert(optionsPayload)
 
-        if (oError) return { error: oError.message }
+        if (oError) {
+          if (savedOptions?.length) await supabase.from('question_option').insert(savedOptions.map((o) => ({ id: o.id, question_id: id, text: o.text, is_correct: o.is_correct, order: o.order })))
+          return { error: oError.message }
+        }
 
         refetch()
         return { error: null }

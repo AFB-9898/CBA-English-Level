@@ -217,4 +217,25 @@ describe('useQuestions', () => {
     // select should have been called at least twice (initial + refetch)
     expect(selectChain.select).toHaveBeenCalledTimes(2)
   })
+
+  it('createQuestion: cleans up orphan when options insert fails', async () => {
+    const ins = createMockChain({ id: 'q1' }, null), optErr = createMockChain(null, { message: 'fail' }), del = createMockChain(null, null)
+    const fetch = createMockChain([], null, 0); let qc = 0
+    mockFrom = vi.fn((t: string) => t === 'question' ? [fetch, ins, del][qc++] ?? del : optErr)
+    const { result } = renderHook(() => useQuestions())
+    await waitFor(() => expect(result.current.loading).toBe(false))
+    const r = await act(async () => result.current.createQuestion({ text: 'Q', level_id: 'l1', category: '', options: [{ text: 'A', is_correct: true }] }))
+    expect(r!.error).toBe('fail'); expect(del.delete).toHaveBeenCalled()
+  })
+
+  it('updateQuestion: re-inserts saved options with original IDs on failure', async () => {
+    const saved = [{ id: 'o1', text: 'A', is_correct: true, order: 0 }, { id: 'o2', text: 'B', is_correct: false, order: 1 }]
+    const upd = createMockChain(null, null), sel = createMockChain(saved, null), del = createMockChain(null, null)
+    const err = createMockChain(null, { message: 'fail' }), re = createMockChain(null, null)
+    let oc = 0; mockFrom = vi.fn((t: string) => t === 'question' ? upd : [sel, del, err, re][oc++])
+    const { result } = renderHook(() => useQuestions())
+    await waitFor(() => expect(result.current.loading).toBe(false))
+    const r = await act(async () => result.current.updateQuestion('q1', { text: 'U', level_id: 'l1', category: '', options: [{ text: 'X', is_correct: true }] }))
+    expect(r!.error).toBe('fail'); expect(re.insert.mock.calls[0][0][0].id).toBe('o1'); expect(re.insert.mock.calls[0][0][1].id).toBe('o2')
+  })
 })

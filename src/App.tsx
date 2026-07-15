@@ -5,6 +5,7 @@ import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import AdminLayout from './pages/AdminLayout'
 import DashboardScreen from './pages/DashboardScreen'
+import QuestionsScreen from './pages/QuestionsScreen'
 
 function PlaceholderPage({ title }: { title: string }) {
   return (
@@ -26,7 +27,7 @@ function App() {
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<DashboardScreen />} />
               <Route path="students" element={<PlaceholderPage title="Students" />} />
-              <Route path="questions" element={<PlaceholderPage title="Questions" />} />
+              <Route path="questions" element={<QuestionsScreen />} />
               <Route path="audit-log" element={<PlaceholderPage title="Audit Log" />} />
             </Route>
           </Route>

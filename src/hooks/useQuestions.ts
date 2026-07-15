@@ -7,9 +7,9 @@ export interface UseQuestionsResult {
   total: number
   loading: boolean
   error: string | null
-  createQuestion: (data: QuestionFormData) => Promise<{ error: string | null }>
-  updateQuestion: (id: string, data: QuestionFormData) => Promise<{ error: string | null }>
-  deleteQuestion: (id: string) => Promise<{ error: string | null }>
+  createQuestion: (data: QuestionFormData) => Promise<{ error: string | null; code?: string }>
+  updateQuestion: (id: string, data: QuestionFormData) => Promise<{ error: string | null; code?: string }>
+  deleteQuestion: (id: string) => Promise<{ error: string | null; code?: string }>
   refetch: () => void
 }
 
@@ -85,7 +85,7 @@ export function useQuestions(options: UseQuestionsOptions = {}): UseQuestionsRes
   }, [levelId, category, page, pageSize, fetchKey])
 
   const createQuestion = useCallback(
-    async (data: QuestionFormData): Promise<{ error: string | null }> => {
+    async (data: QuestionFormData): Promise<{ error: string | null; code?: string }> => {
       try {
         // Insert the question
         const { data: question, error: qError } = await supabase
@@ -98,7 +98,7 @@ export function useQuestions(options: UseQuestionsOptions = {}): UseQuestionsRes
           .select()
           .single()
 
-        if (qError) return { error: qError.message }
+        if (qError) return { error: qError.message, code: (qError as any).code }
 
         // Insert options with order
         const optionsPayload = data.options.map((opt, index) => ({
@@ -124,7 +124,7 @@ export function useQuestions(options: UseQuestionsOptions = {}): UseQuestionsRes
   )
 
   const updateQuestion = useCallback(
-    async (id: string, data: QuestionFormData): Promise<{ error: string | null }> => {
+    async (id: string, data: QuestionFormData): Promise<{ error: string | null; code?: string }> => {
       try {
         // Update the question
         const { error: qError } = await supabase
@@ -137,7 +137,7 @@ export function useQuestions(options: UseQuestionsOptions = {}): UseQuestionsRes
           })
           .eq('id', id)
 
-        if (qError) return { error: qError.message }
+        if (qError) return { error: qError.message, code: (qError as any).code }
 
         const { data: savedOptions } = await supabase.from('question_option').select('*').eq('question_id', id).order('order')
 
@@ -176,15 +176,14 @@ export function useQuestions(options: UseQuestionsOptions = {}): UseQuestionsRes
   )
 
   const deleteQuestion = useCallback(
-    async (id: string): Promise<{ error: string | null }> => {
+    async (id: string): Promise<{ error: string | null; code?: string }> => {
       try {
-        // Options are deleted by CASCADE, just delete the question
         const { error: dError } = await supabase
           .from('question')
           .delete()
           .eq('id', id)
 
-        if (dError) return { error: dError.message }
+        if (dError) return { error: dError.message, code: (dError as any).code }
 
         refetch()
         return { error: null }

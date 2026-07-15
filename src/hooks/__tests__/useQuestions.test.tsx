@@ -194,6 +194,35 @@ describe('useQuestions', () => {
     expect(response!.error).toBeNull()
   })
 
+  it('deleteQuestion returns code 23503 on FK RESTRICT error', async () => {
+    const deleteChain = vi.fn(() => ({
+      then: (resolve: (v: any) => any) => Promise.resolve({ error: { message: 'FK violation', code: '23503' }, data: null }).then(resolve),
+      delete: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+    }))
+    mockFrom = vi.fn((t: string) => t === 'question' ? deleteChain() : createMockChain(null, null))
+
+    const { result } = renderHook(() => useQuestions())
+    await waitFor(() => expect(result.current.loading).toBe(false))
+
+    const res = await act(async () => result.current.deleteQuestion('q-in-use'))
+    expect(res!.error).toBe('FK violation')
+    expect(res!.code).toBe('23503')
+  })
+
+  it.each([
+    ['createQuestion', (r: any) => r.current.createQuestion({ text: 'Q', level_id: 'bad', category: '', options: [{ text: 'A', is_correct: true }] })],
+    ['updateQuestion', (r: any) => r.current.updateQuestion('q1', { text: 'Q', level_id: 'bad', category: '', options: [{ text: 'A', is_correct: true }] })],
+  ])('%s returns code 23503 on FK error', async (_, call) => {
+    const c = vi.fn(() => ({ then: (r: any) => Promise.resolve({ error: { message: 'FK violation', code: '23503' }, data: null }).then(r),
+      insert: vi.fn().mockReturnThis(), update: vi.fn().mockReturnThis(), select: vi.fn().mockReturnThis(), single: vi.fn().mockReturnThis(), eq: vi.fn().mockReturnThis() }))
+    mockFrom = vi.fn((t: string) => t === 'question' ? c() : createMockChain(null, null))
+    const { result } = renderHook(() => useQuestions())
+    await waitFor(() => expect(result.current.loading).toBe(false))
+    const res = await act(async () => call(result))
+    expect(res!.error).toBe('FK violation'); expect(res!.code).toBe('23503')
+  })
+
   it('refetch triggers a re-fetch of data', async () => {
     const selectChain = createMockChain([], null, 0)
 

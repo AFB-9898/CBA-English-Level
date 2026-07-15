@@ -193,6 +193,52 @@ describe('QuestionsScreen', () => {
     expect(screen.getByText('Previous')).toBeInTheDocument()
   })
 
+  describe('delete flow', () => {
+    function mockQuestionWithDelete(del: any) {
+      mockUseQuestions.mockReturnValue({
+        questions: [{
+          id: 'q1', text: 'Test question', level_id: 'l1', category: null,
+          created_at: '2025-07-10T12:00:00Z', updated_at: '2025-07-10T12:00:00Z',
+          level: { id: 'l1', name: 'A1', min_score: 0, max_score: 30, description: null },
+        }],
+        total: 1, loading: false, error: null,
+        createQuestion: vi.fn(), updateQuestion: vi.fn(), deleteQuestion: del, refetch: vi.fn(),
+      })
+      mockUseLevels.mockReturnValue({ levels: [], loading: false, error: null })
+    }
+
+    it('shows FK error when delete returns code 23503', async () => {
+      mockQuestionWithDelete(vi.fn().mockResolvedValue({ error: 'FK violation', code: '23503' }))
+      const spy = vi.spyOn(window, 'confirm').mockReturnValue(true)
+      renderScreen()
+      screen.getAllByText('Delete')[0].click()
+      await vi.waitFor(() => {
+        expect(screen.getByText('Cannot delete: this question is linked to existing exams')).toBeInTheDocument()
+      })
+      spy.mockRestore()
+    })
+
+    it('does not delete when confirm is cancelled', () => {
+      const del = vi.fn()
+      mockQuestionWithDelete(del)
+      const spy = vi.spyOn(window, 'confirm').mockReturnValue(false)
+      renderScreen()
+      screen.getAllByText('Delete')[0].click()
+      expect(del).not.toHaveBeenCalled()
+      spy.mockRestore()
+    })
+
+    it('calls deleteQuestion on confirm', () => {
+      const del = vi.fn().mockResolvedValue({ error: null })
+      mockQuestionWithDelete(del)
+      const spy = vi.spyOn(window, 'confirm').mockReturnValue(true)
+      renderScreen()
+      screen.getAllByText('Delete')[0].click()
+      expect(del).toHaveBeenCalledWith('q1')
+      spy.mockRestore()
+    })
+  })
+
   it('disables Previous button on first page', () => {
     mockUseQuestions.mockReturnValue({
       questions: Array.from({ length: 10 }, (_, i) => ({

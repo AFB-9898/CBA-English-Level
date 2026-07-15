@@ -79,7 +79,10 @@ export function useQuestionForm(mode: 'create' | 'edit', questionId?: string) {
       const result = mode === 'create'
         ? await createQuestion(payload)
         : await updateQuestion(questionId!, payload)
-      if (result.error) { setGeneralError(result.error); return }
+      if (result.error) {
+        setGeneralError(result.code === '23503' ? t('questions.errors.levelDeleted') : result.error)
+        return
+      }
       navigate('/admin/questions')
     } catch {
       setGeneralError(mode === 'create' ? t('questions.errors.createFailed') : t('questions.errors.updateFailed'))

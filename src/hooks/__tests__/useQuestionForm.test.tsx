@@ -3,6 +3,8 @@ import { renderHook, waitFor, act } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { useQuestionForm } from '../useQuestionForm'
 
+vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k: string) => k }) }))
+
 // ── Mock chain builder ────────────────────────────────────────
 function createMockChain(resolvedData: unknown = null, resolvedError: unknown = null) {
   const chain: Record<string, any> = {}
@@ -111,6 +113,17 @@ describe('useQuestionForm', () => {
       await act(async () => result.current.handleSubmit({ preventDefault: vi.fn() } as any))
       expect(result.current.generalError).toBe('Supabase error')
     })
+
+    it('create: level deleted maps to levelDeleted', async () => {
+      mockCreateQuestion.mockResolvedValue({ error: 'FK violation', code: '23503' })
+      mockFrom = vi.fn(() => createMockChain([], null))
+      const { result } = renderHook(() => useQuestionForm('create'))
+      await waitFor(() => expect(result.current.loadingQuestion).toBe(false))
+      act(() => { result.current.setText('Q'); result.current.setLevelId('l1'); result.current.selectCorrect(0) })
+      fillOptions(result)
+      await act(async () => result.current.handleSubmit({ preventDefault: vi.fn() } as any))
+      expect(result.current.generalError).toBe('questions.errors.levelDeleted')
+    })
   })
 
   describe('edit mode', () => {
@@ -158,6 +171,19 @@ describe('useQuestionForm', () => {
       act(() => result.current.setText('Updated question'))
       await act(async () => result.current.handleSubmit({ preventDefault: vi.fn() } as any))
       expect(mockUpdateQuestion).toHaveBeenCalledWith('q1', expect.objectContaining({ text: 'Updated question' }))
+    })
+
+    it('edit: level deleted maps to levelDeleted', async () => {
+      mockUpdateQuestion.mockResolvedValue({ error: 'FK violation', code: '23503' })
+      mockFrom = vi.fn(() => createMockChain({ text: 'Q', level_id: 'l1', category: '', question_option: [
+        { id: 'o1', text: 'A', is_correct: true, order: 0 }, { id: 'o2', text: 'B', is_correct: false, order: 1 },
+        { id: 'o3', text: 'C', is_correct: false, order: 2 }, { id: 'o4', text: 'D', is_correct: false, order: 3 },
+      ]}, null))
+      const { result } = renderHook(() => useQuestionForm('edit', 'q1'))
+      await waitFor(() => expect(result.current.loadingQuestion).toBe(false))
+      act(() => result.current.setText('Updated'))
+      await act(async () => result.current.handleSubmit({ preventDefault: vi.fn() } as any))
+      expect(result.current.generalError).toBe('questions.errors.levelDeleted')
     })
   })
 

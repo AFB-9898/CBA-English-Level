@@ -107,6 +107,11 @@
       "addOption": "Add option",
       "correctAnswer": "Correct answer",
       "removeOption": "Remove option",
+      "createTitle": "Create Question",
+      "editTitle": "Edit Question",
+      "notFound": "Question not found",
+      "backToList": "Back to list",
+      "loadingQuestion": "Loading question…",
       "save": "Save",
       "cancel": "Cancel"
     },

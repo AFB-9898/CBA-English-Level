@@ -55,6 +55,7 @@
       "dashboard": "Dashboard",
       "students": "Estudiantes",
       "questions": "Preguntas",
+      "levels": "Niveles",
       "auditLog": "Registro de Auditoría"
     },
     "stats": {
@@ -136,6 +137,13 @@
       "deleteTitle": "Eliminar pregunta",
       "deleteMessage": "¿Estás seguro de que querés eliminar esta pregunta? Esta acción no se puede deshacer."
     }
+  },
+  "levels": {
+    "title": "Niveles CEFR", "subtitle": "Gestioná los niveles activos y sus versiones históricas.", "create": "Nuevo nivel", "empty": "No hay niveles registrados aún", "historical": "Versión histórica — se conserva para registros existentes", "noDescription": "Sin descripción",
+    "status": { "active": "Activo", "inactive": "Inactivo" },
+    "actions": { "edit": "Editar datos", "distribution": "Editar distribución", "deactivate": "Desactivar" }, "form": { "metadata": "Editar datos del nivel", "name": "Nombre", "min": "Puntaje mínimo", "max": "Puntaje máximo", "description": "Descripción", "save": "Guardar", "saving": "Guardando…", "cancel": "Cancelar" },
+    "distribution": { "title": "Distribución activa de puntajes", "deactivationTitle": "Desactivar {{name}}", "deactivationHelp": "Revisá la redistribución determinista antes de confirmar. El nivel objetivo pasará a histórico.", "removed": "Fuera de la distribución activa", "help": "Ajustá todos los rangos activos juntos. La distribución debe cubrir cada puntaje de 0 a 100 sin huecos ni solapamientos.", "before": "Antes", "after": "Después" },
+     "validation": { "required": "Completá todos los campos obligatorios.", "distribution": "Usá rangos enteros que cubran de 0 a 100 de forma continua, sin huecos ni solapamientos." }, "errors": { "title": "No pudimos completar la acción.", "loadFailed": "No se pudieron cargar los niveles.", "saveFailed": "No se pudo guardar el cambio del nivel.", "lastActive": "Se requieren al menos dos niveles activos.", "duplicate": "Ese código o versión ya existe.", "permission": "No tenés permiso para gestionar niveles.", "conflict": "La distribución cambió en otro lugar. Se recargó el editor; revisá los rangos actuales e intentá de nuevo." }, "success": { "title": "Acción completada", "metadata": "Se guardaron los datos del nivel.", "distribution": "Se guardó la distribución activa.", "deactivated": "Se desactivó el nivel." }, "confirm": { "title": "Desactivar nivel", "message": "¿Estás seguro? Se conservarán los registros históricos y se quitará de la clasificación activa.", "distribution": "¿Querés guardar esta distribución completa? Todos los rangos modificados se versionarán juntos." }
   },
   "errors": {
     "registrationDisabled": "El registro está actualmente deshabilitado",

@@ -218,11 +218,17 @@ VITE_SUPABASE_ANON_KEY=your-anon-key-here
 
 ### 4. Configurar la base de datos
 
-Ejecutar los scripts SQL en el SQL Editor de Supabase:
+`supabase/migrations/` es la única autoridad de migraciones del proyecto.
+Desde la raíz del repositorio, usá Supabase CLI para aplicar el conjunto
+completo en orden:
 
 ```bash
-database/migrations/001_initial.sql
+supabase db reset --local  # desarrollo local
+# supabase db push         # proyecto remoto vinculado
 ```
+
+No ejecutes scripts de migración desde `database/`; ese directorio contiene
+únicamente documentación y recursos de diseño de la base de datos.
 
 ### 5. Ejecutar localmente
 
@@ -282,5 +288,4 @@ Para deployar tu propia instancia:
 ---
 
 [![Licencia: MIT](https://img.shields.io/badge/Licencia-MIT-yellow.svg?style=for-the-badge)](LICENSE)
-
 

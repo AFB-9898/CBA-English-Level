@@ -10,8 +10,7 @@
 
 | Archivo | Descripción |
 |---|---|
-| [`migrations/001_schema.sql`](./migrations/001_schema.sql) | Script completo: esquema, índices, funciones, triggers y RLS |
-| [`migrations/002_seed.sql`](./migrations/002_seed.sql) | Datos de prueba iniciales (niveles, preguntas de ejemplo) |
+| [`../supabase/migrations/`](../supabase/migrations/) | Fuente única y oficial de migraciones versionadas de esquema, datos, funciones, triggers y RLS |
 | [`data-dictionary.md`](./data-dictionary.md) | Diccionario de datos con todas las tablas, columnas y restricciones |
 | [`diagrama-uml.puml`](./diagrama-uml.puml) | Código fuente PlantUML del diagrama entidad-relación |
 | [`diagrama-conceptual.png`](./diagrama-conceptual.png) | Diagrama conceptual (vista de alto nivel del negocio) |
@@ -70,29 +69,28 @@
 
 ## Cómo usar
 
-### Opción 1: Supabase SQL Editor (recomendado para desarrollo)
+### Opción 1: Supabase CLI (recomendado)
 
-1. Copiá el contenido de `migrations/001_schema.sql`
-2. Pegalo en el SQL Editor de tu proyecto Supabase
-3. Ejecutá `migrations/002_seed.sql` para cargar datos de prueba
-
-### Opción 2: CLI con psql
+Desde la raíz del proyecto, ejecutá el reset local para aplicar exclusivamente
+las migraciones oficiales de `supabase/migrations/`:
 
 ```bash
-# Aplicar esquema
-psql "$SUPABASE_DB_URL" -f migrations/001_schema.sql
-
-# Cargar datos de prueba
-psql "$SUPABASE_DB_URL" -f migrations/002_seed.sql
+supabase db reset --local
 ```
 
-### Orden de migración
+Para un proyecto remoto, aplicá las migraciones mediante el flujo oficial de
+Supabase CLI (`supabase db push`). No ejecutes scripts SQL desde este directorio.
 
-```bash
-migrations/
-├── 001_schema.sql   # 1° — esquema completo
-└── 002_seed.sql     # 2° — datos de prueba
-```
+### Opción 2: Supabase SQL Editor
+
+Si necesitás ejecutar SQL manualmente, usá únicamente los archivos versionados
+de `supabase/migrations/`, respetando su orden numérico.
+
+### Autoridad y orden de migración
+
+`supabase/migrations/` es la única autoridad de migraciones del proyecto. El
+Supabase CLI aplica sus archivos versionados en orden numérico; `database/` solo
+contiene documentación, diagramas y el diccionario de datos.
 
 ---
 

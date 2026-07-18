@@ -30,6 +30,48 @@ export interface Level {
   min_score: number
   max_score: number
   description: string | null
+  /** Versioned fields are optional for compatibility with legacy question fixtures. */
+  code?: string
+  version?: number
+  is_active?: boolean
+  supersedes_level_id?: string | null
+}
+
+export interface UpdateLevelMetadataInput {
+  level_id: string
+  name: string
+  description: string | null
+}
+
+export interface ActiveLevelRange {
+  id: string
+  min_score: number
+  max_score: number
+}
+
+export interface ActiveLevelDistribution {
+  revision: number
+  levels: ActiveLevelRange[]
+}
+
+export interface ReplaceActiveLevelDistributionInput {
+  expected_revision: number
+  levels: ActiveLevelRange[]
+  deactivate_level_id?: string | null
+}
+
+export interface LevelDistributionMutation {
+  revision: number
+  deactivated_level_id: string | null
+  before: ActiveLevelDistribution
+  after: ActiveLevelDistribution
+}
+
+export interface LevelMutationResult<T = Level> {
+  data: T | null
+  error: string | null
+  code?: string
+  conflict?: boolean
 }
 
 export interface ExamConfig {

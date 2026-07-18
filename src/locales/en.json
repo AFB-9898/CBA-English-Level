@@ -55,6 +55,7 @@
       "dashboard": "Dashboard",
       "students": "Students",
       "questions": "Questions",
+      "levels": "Levels",
       "auditLog": "Audit Log"
     },
     "stats": {
@@ -136,6 +137,17 @@
       "deleteTitle": "Delete question",
       "deleteMessage": "Are you sure you want to delete this question? This action cannot be undone."
     }
+  },
+  "levels": {
+    "title": "CEFR Levels", "subtitle": "Manage active levels and their historical versions.", "create": "New level", "empty": "No levels registered yet", "historical": "Historical version — retained for existing records", "noDescription": "No description",
+    "status": { "active": "Active", "inactive": "Inactive" },
+    "actions": { "edit": "Edit details", "distribution": "Edit distribution", "deactivate": "Deactivate" },
+    "form": { "metadata": "Edit level details", "name": "Name", "min": "Minimum score", "max": "Maximum score", "description": "Description", "save": "Save", "saving": "Saving…", "cancel": "Cancel" },
+    "distribution": { "title": "Active score distribution", "deactivationTitle": "Deactivate {{name}}", "deactivationHelp": "Review the deterministic redistribution before confirming. The target level will become historical.", "removed": "Removed from active distribution", "help": "Adjust all active ranges together. The distribution must cover every score from 0 to 100 without gaps or overlaps.", "before": "Before", "after": "After" },
+    "validation": { "required": "Complete all required fields.", "distribution": "Use whole-number ranges that cover 0 to 100 continuously without gaps or overlaps." },
+    "errors": { "title": "We could not complete that action.", "loadFailed": "Levels could not be loaded.", "saveFailed": "The level change could not be saved.", "lastActive": "At least two active levels are required.", "duplicate": "That level code or version already exists.", "permission": "You do not have permission to manage levels.", "conflict": "The distribution changed elsewhere. The editor was reloaded; review the current ranges and try again." },
+    "success": { "title": "Action completed", "metadata": "Level details saved.", "distribution": "The active distribution was saved.", "deactivated": "The level was deactivated." },
+    "confirm": { "title": "Deactivate level", "message": "Are you sure? This keeps historical records and removes the level from active classification.", "distribution": "Save this complete score distribution? All changed ranges will be versioned together." }
   },
   "errors": {
     "registrationDisabled": "Registration is currently disabled",

@@ -7,6 +7,7 @@ const navItems = [
   { key: 'dashboard', to: '/admin', icon: '📊' },
   { key: 'students', to: '/admin/students', icon: '👥' },
   { key: 'questions', to: '/admin/questions', icon: '❓' },
+  { key: 'levels', to: '/admin/levels', icon: '📚' },
   { key: 'auditLog', to: '/admin/audit-log', icon: '📋' },
 ] as const
 

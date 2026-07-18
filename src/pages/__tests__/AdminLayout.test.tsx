@@ -32,9 +32,10 @@ function renderAdminLayout(entry = '/admin') {
       <Routes>
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<div data-testid="dashboard-content">Dashboard</div>} />
-          <Route path="students" element={<div data-testid="students-content">Students</div>} />
+          <Route path="students" element={<div data-testid="students-content">Coming soon / Próximamente.</div>} />
           <Route path="questions" element={<div data-testid="questions-content">Questions</div>} />
-          <Route path="audit-log" element={<div data-testid="audit-content">Audit</div>} />
+          <Route path="levels" element={<div data-testid="levels-content">Levels</div>} />
+          <Route path="audit-log" element={<div data-testid="audit-content">Coming soon / Próximamente.</div>} />
         </Route>
         <Route path="/login" element={<div data-testid="login-page">Login</div>} />
       </Routes>
@@ -73,7 +74,7 @@ describe('AdminLayout', () => {
     expect(mockLogout).toHaveBeenCalled()
   })
 
-  it('renders sidebar with 4 navigation links', () => {
+  it('renders sidebar with 5 navigation links including Levels', () => {
     renderAdminLayout()
 
     const sidebar = screen.getByTestId('sidebar')
@@ -81,7 +82,16 @@ describe('AdminLayout', () => {
     expect(screen.getAllByText('Dashboard').length).toBeGreaterThanOrEqual(1)
     expect(screen.getByText('Students')).toBeInTheDocument()
     expect(screen.getByText('Questions')).toBeInTheDocument()
+    expect(screen.getByText('Levels')).toBeInTheDocument()
     expect(screen.getByText('Audit Log')).toBeInTheDocument()
+
+    expect([...sidebar.querySelectorAll('a')].map((link) => link.getAttribute('href'))).toEqual([
+      '/admin',
+      '/admin/students',
+      '/admin/questions',
+      '/admin/levels',
+      '/admin/audit-log',
+    ])
   })
 
   it('highlights the active link on current route', () => {
@@ -98,5 +108,26 @@ describe('AdminLayout', () => {
 
     await user.click(screen.getByText('Students'))
     expect(screen.getByTestId('students-content')).toBeInTheDocument()
+  })
+
+  it('navigates to Levels and highlights it as active', async () => {
+    const user = userEvent.setup()
+    renderAdminLayout()
+
+    await user.click(screen.getByText('Levels'))
+
+    expect(screen.getByTestId('levels-content')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Levels' })).toHaveAttribute('aria-current', 'page')
+    expect(screen.getByRole('link', { name: 'Levels' })).toHaveClass('bg-blue-50')
+  })
+
+  it('navigates to the registered Audit Log placeholder route', async () => {
+    const user = userEvent.setup()
+    renderAdminLayout()
+
+    await user.click(screen.getByText('Audit Log'))
+
+    expect(screen.getByTestId('audit-content')).toHaveTextContent('Coming soon / Próximamente.')
+    expect(screen.getByRole('link', { name: 'Audit Log' })).toHaveAttribute('aria-current', 'page')
   })
 })

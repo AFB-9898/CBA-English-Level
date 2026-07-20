@@ -8,6 +8,9 @@ import AdminLayout from './pages/AdminLayout'
 import DashboardScreen from './pages/DashboardScreen'
 import QuestionsScreen from './pages/QuestionsScreen'
 import LevelsScreen from './pages/LevelsScreen'
+import ExamConfigurationScreen from './pages/ExamConfigurationScreen'
+import ReportsScreen from './pages/ReportsScreen'
+import AdminAuditLogScreen from './pages/AdminAuditLogScreen'
 
 function PlaceholderPage({ titleKey }: { titleKey: string }) {
   const { t } = useTranslation()
@@ -33,7 +36,9 @@ function App() {
               <Route path="students" element={<PlaceholderPage titleKey="dashboard.nav.students" />} />
               <Route path="questions" element={<QuestionsScreen />} />
               <Route path="levels" element={<LevelsScreen />} />
-              <Route path="audit-log" element={<PlaceholderPage titleKey="dashboard.nav.auditLog" />} />
+              <Route path="exam-configuration" element={<ExamConfigurationScreen />} />
+              <Route path="reports" element={<ReportsScreen />} />
+              <Route path="audit-log" element={<AdminAuditLogScreen />} />
             </Route>
           </Route>
           <Route path="*" element={<Navigate to="/admin" replace />} />

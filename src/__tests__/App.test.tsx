@@ -31,6 +31,18 @@ vi.mock('../pages/LevelsScreen', () => ({
   default: () => <div data-testid="levels-screen">CEFR Levels</div>,
 }))
 
+vi.mock('../pages/ExamConfigurationScreen', () => ({
+  default: () => <div data-testid="exam-configuration-screen">Exam Configuration</div>,
+}))
+
+vi.mock('../pages/ReportsScreen', () => ({
+  default: () => <div data-testid="reports-screen">Reports</div>,
+}))
+
+vi.mock('../pages/AdminAuditLogScreen', () => ({
+  default: () => <div data-testid="audit-screen">Administrative Audit</div>,
+}))
+
 beforeEach(() => {
   vi.clearAllMocks()
 })
@@ -122,7 +134,25 @@ describe('App — Auth Flow Integration', () => {
     await waitFor(() => expect(screen.getByTestId('levels-screen')).toBeInTheDocument())
   })
 
-  it.each(['/admin/students', '/admin/audit-log'])('%s renders its registered placeholder route', async (path) => {
+  it('makes Exam Configuration reachable at /admin/exam-configuration for an authenticated admin', async () => {
+    const mockUser = { id: 'admin-1', email: 'admin@cba.edu.bo', user_metadata: { role: 'admin' }, app_metadata: {}, aud: 'authenticated', created_at: new Date().toISOString() }
+    mockGetSession.mockResolvedValue({ data: { session: { user: mockUser } }, error: null })
+    mockOnAuthStateChange.mockReturnValue({ data: { subscription: { unsubscribe: vi.fn() } } })
+    window.history.pushState({}, '', '/admin/exam-configuration')
+    render(<App />)
+    await waitFor(() => expect(screen.getByTestId('exam-configuration-screen')).toBeInTheDocument())
+  })
+
+  it('makes Reports reachable at /admin/reports for an authenticated admin', async () => {
+    const mockUser = { id: 'admin-1', email: 'admin@cba.edu.bo', user_metadata: { role: 'admin' }, app_metadata: {}, aud: 'authenticated', created_at: new Date().toISOString() }
+    mockGetSession.mockResolvedValue({ data: { session: { user: mockUser } }, error: null })
+    mockOnAuthStateChange.mockReturnValue({ data: { subscription: { unsubscribe: vi.fn() } } })
+    window.history.pushState({}, '', '/admin/reports')
+    render(<App />)
+    await waitFor(() => expect(screen.getByTestId('reports-screen')).toBeInTheDocument())
+  })
+
+  it('renders the registered students placeholder route', async () => {
     const mockUser = {
       id: 'admin-1',
       email: 'admin@cba.edu.bo',
@@ -133,10 +163,19 @@ describe('App — Auth Flow Integration', () => {
     }
     mockGetSession.mockResolvedValue({ data: { session: { user: mockUser } }, error: null })
     mockOnAuthStateChange.mockReturnValue({ data: { subscription: { unsubscribe: vi.fn() } } })
-    window.history.pushState({}, '', path)
+    window.history.pushState({}, '', '/admin/students')
 
     render(<App />)
 
     await waitFor(() => expect(screen.getByText('Coming soon / Próximamente.')).toBeInTheDocument())
+  })
+
+  it('makes Administrative Audit reachable at /admin/audit-log for an authenticated admin', async () => {
+    const mockUser = { id: 'admin-1', email: 'admin@cba.edu.bo', user_metadata: { role: 'admin' }, app_metadata: {}, aud: 'authenticated', created_at: new Date().toISOString() }
+    mockGetSession.mockResolvedValue({ data: { session: { user: mockUser } }, error: null })
+    mockOnAuthStateChange.mockReturnValue({ data: { subscription: { unsubscribe: vi.fn() } } })
+    window.history.pushState({}, '', '/admin/audit-log')
+    render(<App />)
+    await waitFor(() => expect(screen.getByTestId('audit-screen')).toBeInTheDocument())
   })
 })

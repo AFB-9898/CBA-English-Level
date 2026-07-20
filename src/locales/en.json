@@ -56,6 +56,8 @@
       "students": "Students",
       "questions": "Questions",
       "levels": "Levels",
+      "examConfiguration": "Exam Configuration",
+      "reports": "Reports",
       "auditLog": "Audit Log"
     },
     "stats": {
@@ -148,6 +150,40 @@
     "errors": { "title": "We could not complete that action.", "loadFailed": "Levels could not be loaded.", "saveFailed": "The level change could not be saved.", "lastActive": "At least two active levels are required.", "duplicate": "That level code or version already exists.", "permission": "You do not have permission to manage levels.", "conflict": "The distribution changed elsewhere. The editor was reloaded; review the current ranges and try again." },
     "success": { "title": "Action completed", "metadata": "Level details saved.", "distribution": "The active distribution was saved.", "deactivated": "The level was deactivated." },
     "confirm": { "title": "Deactivate level", "message": "Are you sure? This keeps historical records and removes the level from active classification.", "distribution": "Save this complete score distribution? All changed ranges will be versioned together." }
+  },
+  "examConfiguration": {
+    "title": "Exam Configuration",
+    "subtitle": "Set the values used for future placement exams.",
+    "fields": { "timeLimit": "Time limit (minutes)", "questions": "Questions per exam", "passingScore": "Passing score (%)" },
+    "passingScoreNote": { "title": "Passing score only", "message": "The passing score controls pass/fail status only. CEFR level is determined by the active score ranges." },
+    "revision": "Configuration revision: {{revision}}",
+    "actions": { "save": "Save configuration", "saving": "Saving…", "retry": "Try again" },
+    "validation": { "wholeNumbers": "Use whole numbers for every field.", "timeLimit": "The time limit must be greater than zero.", "questions": "Questions per exam must be greater than zero.", "passingScore": "The passing score must be from 0 through 100.", "noChanges": "Change at least one value before saving." },
+    "errors": { "title": "We could not complete that action.", "loadFailed": "Exam configuration could not be loaded.", "saveFailed": "Exam configuration could not be saved.", "permission": "You do not have permission to update exam configuration.", "conflict": "The configuration changed elsewhere. The latest values were loaded; review them and try again." },
+    "empty": { "title": "Configuration unavailable", "message": "No current exam configuration was found. Reload the page or contact an administrator." },
+    "success": { "title": "Configuration saved", "saved": "The exam configuration was updated." }
+  },
+  "reports": {
+    "title": "Exam Reports",
+    "subtitle": "Review filtered placement exam results and export up to 5,000 rows.",
+    "filters": { "completedFrom": "Completed from", "completedTo": "Completed to", "level": "CEFR level", "status": "Exam status", "allLevels": "All levels", "allStatuses": "All statuses" },
+    "columns": { "completedAt": "Completed date", "student": "Student", "ci": "Student CI", "status": "Status", "score": "Score", "level": "CEFR level" },
+    "status": { "pending": "Pending", "inProgress": "In progress", "completed": "Completed" },
+    "actions": { "csv": "Export CSV", "xlsx": "Export Excel" },
+    "errors": { "title": "We could not complete that action.", "loadFailed": "Report data could not be loaded.", "exportFailed": "Report export could not be created." },
+    "empty": "No report rows match these filters.",
+    "pagination": { "label": "Report pages", "previous": "Previous", "next": "Next", "page": "Page {{page}}" }
+  },
+  "audit": {
+    "title": "Administrative Audit",
+    "subtitle": "Review recorded administrative changes without exposing sensitive change data.",
+    "filters": { "from": "From", "to": "To", "administrator": "Administrator", "entity": "Entity", "action": "Action", "allAdministrators": "All administrators", "allEntities": "All entities", "allActions": "All actions" },
+    "columns": { "time": "Time", "administrator": "Administrator", "entity": "Entity", "action": "Action", "summary": "Summary" },
+    "entities": { "level": "Level", "examConfig": "Exam configuration", "question": "Question", "questionOption": "Question option" },
+    "actions": { "refresh": "Refresh", "loadMore": "Load more", "loadingMore": "Loading...", "create": "Created", "edit": "Edited", "delete": "Deleted", "deactivate": "Deactivated", "new_version": "New version", "update": "Updated", "answer_change": "Correct answer changed" },
+    "errors": { "title": "We could not load the audit timeline.", "loadFailed": "Please try again." },
+    "empty": "No audit events match these filters.",
+    "systemActor": "System"
   },
   "errors": {
     "registrationDisabled": "Registration is currently disabled",

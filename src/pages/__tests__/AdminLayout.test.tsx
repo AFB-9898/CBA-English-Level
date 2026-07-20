@@ -34,8 +34,10 @@ function renderAdminLayout(entry = '/admin') {
           <Route index element={<div data-testid="dashboard-content">Dashboard</div>} />
           <Route path="students" element={<div data-testid="students-content">Coming soon / Próximamente.</div>} />
           <Route path="questions" element={<div data-testid="questions-content">Questions</div>} />
-          <Route path="levels" element={<div data-testid="levels-content">Levels</div>} />
-          <Route path="audit-log" element={<div data-testid="audit-content">Coming soon / Próximamente.</div>} />
+           <Route path="levels" element={<div data-testid="levels-content">Levels</div>} />
+            <Route path="exam-configuration" element={<div data-testid="exam-configuration-content">Exam Configuration</div>} />
+            <Route path="reports" element={<div data-testid="reports-content">Reports</div>} />
+           <Route path="audit-log" element={<div data-testid="audit-content">Coming soon / Próximamente.</div>} />
         </Route>
         <Route path="/login" element={<div data-testid="login-page">Login</div>} />
       </Routes>
@@ -74,7 +76,7 @@ describe('AdminLayout', () => {
     expect(mockLogout).toHaveBeenCalled()
   })
 
-  it('renders sidebar with 5 navigation links including Levels', () => {
+  it('renders sidebar with 7 navigation links including reports', () => {
     renderAdminLayout()
 
     const sidebar = screen.getByTestId('sidebar')
@@ -83,6 +85,8 @@ describe('AdminLayout', () => {
     expect(screen.getByText('Students')).toBeInTheDocument()
     expect(screen.getByText('Questions')).toBeInTheDocument()
     expect(screen.getByText('Levels')).toBeInTheDocument()
+    expect(screen.getByText('Exam Configuration')).toBeInTheDocument()
+    expect(screen.getByText('Reports')).toBeInTheDocument()
     expect(screen.getByText('Audit Log')).toBeInTheDocument()
 
     expect([...sidebar.querySelectorAll('a')].map((link) => link.getAttribute('href'))).toEqual([
@@ -90,6 +94,8 @@ describe('AdminLayout', () => {
       '/admin/students',
       '/admin/questions',
       '/admin/levels',
+      '/admin/exam-configuration',
+      '/admin/reports',
       '/admin/audit-log',
     ])
   })
@@ -119,6 +125,22 @@ describe('AdminLayout', () => {
     expect(screen.getByTestId('levels-content')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Levels' })).toHaveAttribute('aria-current', 'page')
     expect(screen.getByRole('link', { name: 'Levels' })).toHaveClass('bg-blue-50')
+  })
+
+  it('navigates to Exam Configuration and highlights it as active', async () => {
+    const user = userEvent.setup()
+    renderAdminLayout()
+    await user.click(screen.getByText('Exam Configuration'))
+    expect(screen.getByTestId('exam-configuration-content')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Exam Configuration' })).toHaveAttribute('aria-current', 'page')
+  })
+
+  it('navigates to Reports and highlights it as active', async () => {
+    const user = userEvent.setup()
+    renderAdminLayout()
+    await user.click(screen.getByText('Reports'))
+    expect(screen.getByTestId('reports-content')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Reports' })).toHaveAttribute('aria-current', 'page')
   })
 
   it('navigates to the registered Audit Log placeholder route', async () => {

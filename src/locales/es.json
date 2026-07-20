@@ -56,6 +56,8 @@
       "students": "Estudiantes",
       "questions": "Preguntas",
       "levels": "Niveles",
+      "examConfiguration": "Configuración del examen",
+      "reports": "Reportes",
       "auditLog": "Registro de Auditoría"
     },
     "stats": {
@@ -144,6 +146,40 @@
     "actions": { "edit": "Editar datos", "distribution": "Editar distribución", "deactivate": "Desactivar" }, "form": { "metadata": "Editar datos del nivel", "name": "Nombre", "min": "Puntaje mínimo", "max": "Puntaje máximo", "description": "Descripción", "save": "Guardar", "saving": "Guardando…", "cancel": "Cancelar" },
     "distribution": { "title": "Distribución activa de puntajes", "deactivationTitle": "Desactivar {{name}}", "deactivationHelp": "Revisá la redistribución determinista antes de confirmar. El nivel objetivo pasará a histórico.", "removed": "Fuera de la distribución activa", "help": "Ajustá todos los rangos activos juntos. La distribución debe cubrir cada puntaje de 0 a 100 sin huecos ni solapamientos.", "before": "Antes", "after": "Después" },
      "validation": { "required": "Completá todos los campos obligatorios.", "distribution": "Usá rangos enteros que cubran de 0 a 100 de forma continua, sin huecos ni solapamientos." }, "errors": { "title": "No pudimos completar la acción.", "loadFailed": "No se pudieron cargar los niveles.", "saveFailed": "No se pudo guardar el cambio del nivel.", "lastActive": "Se requieren al menos dos niveles activos.", "duplicate": "Ese código o versión ya existe.", "permission": "No tenés permiso para gestionar niveles.", "conflict": "La distribución cambió en otro lugar. Se recargó el editor; revisá los rangos actuales e intentá de nuevo." }, "success": { "title": "Acción completada", "metadata": "Se guardaron los datos del nivel.", "distribution": "Se guardó la distribución activa.", "deactivated": "Se desactivó el nivel." }, "confirm": { "title": "Desactivar nivel", "message": "¿Estás seguro? Se conservarán los registros históricos y se quitará de la clasificación activa.", "distribution": "¿Querés guardar esta distribución completa? Todos los rangos modificados se versionarán juntos." }
+  },
+  "examConfiguration": {
+    "title": "Configuración del examen",
+    "subtitle": "Definí los valores que se usarán en futuros exámenes de colocación.",
+    "fields": { "timeLimit": "Tiempo límite (minutos)", "questions": "Preguntas por examen", "passingScore": "Puntaje de aprobación (%)" },
+    "passingScoreNote": { "title": "Solo puntaje de aprobación", "message": "El puntaje de aprobación controla únicamente el estado aprobado/reprobado. El nivel CEFR se determina por los rangos de puntaje activos." },
+    "revision": "Revisión de configuración: {{revision}}",
+    "actions": { "save": "Guardar configuración", "saving": "Guardando…", "retry": "Intentar de nuevo" },
+    "validation": { "wholeNumbers": "Usá números enteros en todos los campos.", "timeLimit": "El tiempo límite debe ser mayor que cero.", "questions": "Las preguntas por examen deben ser mayores que cero.", "passingScore": "El puntaje de aprobación debe estar entre 0 y 100.", "noChanges": "Modificá al menos un valor antes de guardar." },
+    "errors": { "title": "No pudimos completar la acción.", "loadFailed": "No se pudo cargar la configuración del examen.", "saveFailed": "No se pudo guardar la configuración del examen.", "permission": "No tenés permiso para actualizar la configuración del examen.", "conflict": "La configuración cambió en otro lugar. Se cargaron los últimos valores; revisalos e intentá de nuevo." },
+    "empty": { "title": "Configuración no disponible", "message": "No se encontró una configuración actual del examen. Recargá la página o contactá a un administrador." },
+    "success": { "title": "Configuración guardada", "saved": "Se actualizó la configuración del examen." }
+  },
+  "reports": {
+    "title": "Reportes de exámenes",
+    "subtitle": "Revisá resultados filtrados de exámenes de colocación y exportá hasta 5.000 filas.",
+    "filters": { "completedFrom": "Completado desde", "completedTo": "Completado hasta", "level": "Nivel CEFR", "status": "Estado del examen", "allLevels": "Todos los niveles", "allStatuses": "Todos los estados" },
+    "columns": { "completedAt": "Fecha de finalización", "student": "Estudiante", "ci": "CI del estudiante", "status": "Estado", "score": "Puntaje", "level": "Nivel CEFR" },
+    "status": { "pending": "Pendiente", "inProgress": "En curso", "completed": "Completado" },
+    "actions": { "csv": "Exportar CSV", "xlsx": "Exportar Excel" },
+    "errors": { "title": "No pudimos completar la acción.", "loadFailed": "No se pudieron cargar los datos del reporte.", "exportFailed": "No se pudo crear la exportación del reporte." },
+    "empty": "No hay filas de reporte que coincidan con estos filtros.",
+    "pagination": { "label": "Páginas del reporte", "previous": "Anterior", "next": "Siguiente", "page": "Página {{page}}" }
+  },
+  "audit": {
+    "title": "Auditoría Administrativa",
+    "subtitle": "Revisá los cambios administrativos registrados sin exponer datos sensibles de los cambios.",
+    "filters": { "from": "Desde", "to": "Hasta", "administrator": "Administrador", "entity": "Entidad", "action": "Acción", "allAdministrators": "Todos los administradores", "allEntities": "Todas las entidades", "allActions": "Todas las acciones" },
+    "columns": { "time": "Fecha y hora", "administrator": "Administrador", "entity": "Entidad", "action": "Acción", "summary": "Resumen" },
+    "entities": { "level": "Nivel", "examConfig": "Configuración del examen", "question": "Pregunta", "questionOption": "Opción de pregunta" },
+    "actions": { "refresh": "Actualizar", "loadMore": "Cargar más", "loadingMore": "Cargando...", "create": "Creada", "edit": "Editada", "delete": "Eliminada", "deactivate": "Desactivada", "new_version": "Nueva versión", "update": "Actualizada", "answer_change": "Respuesta correcta modificada" },
+    "errors": { "title": "No pudimos cargar la cronología de auditoría.", "loadFailed": "Intentá de nuevo." },
+    "empty": "No hay eventos de auditoría para estos filtros.",
+    "systemActor": "Sistema"
   },
   "errors": {
     "registrationDisabled": "El registro está actualmente deshabilitado",

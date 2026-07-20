@@ -8,6 +8,8 @@ const navItems = [
   { key: 'students', to: '/admin/students', icon: '👥' },
   { key: 'questions', to: '/admin/questions', icon: '❓' },
   { key: 'levels', to: '/admin/levels', icon: '📚' },
+  { key: 'examConfiguration', to: '/admin/exam-configuration', icon: '⚙️' },
+  { key: 'reports', to: '/admin/reports', icon: '📈' },
   { key: 'auditLog', to: '/admin/audit-log', icon: '📋' },
 ] as const
 

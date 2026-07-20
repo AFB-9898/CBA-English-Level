@@ -79,7 +79,24 @@ export interface ExamConfig {
   time_limit_minutes: number
   questions_per_exam: number
   passing_score: number
+  revision: number
+  singleton: boolean
+  question_selection_rule: 'random_all_questions'
   updated_at: string
+}
+
+export interface UpdateExamConfigInput {
+  expected_revision: number
+  time_limit_minutes: number
+  questions_per_exam: number
+  passing_score: number
+}
+
+export interface ExamConfigMutationResult {
+  data: ExamConfig | null
+  error: string | null
+  code?: string
+  conflict?: boolean
 }
 
 export interface Question {
@@ -110,6 +127,25 @@ export interface Exam {
   created_at: string
 }
 
+export interface AdminReportRow {
+  exam_id: string
+  student_id: string
+  level_id: string | null
+  completed_at: string | null
+  student_full_name: string
+  student_ci: string
+  status: ExamStatus
+  score: number | null
+  level_code: string | null
+}
+
+export interface ReportFilters {
+  completedFrom: string
+  completedTo: string
+  levelId: string
+  status: ExamStatus | ''
+}
+
 export interface ExamQuestion {
   id: string
   exam_id: string
@@ -134,6 +170,30 @@ export interface AuditLog {
   entity_id: string | null
   details: Record<string, unknown> | null
   created_at: string
+}
+
+export interface AdminAuditRow {
+  audit_id: string
+  created_at: string
+  actor_id: string | null
+  actor_display_name: string | null
+  action: string
+  entity: string
+  entity_id: string | null
+  summary: string
+}
+
+export interface AdminAuditActor {
+  admin_id: string
+  display_name: string
+}
+
+export interface AdminAuditFilters {
+  createdFrom: string
+  createdTo: string
+  adminId: string
+  entity: string
+  action: string
 }
 
 // --- Dashboard ---

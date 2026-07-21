@@ -35,6 +35,8 @@ function App() {
               <Route index element={<DashboardScreen />} />
               <Route path="students" element={<PlaceholderPage titleKey="dashboard.nav.students" />} />
               <Route path="questions" element={<QuestionsScreen />} />
+              <Route path="questions/new" element={<QuestionsScreen />} />
+              <Route path="questions/:id/edit" element={<QuestionsScreen />} />
               <Route path="levels" element={<LevelsScreen />} />
               <Route path="exam-configuration" element={<ExamConfigurationScreen />} />
               <Route path="reports" element={<ReportsScreen />} />

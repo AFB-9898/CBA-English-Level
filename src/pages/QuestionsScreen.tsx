@@ -13,9 +13,6 @@ export default function QuestionsScreen() {
   const isCreate = segments.length >= 2 && segments[segments.length - 2] === 'questions' && segments[segments.length - 1] === 'new'
   const editId = segments.length >= 3 && segments[segments.length - 1] === 'edit' ? segments[segments.length - 2] : null
 
-  if (isCreate) return <QuestionForm mode="create" />
-  if (editId) return <QuestionForm mode="edit" questionId={editId} />
-
   const { t } = useTranslation()
   const navigate = useNavigate()
 
@@ -33,6 +30,9 @@ export default function QuestionsScreen() {
 
   const { levels, loading: levelsLoading } = useLevels()
   const totalPages = useMemo(() => Math.max(1, Math.ceil(total / PAGE_SIZE)), [total])
+
+  if (isCreate) return <QuestionForm mode="create" />
+  if (editId) return <QuestionForm mode="edit" questionId={editId} />
 
   const handleClearFilters = () => {
     setLevelFilter('')

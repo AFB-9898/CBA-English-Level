@@ -43,6 +43,10 @@ vi.mock('../pages/AdminAuditLogScreen', () => ({
   default: () => <div data-testid="audit-screen">Administrative Audit</div>,
 }))
 
+vi.mock('../pages/QuestionsScreen', () => ({
+  default: () => <div data-testid="questions-screen">Question Bank</div>,
+}))
+
 beforeEach(() => {
   vi.clearAllMocks()
 })
@@ -133,6 +137,20 @@ describe('App — Auth Flow Integration', () => {
 
     await waitFor(() => expect(screen.getByTestId('levels-screen')).toBeInTheDocument())
   })
+
+  it.each(['/admin/questions/new', '/admin/questions/question-1/edit'])(
+    'makes the Question Bank form route reachable at %s for an authenticated admin',
+    async (path) => {
+      const mockUser = { id: 'admin-1', email: 'admin@cba.edu.bo', user_metadata: { role: 'admin' }, app_metadata: {}, aud: 'authenticated', created_at: new Date().toISOString() }
+      mockGetSession.mockResolvedValue({ data: { session: { user: mockUser } }, error: null })
+      mockOnAuthStateChange.mockReturnValue({ data: { subscription: { unsubscribe: vi.fn() } } })
+      window.history.pushState({}, '', path)
+
+      render(<App />)
+
+      await waitFor(() => expect(screen.getByTestId('questions-screen')).toBeInTheDocument())
+    },
+  )
 
   it('makes Exam Configuration reachable at /admin/exam-configuration for an authenticated admin', async () => {
     const mockUser = { id: 'admin-1', email: 'admin@cba.edu.bo', user_metadata: { role: 'admin' }, app_metadata: {}, aud: 'authenticated', created_at: new Date().toISOString() }

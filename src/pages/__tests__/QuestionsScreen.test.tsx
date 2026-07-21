@@ -1,6 +1,7 @@
 /// <reference types="vitest" />
 import { render, screen } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
+import userEvent from '@testing-library/user-event'
+import { MemoryRouter, useLocation } from 'react-router-dom'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import QuestionsScreen from '../QuestionsScreen'
 
@@ -14,6 +15,12 @@ vi.mock('../../hooks/useLevels', () => ({
   useLevels: vi.fn(),
 }))
 
+vi.mock('../../components/organisms/QuestionForm', () => ({
+  default: ({ mode, questionId }: { mode: string, questionId?: string }) => (
+    <div data-testid="question-form">{mode}:{questionId ?? ''}</div>
+  ),
+}))
+
 import { useQuestions } from '../../hooks/useQuestions'
 import { useLevels } from '../../hooks/useLevels'
 
@@ -24,10 +31,17 @@ beforeEach(() => {
   vi.clearAllMocks()
 })
 
-function renderScreen() {
+function LocationDisplay() {
+  const { pathname } = useLocation()
+
+  return <output data-testid="location">{pathname}</output>
+}
+
+function renderScreen(initialEntries = ['/admin/questions']) {
   return render(
-    <MemoryRouter>
+    <MemoryRouter initialEntries={initialEntries}>
       <QuestionsScreen />
+      <LocationDisplay />
     </MemoryRouter>,
   )
 }
@@ -49,6 +63,65 @@ describe('QuestionsScreen', () => {
     renderScreen()
     expect(screen.getByText('Question Bank')).toBeInTheDocument()
     expect(screen.getByText('New Question')).toBeInTheDocument()
+  })
+
+  it('renders the create form for the direct new-question URL', () => {
+    mockUseQuestions.mockReturnValue({
+      questions: [], total: 0, loading: false, error: null,
+      createQuestion: vi.fn(), updateQuestion: vi.fn(), deleteQuestion: vi.fn(), refetch: vi.fn(),
+    })
+    mockUseLevels.mockReturnValue({ levels: [], loading: false, error: null })
+
+    renderScreen(['/admin/questions/new'])
+
+    expect(screen.getByTestId('question-form')).toHaveTextContent('create:')
+  })
+
+  it('renders the edit form for the direct edit-question URL', () => {
+    mockUseQuestions.mockReturnValue({
+      questions: [], total: 0, loading: false, error: null,
+      createQuestion: vi.fn(), updateQuestion: vi.fn(), deleteQuestion: vi.fn(), refetch: vi.fn(),
+    })
+    mockUseLevels.mockReturnValue({ levels: [], loading: false, error: null })
+
+    renderScreen(['/admin/questions/question-1/edit'])
+
+    expect(screen.getByTestId('question-form')).toHaveTextContent('edit:question-1')
+  })
+
+  it('navigates to the create form when New Question is clicked', async () => {
+    mockUseQuestions.mockReturnValue({
+      questions: [], total: 0, loading: false, error: null,
+      createQuestion: vi.fn(), updateQuestion: vi.fn(), deleteQuestion: vi.fn(), refetch: vi.fn(),
+    })
+    mockUseLevels.mockReturnValue({ levels: [], loading: false, error: null })
+    const user = userEvent.setup()
+
+    renderScreen()
+    await user.click(screen.getByText('New Question'))
+
+    expect(screen.getByTestId('location')).toHaveTextContent('/admin/questions/new')
+    expect(screen.getByTestId('question-form')).toHaveTextContent('create:')
+  })
+
+  it('navigates to the edit form when Edit is clicked', async () => {
+    mockUseQuestions.mockReturnValue({
+      questions: [{
+        id: 'question-1', text: 'Test question', level_id: 'l1', category: null,
+        created_at: '2025-07-10T12:00:00Z', updated_at: '2025-07-10T12:00:00Z',
+        level: { id: 'l1', name: 'A1', min_score: 0, max_score: 30, description: null },
+      }],
+      total: 1, loading: false, error: null,
+      createQuestion: vi.fn(), updateQuestion: vi.fn(), deleteQuestion: vi.fn(), refetch: vi.fn(),
+    })
+    mockUseLevels.mockReturnValue({ levels: [], loading: false, error: null })
+    const user = userEvent.setup()
+
+    renderScreen()
+    await user.click(screen.getAllByText('Edit')[0])
+
+    expect(screen.getByTestId('location')).toHaveTextContent('/admin/questions/question-1/edit')
+    expect(screen.getByTestId('question-form')).toHaveTextContent('edit:question-1')
   })
 
   it('shows empty state when no questions', () => {

@@ -1,5 +1,5 @@
 /// <reference types="vitest" />
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 const { mockGetSession, mockOnAuthStateChange, mockSignInWithPassword, mockSignOut, mockRpc } = vi.hoisted(() => ({
@@ -152,6 +152,39 @@ describe('AuthContext', () => {
     })
     expect(screen.getByTestId('is-admin')).toHaveTextContent('false')
     expect(screen.getByTestId('is-student')).toHaveTextContent('true')
+  })
+
+  it('keeps the restored session pending while its trusted student principal resolves', async () => {
+    const mockUser = { id: 'student-1', app_metadata: {}, aud: 'authenticated', created_at: new Date().toISOString() }
+    let authStateChange: ((event: string, session: unknown) => void) | undefined
+    let resolvePrincipal!: (result: { data: { role: 'student' }; error: null }) => void
+
+    mockGetSession.mockResolvedValue({ data: { session: { user: mockUser } }, error: null })
+    mockOnAuthStateChange.mockImplementation((callback) => {
+      authStateChange = callback
+      return { data: { subscription: { unsubscribe: vi.fn() } } }
+    })
+    mockRpc.mockImplementation(() => new Promise<{ data: { role: 'student' }; error: null }>((resolve) => {
+      resolvePrincipal = resolve
+    }))
+
+    render(<AuthProvider><TestConsumer /></AuthProvider>)
+
+    await waitFor(() => expect(mockRpc).toHaveBeenCalledWith('get_current_principal'))
+    authStateChange?.('INITIAL_SESSION', null)
+
+    expect(screen.getByTestId('loading')).toHaveTextContent('true')
+    expect(screen.getByTestId('user')).toHaveTextContent('logged-in')
+    expect(mockRpc).toHaveBeenCalledTimes(1)
+
+    await act(async () => {
+      resolvePrincipal({ data: { role: 'student' }, error: null })
+    })
+
+    await waitFor(() => {
+      expect(screen.getByTestId('loading')).toHaveTextContent('false')
+      expect(screen.getByTestId('is-student')).toHaveTextContent('true')
+    })
   })
 
   it('retains the session and exposes a retryable error when principal resolution fails', async () => {

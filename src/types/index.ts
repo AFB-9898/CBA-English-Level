@@ -222,6 +222,19 @@ export interface RecentExam {
   created_at: string
 }
 
+export type StudentExamState = 'available' | 'in_progress' | 'completed'
+
+export interface StudentDashboard {
+  student_full_name: string
+  exam_state: StudentExamState
+  latest_result_score: number | null
+  latest_result_completed_at: string | null
+  assigned_level_code: string | null
+  assigned_level_name: string | null
+  assigned_level_version: number | null
+  attempt_count: number
+}
+
 // --- Payloads (request/response) ---
 
 export interface ExamResult {

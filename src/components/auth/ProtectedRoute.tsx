@@ -13,8 +13,12 @@ export default function ProtectedRoute({ requiredRole }: { requiredRole: Princip
     )
   }
 
-  if (!user || role !== requiredRole) {
-    return <Navigate to={requiredRole === 'admin' ? '/login' : '/student/login'} replace />
+  if (!user || !role) {
+    return <Navigate to="/login" replace />
+  }
+
+  if (role !== requiredRole) {
+    return <Navigate to={role === 'admin' ? '/admin' : '/student'} replace />
   }
 
   return <Outlet />

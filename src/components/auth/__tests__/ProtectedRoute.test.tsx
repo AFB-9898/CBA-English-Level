@@ -18,14 +18,11 @@ function renderAtPath(path: string, requiredRole: 'admin' | 'student' = 'admin')
   return render(
     <MemoryRouter initialEntries={[path]}>
       <Routes>
-        <Route
-          path="/admin"
-          element={<ProtectedRoute requiredRole={requiredRole} />}
-        >
+        <Route path="/admin" element={<ProtectedRoute requiredRole={requiredRole} />}>
           <Route index element={<div data-testid="admin-content">Admin Dashboard</div>} />
         </Route>
+        <Route path="/student" element={<div data-testid="student-content">Student Dashboard</div>} />
         <Route path="/login" element={<div data-testid="login-page">Login</div>} />
-        <Route path="/student/login" element={<div data-testid="student-login-page">Student Login</div>} />
       </Routes>
     </MemoryRouter>,
   )
@@ -60,7 +57,7 @@ describe('ProtectedRoute', () => {
     expect(screen.queryByTestId('admin-content')).not.toBeInTheDocument()
   })
 
-  it("redirects to /login when isAdmin is false", () => {
+  it('redirects a trusted student to /student when the admin role is required', () => {
     mockUseAuth.mockReturnValue({
       user: { id: '2' },
       isAdmin: false,
@@ -70,7 +67,7 @@ describe('ProtectedRoute', () => {
 
     renderAtPath('/admin')
 
-    expect(screen.getByTestId('login-page')).toBeInTheDocument()
+    expect(screen.getByTestId('student-content')).toBeInTheDocument()
     expect(screen.queryByTestId('admin-content')).not.toBeInTheDocument()
   })
 
@@ -90,9 +87,4 @@ describe('ProtectedRoute', () => {
     expect(screen.queryByTestId('login-page')).not.toBeInTheDocument()
   })
 
-  it('redirects an administrator away from a student-only route', () => {
-    mockUseAuth.mockReturnValue({ user: { id: '1' }, role: 'admin', loading: false })
-    renderAtPath('/admin', 'student')
-    expect(screen.getByTestId('student-login-page')).toBeInTheDocument()
-  })
 })

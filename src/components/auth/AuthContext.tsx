@@ -96,6 +96,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
+      // getSession is the authoritative bootstrap source; INITIAL_SESSION can
+      // otherwise race it with a transient session while principal resolution is pending.
+      if (event === 'INITIAL_SESSION') return
+
       if (event === 'SIGNED_OUT') {
         resetState()
         setLoading(false)

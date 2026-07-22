@@ -36,6 +36,18 @@
     "accessStatus": "Estado de acceso",
     "accessMessage": "Tu cuenta está lista. La disponibilidad de exámenes se mostrará aquí en un módulo futuro."
   },
+  "studentDashboard": {
+    "title": "Panel del estudiante",
+    "subtitle": "Revisá el estado de tu examen de colocación y tu último resultado.",
+    "attempts": "Intentos",
+    "assignedLevel": "Nivel CEFR asignado",
+    "latestResult": "Último resultado completado",
+    "noResult": "Aún no completaste ningún examen",
+    "startExam": "Iniciar examen",
+    "states": { "available": "Disponible", "in_progress": "En curso", "completed": "Completado" },
+    "errors": { "loadFailed": "No pudimos cargar tu panel." },
+    "empty": "Tu panel de estudiante no está disponible en este momento."
+  },
   "registerPage": {
     "title": "CBA — Registro de estudiante",
     "subtitle": "Creá una cuenta para rendir exámenes de colocación",

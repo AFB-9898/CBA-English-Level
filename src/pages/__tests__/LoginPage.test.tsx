@@ -6,6 +6,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 const mockLogin = vi.fn()
 const mockLogout = vi.fn()
+const mockRetryPrincipal = vi.fn()
 
 const { mockUser, mockIsAdmin, mockRole, mockLoading } = vi.hoisted(() => ({
   mockUser: { value: null as any },
@@ -23,6 +24,7 @@ vi.mock('../../components/auth/AuthContext', () => ({
     adminName: null,
     login: mockLogin,
     logout: mockLogout,
+    retryPrincipal: mockRetryPrincipal,
   }),
 }))
 
@@ -42,6 +44,7 @@ function renderLoginPage() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/admin" element={<div data-testid="admin-page">Admin</div>} />
+        <Route path="/student" element={<div data-testid="student-page">Student</div>} />
       </Routes>
     </MemoryRouter>,
   )
@@ -162,7 +165,7 @@ describe('LoginPage', () => {
     expect(screen.getByTestId('admin-page')).toBeInTheDocument()
   })
 
-  it("calls logout and shows access denied when non-admin user has active session", async () => {
+  it('redirects to /student without an administrator denial when already authenticated as student', () => {
     mockUser.value = { id: 'student-1', email: 'student@test.com' }
     mockIsAdmin.value = false
     mockRole.value = 'student'
@@ -170,11 +173,9 @@ describe('LoginPage', () => {
 
     renderLoginPage()
 
-    await waitFor(() => {
-      expect(mockLogout).toHaveBeenCalled()
-    })
-
-    expect(screen.getByText('Access denied: not an admin')).toBeInTheDocument()
+    expect(screen.getByTestId('student-page')).toBeInTheDocument()
+    expect(mockLogout).not.toHaveBeenCalled()
+    expect(screen.queryByText('Access denied: not an admin')).not.toBeInTheDocument()
   })
 
   it("shows a Register link that navigates to /register", () => {

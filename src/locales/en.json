@@ -36,6 +36,18 @@
     "accessStatus": "Access status",
     "accessMessage": "Your account is ready. Exam availability will be provided here in a future module."
   },
+  "studentDashboard": {
+    "title": "Student Dashboard",
+    "subtitle": "Review your placement exam status and latest result.",
+    "attempts": "Attempts",
+    "assignedLevel": "Assigned CEFR level",
+    "latestResult": "Latest completed result",
+    "noResult": "No completed exam yet",
+    "startExam": "Start exam",
+    "states": { "available": "Available", "in_progress": "In progress", "completed": "Completed" },
+    "errors": { "loadFailed": "We could not load your dashboard." },
+    "empty": "Your student dashboard is currently unavailable."
+  },
   "registerPage": {
     "title": "CBA — Student Registration",
     "subtitle": "Create an account to take placement exams",

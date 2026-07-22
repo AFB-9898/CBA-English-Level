@@ -51,7 +51,7 @@ describe('RegisterPage', () => {
     expect(screen.getByRole('status')).toHaveTextContent('Registration successful! Please sign in.')
   })
 
-  it('navigates to /login after 2.5 seconds on success', () => {
+  it('navigates to /student/login after 2.5 seconds on success', () => {
     vi.useFakeTimers()
     renderPage()
 
@@ -66,6 +66,6 @@ describe('RegisterPage', () => {
       vi.advanceTimersByTime(2500)
     })
 
-    expect(mockNavigate).toHaveBeenCalledWith('/login')
+    expect(mockNavigate).toHaveBeenCalledWith('/student/login')
   })
 })

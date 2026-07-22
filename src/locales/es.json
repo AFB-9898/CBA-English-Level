@@ -11,7 +11,8 @@
     "login": "Iniciar sesión",
     "signIn": "Iniciar sesión",
     "signingIn": "Iniciando sesión…",
-    "logout": "Cerrar sesión"
+    "logout": "Cerrar sesión",
+    "retry": "Intentar de nuevo"
   },
   "loginPage": {
     "title": "CBA — Iniciar sesión",
@@ -20,6 +21,20 @@
     "accessDenied": "Acceso denegado: no sos administrador",
     "dontHaveAccount": "¿No tenés cuenta?",
     "registerLink": "Registrarse"
+  },
+  "studentLoginPage": {
+    "title": "CBA — Inicio de sesión de estudiante",
+    "subtitle": "Iniciá sesión para acceder a tu cuenta de estudiante",
+    "emptyFieldsError": "Ingresá tu correo y contraseña.",
+    "accessDenied": "Acceso denegado: esta cuenta no es de estudiante",
+    "dontHaveAccount": "¿No tenés una cuenta de estudiante?",
+    "registerLink": "Registrarse"
+  },
+  "studentWelcome": {
+    "title": "Bienvenido al CBA",
+    "subtitle": "Tu cuenta de estudiante inició sesión.",
+    "accessStatus": "Estado de acceso",
+    "accessMessage": "Tu cuenta está lista. La disponibilidad de exámenes se mostrará aquí en un módulo futuro."
   },
   "registerPage": {
     "title": "CBA — Registro de estudiante",
@@ -36,7 +51,8 @@
   "auth": {
     "invalidCredentials": "Correo o contraseña incorrectos",
     "emailNotConfirmed": "Confirmá tu correo electrónico antes de iniciar sesión",
-    "networkError": "Error de red. Intentá de nuevo."
+    "networkError": "Error de red. Intentá de nuevo.",
+    "signInFailed": "No pudimos iniciar sesión. Intentá de nuevo."
   },
   "validation": {
     "fullNameRequired": "El nombre completo es obligatorio",

@@ -14,17 +14,18 @@ beforeEach(() => {
   vi.clearAllMocks()
 })
 
-function renderAtPath(path: string) {
+function renderAtPath(path: string, requiredRole: 'admin' | 'student' = 'admin') {
   return render(
     <MemoryRouter initialEntries={[path]}>
       <Routes>
         <Route
           path="/admin"
-          element={<ProtectedRoute />}
+          element={<ProtectedRoute requiredRole={requiredRole} />}
         >
           <Route index element={<div data-testid="admin-content">Admin Dashboard</div>} />
         </Route>
         <Route path="/login" element={<div data-testid="login-page">Login</div>} />
+        <Route path="/student/login" element={<div data-testid="student-login-page">Student Login</div>} />
       </Routes>
     </MemoryRouter>,
   )
@@ -35,6 +36,7 @@ describe('ProtectedRoute', () => {
     mockUseAuth.mockReturnValue({
       user: { id: '1' },
       isAdmin: true,
+      role: 'admin',
       loading: false,
     })
 
@@ -48,6 +50,7 @@ describe('ProtectedRoute', () => {
     mockUseAuth.mockReturnValue({
       user: null,
       isAdmin: false,
+      role: null,
       loading: false,
     })
 
@@ -61,6 +64,7 @@ describe('ProtectedRoute', () => {
     mockUseAuth.mockReturnValue({
       user: { id: '2' },
       isAdmin: false,
+      role: 'student',
       loading: false,
     })
 
@@ -74,6 +78,7 @@ describe('ProtectedRoute', () => {
     mockUseAuth.mockReturnValue({
       user: null,
       isAdmin: false,
+      role: null,
       loading: true,
     })
 
@@ -83,5 +88,11 @@ describe('ProtectedRoute', () => {
     expect(screen.getByRole('status')).toBeInTheDocument()
     expect(screen.queryByTestId('admin-content')).not.toBeInTheDocument()
     expect(screen.queryByTestId('login-page')).not.toBeInTheDocument()
+  })
+
+  it('redirects an administrator away from a student-only route', () => {
+    mockUseAuth.mockReturnValue({ user: { id: '1' }, role: 'admin', loading: false })
+    renderAtPath('/admin', 'student')
+    expect(screen.getByTestId('student-login-page')).toBeInTheDocument()
   })
 })

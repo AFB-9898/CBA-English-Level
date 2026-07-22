@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { AuthProvider } from './components/auth/AuthContext'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import LoginPage from './pages/LoginPage'
+import StudentLoginPage from './pages/StudentLoginPage'
+import StudentWelcomeScreen from './pages/StudentWelcomeScreen'
 import RegisterPage from './pages/RegisterPage'
 import AdminLayout from './pages/AdminLayout'
 import DashboardScreen from './pages/DashboardScreen'
@@ -29,8 +31,9 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/student/login" element={<StudentLoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route element={<ProtectedRoute />}>
+          <Route element={<ProtectedRoute requiredRole="admin" />}>
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<DashboardScreen />} />
               <Route path="students" element={<PlaceholderPage titleKey="dashboard.nav.students" />} />
@@ -42,6 +45,9 @@ function App() {
               <Route path="reports" element={<ReportsScreen />} />
               <Route path="audit-log" element={<AdminAuditLogScreen />} />
             </Route>
+          </Route>
+          <Route element={<ProtectedRoute requiredRole="student" />}>
+            <Route path="/student" element={<StudentWelcomeScreen />} />
           </Route>
           <Route path="*" element={<Navigate to="/admin" replace />} />
         </Routes>

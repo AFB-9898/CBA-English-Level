@@ -12,7 +12,7 @@ export default function RegisterPage() {
 
   function handleSuccess() {
     setShowToast(true)
-    setTimeout(() => navigate('/login'), 2500)
+    setTimeout(() => navigate('/student/login'), 2500)
   }
 
   return (

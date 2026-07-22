@@ -2,9 +2,10 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-const { mockGetSession, mockOnAuthStateChange } = vi.hoisted(() => ({
+const { mockGetSession, mockOnAuthStateChange, mockRpc } = vi.hoisted(() => ({
   mockGetSession: vi.fn(),
   mockOnAuthStateChange: vi.fn(),
+  mockRpc: vi.fn(),
 }))
 
 vi.mock('../lib/supabase', () => ({
@@ -22,6 +23,7 @@ vi.mock('../lib/supabase', () => ({
         }),
       }),
     }),
+    rpc: mockRpc,
   },
 }))
 
@@ -49,6 +51,7 @@ vi.mock('../pages/QuestionsScreen', () => ({
 
 beforeEach(() => {
   vi.clearAllMocks()
+  mockRpc.mockResolvedValue({ data: { role: 'admin', admin_name: 'Admin' }, error: null })
 })
 
 describe('App — Auth Flow Integration', () => {
@@ -195,5 +198,25 @@ describe('App — Auth Flow Integration', () => {
     window.history.pushState({}, '', '/admin/audit-log')
     render(<App />)
     await waitFor(() => expect(screen.getByTestId('audit-screen')).toBeInTheDocument())
+  })
+
+  it('renders the student welcome screen only for a trusted student principal', async () => {
+    const mockUser = { id: 'student-1', email: 'student@test.local', user_metadata: { role: 'admin' }, app_metadata: {}, aud: 'authenticated', created_at: new Date().toISOString() }
+    mockGetSession.mockResolvedValue({ data: { session: { user: mockUser } }, error: null })
+    mockOnAuthStateChange.mockReturnValue({ data: { subscription: { unsubscribe: vi.fn() } } })
+    mockRpc.mockResolvedValue({ data: { role: 'student' }, error: null })
+    window.history.pushState({}, '', '/student')
+    render(<App />)
+    await waitFor(() => expect(screen.getByText('Welcome to CBA')).toBeInTheDocument())
+  })
+
+  it('keeps a trusted student out of the admin route', async () => {
+    const mockUser = { id: 'student-1', email: 'student@test.local', user_metadata: { role: 'admin' }, app_metadata: {}, aud: 'authenticated', created_at: new Date().toISOString() }
+    mockGetSession.mockResolvedValue({ data: { session: { user: mockUser } }, error: null })
+    mockOnAuthStateChange.mockReturnValue({ data: { subscription: { unsubscribe: vi.fn() } } })
+    mockRpc.mockResolvedValue({ data: { role: 'student' }, error: null })
+    window.history.pushState({}, '', '/admin')
+    render(<App />)
+    await waitFor(() => expect(screen.getByText('CBA — Login')).toBeInTheDocument())
   })
 })

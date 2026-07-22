@@ -1,8 +1,9 @@
 import { Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from './AuthContext'
+import type { PrincipalRole } from '../../types/auth'
 
-export default function ProtectedRoute() {
-  const { user, isAdmin, loading } = useAuth()
+export default function ProtectedRoute({ requiredRole }: { requiredRole: PrincipalRole }) {
+  const { user, role, loading } = useAuth()
 
   if (loading) {
     return (
@@ -12,8 +13,8 @@ export default function ProtectedRoute() {
     )
   }
 
-  if (!user || !isAdmin) {
-    return <Navigate to="/login" replace />
+  if (!user || role !== requiredRole) {
+    return <Navigate to={requiredRole === 'admin' ? '/login' : '/student/login'} replace />
   }
 
   return <Outlet />

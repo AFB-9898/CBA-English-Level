@@ -11,7 +11,8 @@
     "login": "Login",
     "signIn": "Sign In",
     "signingIn": "Signing in…",
-    "logout": "Logout"
+    "logout": "Logout",
+    "retry": "Try again"
   },
   "loginPage": {
     "title": "CBA — Login",
@@ -20,6 +21,20 @@
     "accessDenied": "Access denied: not an admin",
     "dontHaveAccount": "Don't have an account?",
     "registerLink": "Register"
+  },
+  "studentLoginPage": {
+    "title": "CBA — Student Login",
+    "subtitle": "Sign in to access your student account",
+    "emptyFieldsError": "Please enter both email and password.",
+    "accessDenied": "Access denied: this account is not a student account",
+    "dontHaveAccount": "Don't have a student account?",
+    "registerLink": "Register"
+  },
+  "studentWelcome": {
+    "title": "Welcome to CBA",
+    "subtitle": "Your student account is signed in.",
+    "accessStatus": "Access status",
+    "accessMessage": "Your account is ready. Exam availability will be provided here in a future module."
   },
   "registerPage": {
     "title": "CBA — Student Registration",
@@ -36,7 +51,8 @@
   "auth": {
     "invalidCredentials": "Invalid email or password",
     "emailNotConfirmed": "Please confirm your email before logging in",
-    "networkError": "Network error. Please try again."
+    "networkError": "Network error. Please try again.",
+    "signInFailed": "We could not sign you in. Please try again."
   },
   "validation": {
     "fullNameRequired": "Full name is required",

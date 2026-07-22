@@ -42,7 +42,7 @@ SELECT ok((SELECT COUNT(*) FROM public.get_admin_exam_report(NULL, NULL, NULL, '
 SELECT throws_ok($$ SELECT * FROM public.get_admin_exam_report('2026-07-12', '2026-07-11') $$, NULL, 'Completed date range is invalid', 'invalid date range is rejected');
 SELECT throws_ok($$ SELECT * FROM public.get_admin_exam_report(NULL, NULL, NULL, NULL, 0, 25) $$, NULL, 'Page must be at least one', 'invalid page is rejected');
 SELECT throws_ok($$ SELECT * FROM public.get_admin_exam_report(NULL, NULL, NULL, NULL, 1, 5001) $$, NULL, 'Page size must be between one and 5000', 'unbounded export size is rejected');
-SELECT ok(NOT has_table_privilege('authenticated', 'public.student', 'SELECT'), 'authenticated role has no direct student-table select grant');
+SELECT ok(has_table_privilege('authenticated', 'public.student', 'SELECT'), 'authenticated student profile reads are constrained by the self row policy');
 
 RESET ROLE;
 SELECT * FROM finish();

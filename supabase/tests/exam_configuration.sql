@@ -19,6 +19,7 @@ INSERT INTO public.admin (id, email, full_name)
 VALUES ('00000000-0000-0000-0000-000000000003', 'exam-config-admin@test.local', 'Exam Config Admin')
 ON CONFLICT (id) DO NOTHING;
 DELETE FROM public.admin WHERE id = '00000000-0000-0000-0000-000000000004';
+GRANT SELECT ON public.audit_log TO authenticated;
 
 BEGIN;
 RESET ROLE;

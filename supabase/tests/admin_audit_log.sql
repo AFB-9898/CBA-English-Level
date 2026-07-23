@@ -12,7 +12,7 @@ REVOKE SELECT ON public.audit_log FROM authenticated;
 
 BEGIN;
 RESET ROLE;
-TRUNCATE public.student_answer, public.exam_question, public.question_option,
+TRUNCATE public.student_answer, public.exam_question_option, public.exam_level_snapshot, public.exam_question, public.question_option,
   public.exam, public.question, public.student, public.audit_log;
 INSERT INTO public.audit_log (id, admin_id, action, entity, entity_id, details, created_at)
 VALUES ('00000000-0000-0000-0000-000000000100', '00000000-0000-0000-0000-000000000009', 'edit', 'level', NULL, '{"before":{"name":"old"}}', '2026-07-01T00:00:00Z');

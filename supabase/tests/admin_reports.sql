@@ -11,7 +11,7 @@ DELETE FROM public.admin WHERE id = '00000000-0000-0000-0000-000000000006';
 
 BEGIN;
 RESET ROLE;
-TRUNCATE public.student_answer, public.exam_question, public.question_option,
+TRUNCATE public.student_answer, public.exam_question_option, public.exam_level_snapshot, public.exam_question, public.question_option,
   public.exam, public.question, public.student, public.audit_log;
 INSERT INTO public.student (id, ci, full_name, email) VALUES
   ('00000000-0000-0000-0000-000000000020', 'REPORT-A1', 'Alpha Student', 'alpha.reports@test.local'),

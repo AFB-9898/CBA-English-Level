@@ -2,11 +2,20 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '../components/auth/AuthContext'
 import LanguageSwitcher from '../components/atoms/LanguageSwitcher'
 import { useStudentDashboard } from '../hooks/useStudentDashboard'
+import { useStartExam } from '../hooks/useStartExam'
+import { useNavigate } from 'react-router-dom'
 
 export default function StudentWelcomeScreen() {
   const { t } = useTranslation()
   const { logout } = useAuth()
   const { dashboard, loading, error, refetch } = useStudentDashboard()
+  const { start, starting, error: startError } = useStartExam()
+  const navigate = useNavigate()
+
+  async function beginExam() {
+    const attempt = await start()
+    if (attempt) navigate(`/student/exam/${attempt.attempt_id}`)
+  }
 
   return (
     <main className="min-h-screen bg-gray-50 px-4 py-12">
@@ -29,7 +38,11 @@ export default function StudentWelcomeScreen() {
             <div><dt className="text-gray-500">{t('studentDashboard.assignedLevel')}</dt><dd className="font-medium text-gray-900">{dashboard.assigned_level_code ? `${dashboard.assigned_level_code} - ${dashboard.assigned_level_name} (v${dashboard.assigned_level_version})` : t('studentDashboard.noResult')}</dd></div>
             <div><dt className="text-gray-500">{t('studentDashboard.latestResult')}</dt><dd className="font-medium text-gray-900">{dashboard.latest_result_score ?? t('studentDashboard.noResult')}</dd></div>
           </dl>
-          <button type="button" disabled className="w-full rounded-md bg-gray-400 px-4 py-2 font-medium text-white disabled:cursor-not-allowed">{t('studentDashboard.startExam')}</button>
+          {startError && <div role="alert" className="rounded-md bg-red-50 p-3 text-sm text-red-800">{t('studentDashboard.errors.startFailed')} <button type="button" onClick={() => void beginExam()} className="font-medium underline">{t('common.retry')}</button></div>}
+          <button type="button" onClick={() => void beginExam()} disabled={starting || dashboard.exam_state === 'completed'} className="w-full rounded-md bg-blue-700 px-4 py-2 font-medium text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-gray-400">
+            {starting ? t('studentDashboard.starting') : dashboard.exam_state === 'in_progress' ? t('studentDashboard.resumeExam') : t('studentDashboard.startExam')}
+          </button>
+          {dashboard.exam_state === 'completed' && <p className="text-center text-sm text-gray-600">{t('studentDashboard.completedExplanation')}</p>}
         </div>}
         <button
           type="button"

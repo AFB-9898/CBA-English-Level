@@ -1,6 +1,7 @@
 /// <reference types="vitest" />
 import { fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { BrowserRouter } from 'react-router-dom'
 import type { StudentDashboard } from '../../types'
 
 const logout = vi.fn()
@@ -9,11 +10,15 @@ vi.mock('../../components/auth/AuthContext', () => ({
 }))
 
 const refetch = vi.fn()
+const start = vi.fn()
 type DashboardState = { dashboard: StudentDashboard | null; loading: boolean; error: string | null }
 const completedDashboard: StudentDashboard = { student_full_name: 'Ada Lovelace', exam_state: 'completed', latest_result_score: 88, latest_result_completed_at: '2026-07-22T12:00:00Z', assigned_level_code: 'B2', assigned_level_name: 'Vantage', assigned_level_version: 1, attempt_count: 2 }
 let dashboardState: DashboardState = { dashboard: completedDashboard, loading: false, error: null }
 vi.mock('../../hooks/useStudentDashboard', () => ({
   useStudentDashboard: () => ({ ...dashboardState, refetch }),
+}))
+vi.mock('../../hooks/useStartExam', () => ({
+  useStartExam: () => ({ start, starting: false, error: null }),
 }))
 
 import StudentWelcomeScreen from '../StudentWelcomeScreen'
@@ -25,7 +30,7 @@ describe('StudentWelcomeScreen', () => {
   })
 
   it('shows the read-only student dashboard and a disabled future exam action', () => {
-    render(<StudentWelcomeScreen />)
+    render(<BrowserRouter><StudentWelcomeScreen /></BrowserRouter>)
     expect(screen.getByText('Student Dashboard')).toBeInTheDocument()
     expect(screen.getByText('Ada Lovelace')).toBeInTheDocument()
     expect(screen.getByText('Completed')).toBeInTheDocument()
@@ -38,17 +43,17 @@ describe('StudentWelcomeScreen', () => {
 
   it('renders loading, error retry, and an empty dashboard state', () => {
     dashboardState = { dashboard: null, loading: true, error: null }
-    const { container, rerender } = render(<StudentWelcomeScreen />)
+    const { container, rerender } = render(<BrowserRouter><StudentWelcomeScreen /></BrowserRouter>)
     expect(container.querySelector('[aria-busy="true"]')).toBeInTheDocument()
 
     dashboardState = { dashboard: null, loading: false, error: 'denied' }
-    rerender(<StudentWelcomeScreen />)
+    rerender(<BrowserRouter><StudentWelcomeScreen /></BrowserRouter>)
     expect(screen.getByRole('alert')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Try again' }))
     expect(refetch).toHaveBeenCalled()
 
     dashboardState = { dashboard: null, loading: false, error: null }
-    rerender(<StudentWelcomeScreen />)
+    rerender(<BrowserRouter><StudentWelcomeScreen /></BrowserRouter>)
     expect(screen.getByText('Your student dashboard is currently unavailable.')).toBeInTheDocument()
   })
 })

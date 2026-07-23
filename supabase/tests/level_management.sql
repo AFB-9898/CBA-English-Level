@@ -22,15 +22,14 @@ INSERT INTO public.admin (id, email, full_name)
 VALUES ('00000000-0000-0000-0000-000000000001', 'level-admin@test.local', 'Level Admin')
 ON CONFLICT (id) DO NOTHING;
 DELETE FROM public.admin WHERE id = '00000000-0000-0000-0000-000000000002';
-TRUNCATE public.student_answer, public.exam_question, public.question_option,
+TRUNCATE public.student_answer, public.exam_question_option, public.exam_level_snapshot, public.exam_question, public.question_option,
   public.exam, public.question, public.student, public.audit_log;
 INSERT INTO public.student (id, ci, full_name, email)
 VALUES ('00000000-0000-0000-0000-000000000010', 'TEST-LEVEL', 'Level Student', 'level@test.local');
-GRANT SELECT ON public.level, public.admin, public.audit_log, public.level_partition_revision TO authenticated;
-GRANT INSERT, SELECT ON public.question, public.exam TO authenticated;
-
 BEGIN;
 RESET ROLE;
+GRANT SELECT ON public.level, public.admin, public.audit_log, public.level_partition_revision TO authenticated;
+GRANT INSERT, SELECT ON public.question, public.exam TO authenticated;
 INSERT INTO public.question (text, level_id, category)
 SELECT 'Historical level fixture', id, 'atomic-level-test'
 FROM public.level WHERE code = 'B1' AND version = 1;

@@ -11,7 +11,7 @@ DELETE FROM public.admin WHERE id = '00000000-0000-0000-0000-000000000013';
 
 BEGIN;
 RESET ROLE;
-TRUNCATE public.student_answer, public.exam_question, public.question_option,
+TRUNCATE public.student_answer, public.exam_question_option, public.exam_level_snapshot, public.exam_question, public.question_option,
   public.exam, public.question, public.student, public.audit_log;
 
 INSERT INTO public.question (id, text, level_id, category)
@@ -46,13 +46,17 @@ SELECT throws_ok(
   '42501', NULL, 'non-administrator cannot create questions'
 );
 UPDATE public.question SET text = 'Denied update' WHERE id = '00000000-0000-0000-0000-000000000110';
+RESET ROLE;
 SELECT ok((SELECT text FROM public.question WHERE id = '00000000-0000-0000-0000-000000000110') = 'Question Bank privilege fixture',
   'non-administrator cannot update questions');
+SET LOCAL ROLE authenticated;
+SELECT set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000013', TRUE);
 SELECT throws_ok(
   $$ INSERT INTO public.question_option (question_id, text, is_correct, "order") VALUES ('00000000-0000-0000-0000-000000000110', 'Denied option', FALSE, 1) $$,
   '42501', NULL, 'non-administrator cannot create question options'
 );
 DELETE FROM public.question_option WHERE id = '00000000-0000-0000-0000-000000000111';
+RESET ROLE;
 SELECT ok(EXISTS (SELECT 1 FROM public.question_option WHERE id = '00000000-0000-0000-0000-000000000111'),
   'non-administrator cannot delete question options');
 

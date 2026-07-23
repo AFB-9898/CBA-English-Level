@@ -4,10 +4,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const refetch = vi.fn()
 const saveAnswer = vi.fn().mockResolvedValue({ status: 'in_progress' })
+const waitForPendingAnswerSaves = vi.fn().mockResolvedValue(true)
 const submit = vi.fn().mockResolvedValue(null)
 const recoverTimedOutSubmit = vi.fn().mockResolvedValue(null)
 let timerState = { remaining: 60_000, expired: false }
 let savingAnswers = false
+let saveErrors: Record<string, string> = {}
 const inProgressAttempt = {
   attempt_id: 'attempt-1', status: 'in_progress' as const, deadline_at: '2026-01-01T01:00:00Z', server_now: '2026-01-01T00:00:00Z',
   questions: [
@@ -21,7 +23,7 @@ let attempt: Omit<typeof inProgressAttempt, 'status' | 'result'> & {
 } = inProgressAttempt
 
 vi.mock('../../hooks/useExamAttempt', () => ({
-  useExamAttempt: () => ({ attempt, receivedAt: Date.now(), loading: false, error: null, refetch, saveAnswer, savingQuestionId: null, savingAnswers, saveErrors: {}, submitting: false, submit, recoverTimedOutSubmit }),
+  useExamAttempt: () => ({ attempt, receivedAt: Date.now(), loading: false, error: null, refetch, saveAnswer, waitForPendingAnswerSaves, savingQuestionId: null, savingAnswers, saveErrors, submitting: false, submit, recoverTimedOutSubmit }),
 }))
 vi.mock('../../hooks/useExamTimer', () => ({ useExamTimer: () => timerState }))
 
@@ -37,6 +39,8 @@ describe('StudentExamScreen', () => {
     attempt = inProgressAttempt
     timerState = { remaining: 60_000, expired: false }
     savingAnswers = false
+    saveErrors = {}
+    waitForPendingAnswerSaves.mockResolvedValue(true)
     vi.stubGlobal('confirm', vi.fn(() => true))
   })
 
@@ -63,6 +67,30 @@ describe('StudentExamScreen', () => {
     timerState = { remaining: 0, expired: true }
     renderScreen()
     await waitFor(() => expect(submit).toHaveBeenCalledTimes(1))
+  })
+
+  it('waits for a pending answer save before submitting on timeout', async () => {
+    let finishSave: ((value: boolean) => void) | undefined
+    waitForPendingAnswerSaves.mockImplementationOnce(() => new Promise((resolve) => { finishSave = resolve }))
+    timerState = { remaining: 0, expired: true }
+    renderScreen()
+    await waitFor(() => expect(waitForPendingAnswerSaves).toHaveBeenCalledTimes(1))
+    expect(submit).not.toHaveBeenCalled()
+
+    finishSave?.(true)
+    await waitFor(() => expect(submit).toHaveBeenCalledTimes(1))
+  })
+
+  it('does not finalize when a pending answer save fails, including through timeout recovery', async () => {
+    waitForPendingAnswerSaves.mockResolvedValue(false)
+    saveErrors = { q1: 'offline' }
+    timerState = { remaining: 0, expired: true }
+    renderScreen()
+    await screen.findByText('Time ran out, but we could not confirm your submission.')
+    expect(submit).not.toHaveBeenCalled()
+    fireEvent.click(screen.getByRole('button', { name: 'Retry submission' }))
+    await waitFor(() => expect(waitForPendingAnswerSaves).toHaveBeenCalledTimes(2))
+    expect(recoverTimedOutSubmit).not.toHaveBeenCalled()
   })
 
   it('offers recovery after an automatic timeout submit fails and shows the persisted result after reload', async () => {

@@ -28,12 +28,22 @@ describe('useExamAttempt', () => {
     expect(result.current.attempt).toEqual(completed)
   })
 
-  it('ignores an older answer-save response that resolves after a newer selection', async () => {
+  it('ignores an older answer-save response for a different question', async () => {
     let resolveFirst: ((value: { data: typeof attempt; error: null }) => void) | undefined
     let resolveSecond: ((value: { data: typeof attempt; error: null }) => void) | undefined
-    const firstResponse = { ...attempt, questions: [{ ...attempt.questions[0], selected_option_id: 'option-1' }] }
-    const secondResponse = { ...attempt, questions: [{ ...attempt.questions[0], selected_option_id: 'option-2' }] }
-    rpc.mockResolvedValueOnce({ data: attempt, error: null })
+    const attemptWithTwoQuestions = {
+      ...attempt,
+      questions: [...attempt.questions, { ...attempt.questions[0], exam_question_id: 'question-2', selected_option_id: null }],
+    }
+    const firstResponse = {
+      ...attemptWithTwoQuestions,
+      questions: [{ ...attemptWithTwoQuestions.questions[0], selected_option_id: 'option-1' }, attemptWithTwoQuestions.questions[1]],
+    }
+    const secondResponse = {
+      ...attemptWithTwoQuestions,
+      questions: [{ ...attemptWithTwoQuestions.questions[0], selected_option_id: 'option-1' }, { ...attemptWithTwoQuestions.questions[1], selected_option_id: 'option-2' }],
+    }
+    rpc.mockResolvedValueOnce({ data: attemptWithTwoQuestions, error: null })
       .mockImplementationOnce(() => new Promise((resolve) => { resolveFirst = resolve }))
       .mockImplementationOnce(() => new Promise((resolve) => { resolveSecond = resolve }))
     const { result } = renderHook(() => useExamAttempt('attempt-1'))
@@ -43,7 +53,7 @@ describe('useExamAttempt', () => {
     let secondSave!: Promise<unknown>
     act(() => {
       firstSave = result.current.saveAnswer('question-1', 'option-1')
-      secondSave = result.current.saveAnswer('question-1', 'option-2')
+      secondSave = result.current.saveAnswer('question-2', 'option-2')
     })
     expect(result.current.savingAnswers).toBe(true)
 
@@ -52,6 +62,58 @@ describe('useExamAttempt', () => {
     await act(async () => { resolveFirst?.({ data: firstResponse, error: null }); await firstSave })
     expect(result.current.attempt).toEqual(secondResponse)
     expect(result.current.savingAnswers).toBe(false)
+  })
+
+  it('waits for pending answer saves before allowing submission', async () => {
+    let resolveSave: ((value: { data: typeof attempt; error: null }) => void) | undefined
+    rpc.mockResolvedValueOnce({ data: attempt, error: null }).mockImplementationOnce(() => new Promise((resolve) => { resolveSave = resolve }))
+    const { result } = renderHook(() => useExamAttempt('attempt-1'))
+    await waitFor(() => expect(result.current.loading).toBe(false))
+
+    let save!: Promise<unknown>
+    let readyToSubmit!: Promise<boolean>
+    act(() => {
+      save = result.current.saveAnswer('question-1', 'option-1')
+      readyToSubmit = result.current.waitForPendingAnswerSaves()
+    })
+    await expect(Promise.race([readyToSubmit, Promise.resolve('still-saving')])).resolves.toBe('still-saving')
+
+    await act(async () => { resolveSave?.({ data: attempt, error: null }); await save })
+    await expect(readyToSubmit).resolves.toBe(true)
+  })
+
+  it('blocks submission when a pending answer save fails until that answer is saved successfully', async () => {
+    rpc.mockResolvedValueOnce({ data: attempt, error: null })
+      .mockResolvedValueOnce({ data: null, error: { message: 'offline' } })
+      .mockResolvedValueOnce({ data: attempt, error: null })
+    const { result } = renderHook(() => useExamAttempt('attempt-1'))
+    await waitFor(() => expect(result.current.loading).toBe(false))
+
+    await act(async () => {
+      const save = result.current.saveAnswer('question-1', 'option-1')
+      expect(await result.current.waitForPendingAnswerSaves()).toBe(false)
+      await save
+    })
+    expect(result.current.saveErrors['question-1']).toBe('offline')
+
+    await act(async () => { await result.current.saveAnswer('question-1', 'option-1') })
+    await expect(result.current.waitForPendingAnswerSaves()).resolves.toBe(true)
+  })
+
+  it('keeps a failed save from one question from being hidden by another question save', async () => {
+    rpc.mockResolvedValueOnce({ data: attempt, error: null })
+      .mockResolvedValueOnce({ data: null, error: { message: 'offline' } })
+      .mockResolvedValueOnce({ data: attempt, error: null })
+    const { result } = renderHook(() => useExamAttempt('attempt-1'))
+    await waitFor(() => expect(result.current.loading).toBe(false))
+
+    await act(async () => {
+      const failedSave = result.current.saveAnswer('question-1', 'option-1')
+      const successfulSave = result.current.saveAnswer('question-2', 'option-2')
+      expect(await result.current.waitForPendingAnswerSaves()).toBe(false)
+      await Promise.all([failedSave, successfulSave])
+    })
+    expect(result.current.saveErrors['question-1']).toBe('offline')
   })
 
   it('recovers a failed timed-out submit by re-fetching the persisted result without another submit', async () => {

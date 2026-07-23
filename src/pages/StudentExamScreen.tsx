@@ -13,7 +13,7 @@ export default function StudentExamScreen() {
   const { t } = useTranslation()
   const { attemptId } = useParams()
   const navigate = useNavigate()
-  const { attempt, receivedAt, loading, error, refetch, saveAnswer, savingQuestionId, savingAnswers, saveErrors, submitting, submit, recoverTimedOutSubmit } = useExamAttempt(attemptId)
+  const { attempt, receivedAt, loading, error, refetch, saveAnswer, waitForPendingAnswerSaves, savingQuestionId, savingAnswers, saveErrors, submitting, submit, recoverTimedOutSubmit } = useExamAttempt(attemptId)
   const [activeIndex, setActiveIndex] = useState(0)
   const [selected, setSelected] = useState<Record<string, string | null>>({})
   const [timeoutSubmitFailed, setTimeoutSubmitFailed] = useState(false)
@@ -46,10 +46,21 @@ export default function StudentExamScreen() {
   useEffect(() => {
     if (!expired || attempt?.status !== 'in_progress' || submittedOnTimeout.current) return
     submittedOnTimeout.current = true
-    void submit().then((result) => setTimeoutSubmitFailed(result === null))
-  }, [attempt?.status, expired, submit])
+    void waitForPendingAnswerSaves().then(async (saved) => {
+      if (!saved) {
+        setTimeoutSubmitFailed(true)
+        return
+      }
+      const result = await submit()
+      setTimeoutSubmitFailed(result === null)
+    })
+  }, [attempt?.status, expired, submit, waitForPendingAnswerSaves])
 
   async function recoverTimeoutSubmission() {
+    if (!await waitForPendingAnswerSaves()) {
+      setTimeoutSubmitFailed(true)
+      return
+    }
     const result = await recoverTimedOutSubmit()
     setTimeoutSubmitFailed(result === null)
   }

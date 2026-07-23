@@ -18,7 +18,11 @@ export function useExamAttempt(attemptId: string | undefined) {
   const [submitting, setSubmitting] = useState(false)
   const mounted = useRef(true)
   const saveRequestId = useRef(0)
+  const latestSaveRequestIdByQuestion = useRef(new Map<string, number>())
+  const latestAppliedSaveRequestId = useRef(0)
   const pendingSaves = useRef(0)
+  const pendingSaveCompletions = useRef(new Set<Promise<void>>())
+  const failedSaveQuestionIds = useRef(new Set<string>())
 
   useEffect(() => {
     mounted.current = true
@@ -60,6 +64,10 @@ export function useExamAttempt(attemptId: string | undefined) {
   const saveAnswer = useCallback(async (questionId: string, optionId: string) => {
     if (!attemptId) return null
     const requestId = ++saveRequestId.current
+    latestSaveRequestIdByQuestion.current.set(questionId, requestId)
+    let completeSave: () => void = () => undefined
+    const completion = new Promise<void>((resolve) => { completeSave = resolve })
+    pendingSaveCompletions.current.add(completion)
     pendingSaves.current += 1
     setSavingQuestionId(questionId)
     setSavingAnswers(true)
@@ -73,19 +81,36 @@ export function useExamAttempt(attemptId: string | undefined) {
       if (rpcError) throw rpcError
       if (!data) throw new Error('Save answer returned no response')
       const response = data as ExamAttempt
-      if (requestId === saveRequestId.current) applyAttempt(response)
+      if (
+        latestSaveRequestIdByQuestion.current.get(questionId) === requestId
+        && requestId > latestAppliedSaveRequestId.current
+      ) {
+        failedSaveQuestionIds.current.delete(questionId)
+        latestAppliedSaveRequestId.current = requestId
+        applyAttempt(response)
+      }
       return response
     } catch (err) {
-      if (mounted.current && requestId === saveRequestId.current) setSaveErrors((errors) => ({ ...errors, [questionId]: errorMessage(err) }))
+      if (latestSaveRequestIdByQuestion.current.get(questionId) === requestId) {
+        failedSaveQuestionIds.current.add(questionId)
+        if (mounted.current) setSaveErrors((errors) => ({ ...errors, [questionId]: errorMessage(err) }))
+      }
       return null
     } finally {
       pendingSaves.current -= 1
+      pendingSaveCompletions.current.delete(completion)
+      completeSave()
       if (mounted.current) {
         setSavingQuestionId(null)
         setSavingAnswers(pendingSaves.current > 0)
       }
     }
   }, [applyAttempt, attemptId])
+
+  const waitForPendingAnswerSaves = useCallback(async () => {
+    await Promise.all(pendingSaveCompletions.current)
+    return failedSaveQuestionIds.current.size === 0
+  }, [])
 
   const submit = useCallback(async () => {
     if (!attemptId || submitting) return null
@@ -111,5 +136,5 @@ export function useExamAttempt(attemptId: string | undefined) {
     return submit()
   }, [refetch, submit])
 
-  return { attempt, receivedAt, loading, error, refetch, saveAnswer, savingQuestionId, savingAnswers, saveErrors, submitting, submit, recoverTimedOutSubmit }
+  return { attempt, receivedAt, loading, error, refetch, saveAnswer, waitForPendingAnswerSaves, savingQuestionId, savingAnswers, saveErrors, submitting, submit, recoverTimedOutSubmit }
 }

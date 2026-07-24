@@ -235,6 +235,18 @@ export interface StudentDashboard {
   attempt_count: number
 }
 
+export interface StudentExamHistoryItem {
+  attempt_id: string
+  completed_at: string
+  score: number
+  cefr_level_code: string | null
+  cefr_level_name: string | null
+  cefr_level_version: number | null
+  historical_status: 'finalized'
+}
+
+export interface StudentExamHistoryDetail extends Omit<StudentExamHistoryItem, 'attempt_id'> {}
+
 // --- Payloads (request/response) ---
 
 export interface ExamResult {

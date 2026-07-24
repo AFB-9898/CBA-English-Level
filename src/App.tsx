@@ -13,6 +13,7 @@ import ExamConfigurationScreen from './pages/ExamConfigurationScreen'
 import ReportsScreen from './pages/ReportsScreen'
 import AdminAuditLogScreen from './pages/AdminAuditLogScreen'
 import StudentExamScreen from './pages/StudentExamScreen'
+import StudentExamHistoryScreen from './pages/StudentExamHistoryScreen'
 
 function PlaceholderPage({ titleKey }: { titleKey: string }) {
   const { t } = useTranslation()
@@ -48,6 +49,8 @@ function App() {
           </Route>
           <Route element={<ProtectedRoute requiredRole="student" />}>
             <Route path="/student" element={<StudentWelcomeScreen />} />
+            <Route path="/student/history" element={<StudentExamHistoryScreen />} />
+            <Route path="/student/history/:attemptId" element={<StudentExamHistoryScreen />} />
             <Route path="/student/exam/:attemptId" element={<StudentExamScreen />} />
           </Route>
           <Route path="*" element={<Navigate to="/admin" replace />} />

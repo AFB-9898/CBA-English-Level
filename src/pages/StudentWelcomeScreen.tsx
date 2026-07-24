@@ -3,7 +3,7 @@ import { useAuth } from '../components/auth/AuthContext'
 import LanguageSwitcher from '../components/atoms/LanguageSwitcher'
 import { useStudentDashboard } from '../hooks/useStudentDashboard'
 import { useStartExam } from '../hooks/useStartExam'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 export default function StudentWelcomeScreen() {
   const { t } = useTranslation()
@@ -42,6 +42,7 @@ export default function StudentWelcomeScreen() {
           <button type="button" onClick={() => void beginExam()} disabled={starting || dashboard.exam_state === 'completed'} className="w-full rounded-md bg-blue-700 px-4 py-2 font-medium text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-gray-400">
             {starting ? t('studentDashboard.starting') : dashboard.exam_state === 'in_progress' ? t('studentDashboard.resumeExam') : t('studentDashboard.startExam')}
           </button>
+          <Link to="/student/history" className="block text-center text-sm font-medium text-blue-700 hover:underline">{t('studentDashboard.history')}</Link>
           {dashboard.exam_state === 'completed' && <p className="text-center text-sm text-gray-600">{t('studentDashboard.completedExplanation')}</p>}
         </div>}
         <button

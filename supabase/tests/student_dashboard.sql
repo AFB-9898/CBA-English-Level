@@ -1,7 +1,7 @@
--- Contract tests for migrations 012 and 014. Run after `supabase db reset` with psql.
+-- Contract tests for migrations 012, 014, and 015. Run after `supabase db reset` with psql.
 \set ON_ERROR_STOP on
 CREATE EXTENSION IF NOT EXISTS pgtap WITH SCHEMA public;
-SELECT plan(13);
+SELECT plan(24);
 SET search_path = public, extensions;
 
 BEGIN;
@@ -25,6 +25,10 @@ INSERT INTO public.exam (id, student_id, completed_at, score, level_id, status) 
   ('00000000-0000-0000-0000-000000000128', '00000000-0000-0000-0000-000000000122', NULL, NULL, NULL, 'pending'),
   ('00000000-0000-0000-0000-000000000130', '00000000-0000-0000-0000-000000000129', (date_trunc('day', NOW() AT TIME ZONE 'America/La_Paz') AT TIME ZONE 'America/La_Paz') + INTERVAL '12 hours', 88, (SELECT id FROM public.level WHERE code = 'B1' AND version = 1), 'completed');
 
+INSERT INTO public.exam_level_snapshot (exam_id, source_level_id, code, name, version, min_score, max_score) VALUES
+  ('00000000-0000-0000-0000-000000000124', '00000000-0000-0000-0000-000000000123', 'H1', 'Historical Snapshot', 3, 0, 100),
+  ('00000000-0000-0000-0000-000000000130', (SELECT id FROM public.level WHERE code = 'B1' AND version = 1), 'B1', 'Threshold', 1, 0, 100);
+
 SELECT is(public.fn_cba_business_date(TIMESTAMPTZ '2026-01-01 03:30:00+00'), DATE '2025-12-31', 'CBA business date remains on the prior local day before the UTC boundary');
 SELECT is(public.fn_cba_business_date(TIMESTAMPTZ '2026-01-01 04:30:00+00'), DATE '2026-01-01', 'CBA business date advances at the America/La_Paz boundary');
 SELECT ok(pg_get_functiondef('public.get_student_dashboard()'::regprocedure) LIKE '%fn_cba_business_date(completed_at)%', 'dashboard uses the CBA business-date function');
@@ -37,6 +41,21 @@ SELECT is((SELECT exam_state FROM public.get_student_dashboard()), 'in_progress'
 SELECT is((SELECT latest_result_score FROM public.get_student_dashboard()), 73, 'latest completed result is returned without exam content');
 SELECT is((SELECT assigned_level_code FROM public.get_student_dashboard()), 'HX', 'latest result keeps its persisted historical level code');
 SELECT is((SELECT assigned_level_name FROM public.get_student_dashboard()), 'Historical Level', 'latest result keeps its persisted historical level name');
+SELECT is((SELECT COUNT(*) FROM public.get_student_exam_history()), 1::BIGINT, 'history returns only the authenticated student finalized attempts');
+SELECT is((SELECT score FROM public.get_student_exam_history()), 73, 'history projects the finalized score');
+SELECT is((SELECT cefr_level_code FROM public.get_student_exam_history()), 'H1', 'history uses the immutable CEFR snapshot');
+SELECT is((SELECT historical_status FROM public.get_student_exam_history()), 'finalized', 'history labels finalized attempts without exposing mutable state');
+SELECT is((SELECT score FROM public.get_student_exam_history_detail('00000000-0000-0000-0000-000000000124')), 73, 'history detail resolves by stable attempt identifier');
+SELECT is((SELECT COUNT(*) FROM public.get_student_exam_history_detail('00000000-0000-0000-0000-000000000199')), 0::BIGINT, 'history detail does not resolve an unavailable attempt');
+SELECT ok(pg_get_functiondef('public.get_student_exam_history()'::regprocedure) NOT LIKE '%student_answer%', 'history projection does not access student answers');
+
+RESET ROLE;
+INSERT INTO public.exam (id, student_id, completed_at, score, level_id, status) VALUES
+  ('00000000-0000-0000-0000-000000000125', '00000000-0000-0000-0000-000000000120', CURRENT_DATE - INTERVAL '1 day', 85, '00000000-0000-0000-0000-000000000123', 'completed');
+SET LOCAL ROLE authenticated;
+SELECT set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000120', TRUE);
+SELECT is((SELECT COUNT(*) FROM public.get_student_exam_history()), 2::BIGINT, 'history includes a newly finalized attempt');
+SELECT is((SELECT score FROM public.get_student_exam_history_detail('00000000-0000-0000-0000-000000000124')), 73, 'a pre-existing attempt detail remains stable after a new finalization');
 
 SELECT set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000129', TRUE);
 SELECT is((SELECT exam_state FROM public.get_student_dashboard()), 'completed', 'own completion today maps to completed');
@@ -44,9 +63,11 @@ SELECT is((SELECT exam_state FROM public.get_student_dashboard()), 'completed', 
 SELECT set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000122', TRUE);
 SELECT is((SELECT exam_state FROM public.get_student_dashboard()), 'available', 'pending exams map to available');
 SELECT ok((SELECT latest_result_score IS NULL AND assigned_level_code IS NULL FROM public.get_student_dashboard()), 'student without a completed exam has no result');
+SELECT is((SELECT COUNT(*) FROM public.get_student_exam_history()), 0::BIGINT, 'history excludes pending attempts');
 
 SELECT set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000199', TRUE);
 SELECT throws_ok($$ SELECT * FROM public.get_student_dashboard() $$, '42501', 'Student access required', 'non-student cannot access the dashboard');
+SELECT throws_ok($$ SELECT * FROM public.get_student_exam_history() $$, '42501', 'Student access required', 'non-student cannot access history');
 
 RESET ROLE;
 SELECT * FROM finish();

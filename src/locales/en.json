@@ -49,7 +49,24 @@
     "completedExplanation": "You have already completed an exam today. You can take another one on a future CBA business day.",
     "states": { "available": "Available", "in_progress": "In progress", "completed": "Completed" },
     "errors": { "loadFailed": "We could not load your dashboard.", "startFailed": "We could not open your exam." },
-    "empty": "Your student dashboard is currently unavailable."
+    "empty": "Your student dashboard is currently unavailable.",
+    "history": "View exam history"
+  },
+  "studentHistory": {
+    "title": "Exam history",
+    "subtitle": "Review your finalized placement exam attempts.",
+    "detailTitle": "Exam attempt",
+    "date": "Date",
+    "score": "Score",
+    "cefrLevel": "CEFR level",
+    "status": "Historical status",
+    "statuses": { "finalized": "Finalized" },
+    "viewDetails": "View details",
+    "backToDashboard": "Back to dashboard",
+    "backToHistory": "Back to exam history",
+    "loadFailed": "We could not load your exam history.",
+    "notFound": "This exam history entry is unavailable.",
+    "empty": "You have no finalized exam attempts yet."
   },
   "studentExam": {
     "title": "Placement exam",

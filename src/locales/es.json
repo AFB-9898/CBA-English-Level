@@ -49,7 +49,24 @@
     "completedExplanation": "Ya completaste un examen hoy. Podrás rendir otro en un próximo día hábil del CBA.",
     "states": { "available": "Disponible", "in_progress": "En curso", "completed": "Completado" },
     "errors": { "loadFailed": "No pudimos cargar tu panel.", "startFailed": "No pudimos abrir tu examen." },
-    "empty": "Tu panel de estudiante no está disponible en este momento."
+    "empty": "Tu panel de estudiante no está disponible en este momento.",
+    "history": "Ver historial de exámenes"
+  },
+  "studentHistory": {
+    "title": "Historial de exámenes",
+    "subtitle": "Revisá tus intentos finalizados de examen de colocación.",
+    "detailTitle": "Intento de examen",
+    "date": "Fecha",
+    "score": "Puntaje",
+    "cefrLevel": "Nivel CEFR",
+    "status": "Estado histórico",
+    "statuses": { "finalized": "Finalizado" },
+    "viewDetails": "Ver detalle",
+    "backToDashboard": "Volver al panel",
+    "backToHistory": "Volver al historial de exámenes",
+    "loadFailed": "No pudimos cargar tu historial de exámenes.",
+    "notFound": "Esta entrada del historial de exámenes no está disponible.",
+    "empty": "Aún no tenés intentos de examen finalizados."
   },
   "studentExam": {
     "title": "Examen de colocación",

@@ -257,6 +257,21 @@
     "empty": "No audit events match these filters.",
     "systemActor": "System"
   },
+  "students": {
+    "title": "Students",
+    "subtitle": "Search student profiles and manage permitted contact details.",
+    "searchLabel": "Search students",
+    "searchPlaceholder": "Name, CI, or email",
+    "detailTitle": "Student profile",
+    "detailSubtitle": "Only the name and phone number can be changed.",
+    "identityReadOnly": "CI and email are identity fields and cannot be changed here.",
+    "saved": "Student profile saved.",
+    "empty": "No students match this search.",
+    "notFound": "This student profile is unavailable.",
+    "actions": { "refresh": "Refresh", "view": "View profile", "loadMore": "Load more", "loadingMore": "Loading...", "back": "Back to students", "save": "Save profile", "saving": "Saving..." },
+    "errors": { "load": "We could not load this student profile.", "loadFailed": "We could not load student data.", "permission": "You do not have permission to access student profiles.", "updateFailed": "We could not update this student profile." },
+    "attempts": { "title": "Exam attempts", "subtitle": "Read-only history and results. Answers are not available here.", "status": "Status", "completedAt": "Completed", "score": "Score", "level": "CEFR level", "notCompleted": "Not completed", "empty": "This student has no exam attempts." }
+  },
   "errors": {
     "registrationDisabled": "Registration is currently disabled",
     "emailAlreadyRegistered": "This email is already registered",

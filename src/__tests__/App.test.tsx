@@ -186,7 +186,7 @@ describe('App — Auth Flow Integration', () => {
     await waitFor(() => expect(screen.getByTestId('reports-screen')).toBeInTheDocument())
   })
 
-  it('renders the registered students placeholder route', async () => {
+  it('makes Student Management reachable at /admin/students for an authenticated admin', async () => {
     const mockUser = {
       id: 'admin-1',
       email: 'admin@cba.edu.bo',
@@ -201,7 +201,7 @@ describe('App — Auth Flow Integration', () => {
 
     render(<App />)
 
-    await waitFor(() => expect(screen.getByText('Coming soon / Próximamente.')).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByRole('heading', { name: 'Students' })).toBeInTheDocument())
   })
 
   it('makes Administrative Audit reachable at /admin/audit-log for an authenticated admin', async () => {

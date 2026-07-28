@@ -196,6 +196,29 @@ export interface AdminAuditFilters {
   action: string
 }
 
+export interface AdminStudentListRow {
+  student_id: string
+  full_name: string
+  ci: string
+  email: string
+  created_at: string
+}
+
+export interface AdminStudentDetail extends AdminStudentListRow {
+  phone: string | null
+}
+
+export interface AdminStudentAttempt {
+  attempt_id: string
+  status: ExamStatus
+  started_at: string | null
+  completed_at: string | null
+  score: number | null
+  cefr_level_code: string | null
+  cefr_level_name: string | null
+  cefr_level_version: number | null
+}
+
 // --- Dashboard ---
 
 export interface DashboardStats {

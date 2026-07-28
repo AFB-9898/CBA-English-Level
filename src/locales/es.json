@@ -253,6 +253,21 @@
     "empty": "No hay eventos de auditoría para estos filtros.",
     "systemActor": "Sistema"
   },
+  "students": {
+    "title": "Estudiantes",
+    "subtitle": "Buscá perfiles de estudiantes y gestioná únicamente datos de contacto permitidos.",
+    "searchLabel": "Buscar estudiantes",
+    "searchPlaceholder": "Nombre, CI o correo",
+    "detailTitle": "Perfil del estudiante",
+    "detailSubtitle": "Solo se pueden modificar el nombre y el teléfono.",
+    "identityReadOnly": "El CI y el correo son campos de identidad y no se pueden modificar aquí.",
+    "saved": "El perfil del estudiante se guardó.",
+    "empty": "No hay estudiantes que coincidan con esta búsqueda.",
+    "notFound": "Este perfil de estudiante no está disponible.",
+    "actions": { "refresh": "Actualizar", "view": "Ver perfil", "loadMore": "Cargar más", "loadingMore": "Cargando...", "back": "Volver a estudiantes", "save": "Guardar perfil", "saving": "Guardando..." },
+    "errors": { "load": "No pudimos cargar este perfil de estudiante.", "loadFailed": "No pudimos cargar los datos del estudiante.", "permission": "No tenés permiso para acceder a los perfiles de estudiantes.", "updateFailed": "No pudimos actualizar este perfil de estudiante." },
+    "attempts": { "title": "Intentos de examen", "subtitle": "Historial y resultados de solo lectura. Las respuestas no están disponibles aquí.", "status": "Estado", "completedAt": "Finalizado", "score": "Puntaje", "level": "Nivel CEFR", "notCompleted": "No finalizado", "empty": "Este estudiante no tiene intentos de examen." }
+  },
   "errors": {
     "registrationDisabled": "El registro está actualmente deshabilitado",
     "emailAlreadyRegistered": "Este correo ya está registrado",

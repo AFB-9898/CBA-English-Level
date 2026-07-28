@@ -1,0 +1,20 @@
+[Unit]
+Description=CBA Supabase logical database backup
+Wants=network-online.target
+After=network-online.target
+[Service]
+Type=oneshot
+User=cba-backup
+Group=cba-backup
+WorkingDirectory=/opt/cba-english-level
+EnvironmentFile=/etc/cba-supabase-backup.env
+Environment=BACKUP_ROOT=/var/lib/cba-supabase-backups
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+ExecStart=/bin/bash /opt/cba-english-level/scripts/backup-daily.sh
+TimeoutStartSec=20min
+UMask=0077
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=strict
+ReadWritePaths=/var/lib/cba-supabase-backups

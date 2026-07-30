@@ -6,6 +6,7 @@
     "ci": "CI (Cédula de Identidad)",
     "phone": "Teléfono",
     "phoneOptional": "Teléfono (opcional)",
+    "optional": "opcional",
     "register": "Registrarse",
     "registering": "Registrando…",
     "login": "Iniciar sesión",
@@ -21,6 +22,22 @@
     "accessDenied": "Acceso denegado: no sos administrador",
     "dontHaveAccount": "¿No tenés cuenta?",
     "registerLink": "Registrarse"
+  },
+  "authPresentation": {
+    "brand": "CBA",
+    "organizationName": "Centro Boliviano Americano",
+    "panelLabel": "Centro Boliviano Americano",
+    "placementExam": "Examen de colocación",
+    "loginBrandCopy": "Tu recorrido de aprendizaje de inglés comienza con el nivel adecuado.",
+    "registerBrandCopy": "Creá tu perfil y descubrí el nivel de inglés adecuado para vos.",
+    "switchToEnglish": "Cambiar a inglés",
+    "switchToSpanish": "Cambiar a español",
+    "fullNamePlaceholder": "Juan Pérez",
+    "ciPlaceholder": "1234567",
+    "emailPlaceholder": "student@cba.edu.bo",
+    "phonePlaceholder": "71234567",
+    "loginEmailPlaceholder": "correo@ejemplo.com",
+    "passwordPlaceholder": "••••••••"
   },
   "studentLoginPage": {
     "title": "CBA — Inicio de sesión de estudiante",

@@ -36,7 +36,7 @@ describe('RegisterForm', () => {
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/phone/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /register/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /register/i })).toHaveClass('cba-auth__button')
   })
 
   it('shows validation errors on empty submission', async () => {
@@ -49,6 +49,7 @@ describe('RegisterForm', () => {
     expect(screen.getByText('CI is required')).toBeInTheDocument()
     expect(screen.getByText('Email is required')).toBeInTheDocument()
     expect(screen.getByText('Password is required')).toBeInTheDocument()
+    expect(screen.getByText('Email is required').closest('.cba-auth__field')).toHaveClass('cba-auth__field--error')
     expect(mockSignUp).not.toHaveBeenCalled()
   })
 

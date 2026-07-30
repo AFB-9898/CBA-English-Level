@@ -80,14 +80,13 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
     }
   }
 
-  const inputClass =
-    'w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+  const inputClass = 'cba-auth__input'
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="cba-auth__form">
       {/* Full Name */}
-      <div>
-        <label htmlFor="full_name" className="block text-sm font-medium text-gray-700 mb-1">
+      <div className={`cba-auth__field${errors.full_name ? ' cba-auth__field--error' : ''}`}>
+        <label htmlFor="full_name" className="cba-auth__label">
           {t('common.fullName')}
         </label>
         <input
@@ -95,21 +94,21 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
           type="text"
           value={fields.full_name}
           onChange={(e) => handleChange('full_name', e.target.value)}
-          placeholder="Juan Pérez"
+          placeholder={t('authPresentation.fullNamePlaceholder')}
           className={inputClass}
           disabled={submitting}
           autoComplete="name"
         />
         {errors.full_name && (
-          <p className="text-red-500 text-sm mt-1" role="alert">
+          <p className="cba-auth__field-error" role="alert">
             {errors.full_name}
           </p>
         )}
       </div>
 
       {/* CI */}
-      <div>
-        <label htmlFor="ci" className="block text-sm font-medium text-gray-700 mb-1">
+      <div className={`cba-auth__field${errors.ci ? ' cba-auth__field--error' : ''}`}>
+        <label htmlFor="ci" className="cba-auth__label">
           {t('common.ci')}
         </label>
         <input
@@ -117,20 +116,20 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
           type="text"
           value={fields.ci}
           onChange={(e) => handleChange('ci', e.target.value)}
-          placeholder="1234567"
+          placeholder={t('authPresentation.ciPlaceholder')}
           className={inputClass}
           disabled={submitting}
         />
         {errors.ci && (
-          <p className="text-red-500 text-sm mt-1" role="alert">
+          <p className="cba-auth__field-error" role="alert">
             {errors.ci}
           </p>
         )}
       </div>
 
       {/* Email */}
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+      <div className={`cba-auth__field${errors.email ? ' cba-auth__field--error' : ''}`}>
+        <label htmlFor="email" className="cba-auth__label">
           {t('common.email')}
         </label>
         <input
@@ -138,43 +137,43 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
           type="email"
           value={fields.email}
           onChange={(e) => handleChange('email', e.target.value)}
-          placeholder="student@cba.edu.bo"
+          placeholder={t('authPresentation.emailPlaceholder')}
           className={inputClass}
           disabled={submitting}
           autoComplete="email"
         />
         {errors.email && (
-          <p className="text-red-500 text-sm mt-1" role="alert">
+          <p className="cba-auth__field-error" role="alert">
             {errors.email}
           </p>
         )}
       </div>
 
       {/* Phone */}
-      <div>
-        <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-          {t('common.phone')} <span className="text-gray-400">(optional)</span>
+      <div className={`cba-auth__field${errors.phone ? ' cba-auth__field--error' : ''}`}>
+        <label htmlFor="phone" className="cba-auth__label">
+          {t('common.phone')} <span className="cba-auth__optional">({t('common.optional')})</span>
         </label>
         <input
           id="phone"
           type="tel"
           value={fields.phone}
           onChange={(e) => handleChange('phone', e.target.value)}
-          placeholder="71234567"
+          placeholder={t('authPresentation.phonePlaceholder')}
           className={inputClass}
           disabled={submitting}
           autoComplete="tel"
         />
         {errors.phone && (
-          <p className="text-red-500 text-sm mt-1" role="alert">
+          <p className="cba-auth__field-error" role="alert">
             {errors.phone}
           </p>
         )}
       </div>
 
       {/* Password */}
-      <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+      <div className={`cba-auth__field${errors.password ? ' cba-auth__field--error' : ''}`}>
+        <label htmlFor="password" className="cba-auth__label">
           {t('common.password')}
         </label>
         <input
@@ -182,13 +181,13 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
           type="password"
           value={fields.password}
           onChange={(e) => handleChange('password', e.target.value)}
-          placeholder="••••••••"
+          placeholder={t('authPresentation.passwordPlaceholder')}
           className={inputClass}
           disabled={submitting}
           autoComplete="new-password"
         />
         {errors.password && (
-          <p className="text-red-500 text-sm mt-1" role="alert">
+          <p className="cba-auth__field-error" role="alert">
             {errors.password}
           </p>
         )}
@@ -196,7 +195,7 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
 
       {/* General / banner error */}
       {generalError && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm" role="alert">
+        <div className="cba-auth__alert" role="alert">
           {generalError}
         </div>
       )}
@@ -205,15 +204,15 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
       <button
         type="submit"
         disabled={submitting}
-        className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="cba-auth__button"
       >
         {submitting ? t('common.registering') : t('common.register')}
       </button>
 
       {/* Link to login */}
-      <p className="text-sm text-center text-gray-500 mt-4">
+      <p className="cba-auth__footer">
         {t('registerForm.alreadyHaveAccount')}{' '}
-        <Link to="/login" className="text-blue-600 hover:underline">
+        <Link to="/login" className="cba-auth__link">
           {t('registerForm.loginLink')}
         </Link>
       </p>

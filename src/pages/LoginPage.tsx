@@ -3,22 +3,34 @@ import { Navigate, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../components/auth/AuthContext'
 import LanguageSwitcher from '../components/atoms/LanguageSwitcher'
+import '../styles/cba-auth.css'
 
 function PageShell({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation()
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3">
-            <h1 className="text-2xl font-bold text-gray-800">{t('loginPage.title')}</h1>
+    <div className="cba-auth">
+      <aside className="cba-auth__brand-panel" aria-label={t('authPresentation.panelLabel')}>
+        <div className="cba-auth__brand-content">
+          <div className="cba-auth__mark" aria-hidden="true">{t('authPresentation.brand')}</div>
+          <p className="cba-auth__brand-kicker">{t('authPresentation.organizationName')}</p>
+          <p className="cba-auth__brand-name">{t('authPresentation.placementExam')}</p>
+          <p className="cba-auth__brand-copy">{t('authPresentation.loginBrandCopy')}</p>
+        </div>
+      </aside>
+      <main className="cba-auth__main">
+        <div className="cba-auth__container">
+          <div className="cba-auth__heading">
+            <div>
+              <p className="cba-auth__eyebrow">{t('authPresentation.organizationName')}</p>
+              <h1 className="cba-auth__title">{t('loginPage.title')}</h1>
+              <p className="cba-auth__subtitle">{t('loginPage.subtitle')}</p>
+            </div>
             <LanguageSwitcher />
           </div>
-          <p className="text-sm text-gray-500 mt-1">{t('loginPage.subtitle')}</p>
+          <div className="cba-auth__card">{children}</div>
         </div>
-        <div className="bg-white rounded-lg shadow-md p-6">{children}</div>
-      </div>
+      </main>
     </div>
   )
 }
@@ -55,22 +67,22 @@ export default function LoginPage() {
 
   return (
     <PageShell>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="cba-auth__form">
         {principalError && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm" role="alert">
+          <div className="cba-auth__alert" role="alert">
             <p>{principalError}</p>
             <button
               type="button"
               onClick={() => void retryPrincipal()}
               disabled={loading}
-              className="mt-2 text-blue-600 hover:underline disabled:opacity-50"
+              className="cba-auth__alert-button mt-2 disabled:opacity-50"
             >
               {t('common.retry')}
             </button>
           </div>
         )}
-        <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="cba-auth__field">
+            <label htmlFor="email" className="cba-auth__label">
             {t('common.email')}
           </label>
           <input
@@ -78,15 +90,15 @@ export default function LoginPage() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="email@example.com"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder={t('authPresentation.loginEmailPlaceholder')}
+            className="cba-auth__input"
             disabled={submitting}
             autoComplete="email"
           />
         </div>
 
-        <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="cba-auth__field">
+            <label htmlFor="password" className="cba-auth__label">
             {t('common.password')}
           </label>
           <input
@@ -94,15 +106,15 @@ export default function LoginPage() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder={t('authPresentation.passwordPlaceholder')}
+            className="cba-auth__input"
             disabled={submitting}
             autoComplete="current-password"
           />
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm" role="alert">
+          <div className="cba-auth__alert" role="alert">
             {error}
           </div>
         )}
@@ -110,14 +122,14 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={submitting || loading}
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="cba-auth__button"
         >
           {submitting ? t('common.signingIn') : t('common.signIn')}
         </button>
 
-        <p className="text-sm text-center text-gray-500 mt-4">
+        <p className="cba-auth__footer">
           {t('loginPage.dontHaveAccount')}{' '}
-          <Link to="/register" className="text-blue-600 hover:underline">
+          <Link to="/register" className="cba-auth__link">
             {t('loginPage.registerLink')}
           </Link>
         </p>

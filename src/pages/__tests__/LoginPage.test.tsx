@@ -3,6 +3,7 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import i18n from '../../i18n'
 
 const mockLogin = vi.fn()
 const mockLogout = vi.fn()
@@ -30,8 +31,9 @@ vi.mock('../../components/auth/AuthContext', () => ({
 
 import LoginPage from '../LoginPage'
 
-beforeEach(() => {
+beforeEach(async () => {
   vi.clearAllMocks()
+  await i18n.changeLanguage('en')
   mockUser.value = null
   mockIsAdmin.value = false
   mockRole.value = null
@@ -63,9 +65,39 @@ describe('LoginPage', () => {
   it("renders the login form with email and password fields", () => {
     renderLoginPage()
 
+    expect(document.querySelector('.cba-auth')).toBeInTheDocument()
+    expect(document.querySelector('.cba-auth__mark')).toHaveTextContent('CBA')
     expect(screen.getByLabelText('Email')).toBeInTheDocument()
     expect(screen.getByLabelText('Password')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /sign in/i })).toHaveClass('cba-auth__button')
+  })
+
+  it('updates login visual content when switching between English and Spanish', async () => {
+    const user = userEvent.setup()
+    renderLoginPage()
+
+    expect(screen.getByText('Placement Exam')).toBeInTheDocument()
+    expect(screen.getByText('Your English learning journey starts with the right level.')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('email@example.com')).toBeInTheDocument()
+    expect(screen.getByTitle('Switch to Spanish')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'EN' }))
+
+    await waitFor(() => {
+      expect(screen.getByText('Examen de colocación')).toBeInTheDocument()
+      expect(screen.getByText('Tu recorrido de aprendizaje de inglés comienza con el nivel adecuado.')).toBeInTheDocument()
+      expect(screen.getByPlaceholderText('correo@ejemplo.com')).toBeInTheDocument()
+      expect(screen.getByTitle('Cambiar a inglés')).toBeInTheDocument()
+    })
+
+    await user.click(screen.getByRole('button', { name: 'ES' }))
+
+    await waitFor(() => {
+      expect(screen.getByText('Placement Exam')).toBeInTheDocument()
+      expect(screen.getByText('Your English learning journey starts with the right level.')).toBeInTheDocument()
+      expect(screen.getByPlaceholderText('email@example.com')).toBeInTheDocument()
+      expect(screen.getByTitle('Switch to Spanish')).toBeInTheDocument()
+    })
   })
 
   it('retains input focus while typing consecutive email and password characters', async () => {

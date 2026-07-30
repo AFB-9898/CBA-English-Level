@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import RegisterForm from '../components/organisms/RegisterForm'
 import Toast from '../components/atoms/Toast'
 import LanguageSwitcher from '../components/atoms/LanguageSwitcher'
+import '../styles/cba-auth.css'
 
 export default function RegisterPage() {
   const { t } = useTranslation()
@@ -29,17 +30,28 @@ export default function RegisterPage() {
 function PageShell({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation()
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3">
-            <h1 className="text-2xl font-bold text-gray-800">{t('registerPage.title')}</h1>
+    <div className="cba-auth">
+      <aside className="cba-auth__brand-panel" aria-label={t('authPresentation.panelLabel')}>
+        <div className="cba-auth__brand-content">
+          <div className="cba-auth__mark" aria-hidden="true">{t('authPresentation.brand')}</div>
+          <p className="cba-auth__brand-kicker">{t('authPresentation.organizationName')}</p>
+          <p className="cba-auth__brand-name">{t('authPresentation.placementExam')}</p>
+          <p className="cba-auth__brand-copy">{t('authPresentation.registerBrandCopy')}</p>
+        </div>
+      </aside>
+      <main className="cba-auth__main">
+        <div className="cba-auth__container">
+          <div className="cba-auth__heading">
+            <div>
+              <p className="cba-auth__eyebrow">{t('authPresentation.organizationName')}</p>
+              <h1 className="cba-auth__title">{t('registerPage.title')}</h1>
+              <p className="cba-auth__subtitle">{t('registerPage.subtitle')}</p>
+            </div>
             <LanguageSwitcher />
           </div>
-          <p className="text-sm text-gray-500 mt-1">{t('registerPage.subtitle')}</p>
+          <div className="cba-auth__card">{children}</div>
         </div>
-        <div className="bg-white rounded-lg shadow-md p-6">{children}</div>
-      </div>
+      </main>
     </div>
   )
 }

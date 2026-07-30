@@ -1,0 +1,283 @@
+.cba-auth {
+  --cba-navy: #003366;
+  --cba-institutional-red: #CC0000;
+  --cba-secondary-blue: #0066CC;
+  --cba-light-background: #F5F7FB;
+  --cba-white: #FFFFFF;
+  --cba-primary-text: #10213D;
+  --cba-secondary-text: #667085;
+  --cba-soft-border: #D9E0EA;
+  --cba-success: #16A34A;
+  --cba-warning: #F59E0B;
+  --cba-error: #DC2626;
+
+  align-items: stretch;
+  background: var(--cba-light-background);
+  color: var(--cba-primary-text);
+  display: grid;
+  min-height: 100vh;
+}
+
+.cba-auth__brand-panel {
+  align-items: center;
+  background: var(--cba-navy);
+  color: var(--cba-white);
+  display: none;
+  justify-content: center;
+  padding: 3rem;
+}
+
+.cba-auth__brand-content {
+  max-width: 27rem;
+}
+
+.cba-auth__mark {
+  align-items: center;
+  border: 2px solid var(--cba-white);
+  display: inline-flex;
+  font-size: 1.125rem;
+  font-weight: 800;
+  height: 3rem;
+  justify-content: center;
+  letter-spacing: 0.12em;
+  position: relative;
+  width: 3rem;
+}
+
+.cba-auth__mark::after {
+  background: var(--cba-institutional-red);
+  bottom: -0.35rem;
+  content: '';
+  height: 0.25rem;
+  position: absolute;
+  width: 2.2rem;
+}
+
+.cba-auth__brand-kicker {
+  color: var(--cba-white);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  margin: 2rem 0 0;
+  text-transform: uppercase;
+}
+
+.cba-auth__brand-name {
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  margin: 0.5rem 0 0;
+}
+
+.cba-auth__brand-copy {
+  color: color-mix(in srgb, var(--cba-white) 78%, transparent);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 1.25rem 0 0;
+}
+
+.cba-auth__main {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.cba-auth__container {
+  width: min(100%, 28rem);
+}
+
+.cba-auth__heading {
+  align-items: flex-start;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  margin-bottom: 1.75rem;
+}
+
+.cba-auth__eyebrow {
+  color: var(--cba-institutional-red);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.cba-auth__title {
+  color: var(--cba-primary-text);
+  font-size: 1.875rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  margin: 0.35rem 0 0;
+}
+
+.cba-auth__subtitle {
+  color: var(--cba-secondary-text);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  margin: 0.65rem 0 0;
+}
+
+.cba-auth__card {
+  background: var(--cba-white);
+  border: 1px solid var(--cba-soft-border);
+  border-radius: 0.75rem;
+  box-shadow: 0 1rem 2.5rem rgb(16 33 61 / 8%);
+  padding: 1.5rem;
+}
+
+.cba-auth__form {
+  display: grid;
+  gap: 1.125rem;
+}
+
+.cba-auth__field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.cba-auth__label {
+  color: var(--cba-primary-text);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.cba-auth__optional {
+  color: var(--cba-secondary-text);
+  font-weight: 400;
+}
+
+.cba-auth__input {
+  background: var(--cba-white);
+  border: 1px solid var(--cba-soft-border);
+  border-radius: 0.375rem;
+  color: var(--cba-primary-text);
+  font-size: 1rem;
+  line-height: 1.5;
+  outline: none;
+  padding: 0.7rem 0.8rem;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+  width: 100%;
+}
+
+.cba-auth__input::placeholder {
+  color: var(--cba-secondary-text);
+  opacity: 0.75;
+}
+
+.cba-auth__input:focus {
+  border-color: var(--cba-secondary-blue);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--cba-secondary-blue) 20%, transparent);
+}
+
+.cba-auth__input:disabled {
+  background: var(--cba-light-background);
+  color: var(--cba-secondary-text);
+  cursor: not-allowed;
+}
+
+.cba-auth__field--error .cba-auth__input {
+  border-color: var(--cba-error);
+}
+
+.cba-auth__field-error {
+  color: var(--cba-error);
+  font-size: 0.8125rem;
+  margin: 0;
+}
+
+.cba-auth__alert {
+  background: color-mix(in srgb, var(--cba-error) 8%, var(--cba-white));
+  border-left: 3px solid var(--cba-error);
+  color: var(--cba-primary-text);
+  font-size: 0.875rem;
+  line-height: 1.45;
+  padding: 0.75rem 0.875rem;
+}
+
+.cba-auth__alert-button,
+.cba-auth__link {
+  color: var(--cba-secondary-blue);
+  font-weight: 700;
+}
+
+.cba-auth__alert-button:hover,
+.cba-auth__link:hover {
+  color: var(--cba-navy);
+  text-decoration: underline;
+}
+
+.cba-auth__button {
+  background: var(--cba-institutional-red);
+  border: 1px solid var(--cba-institutional-red);
+  border-radius: 0.375rem;
+  color: var(--cba-white);
+  font-size: 0.9375rem;
+  font-weight: 800;
+  margin-top: 0.25rem;
+  padding: 0.75rem 1rem;
+  transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+  width: 100%;
+}
+
+.cba-auth__button:hover:not(:disabled) {
+  background: var(--cba-navy);
+  border-color: var(--cba-navy);
+}
+
+.cba-auth__button:focus-visible,
+.cba-auth__alert-button:focus-visible,
+.cba-auth__link:focus-visible,
+.cba-language-switcher:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--cba-secondary-blue) 40%, transparent);
+  outline-offset: 2px;
+}
+
+.cba-auth__button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.cba-auth__footer {
+  color: var(--cba-secondary-text);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0.25rem 0 0;
+  text-align: center;
+}
+
+.cba-auth .cba-language-switcher {
+  background: var(--cba-white);
+  border: 1px solid var(--cba-soft-border);
+  border-radius: 999px;
+  color: var(--cba-navy);
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0.35rem 0.6rem;
+}
+
+.cba-auth .cba-language-switcher:hover {
+  border-color: var(--cba-secondary-blue);
+  color: var(--cba-secondary-blue);
+}
+
+@media (min-width: 768px) {
+  .cba-auth {
+    grid-template-columns: minmax(20rem, 0.9fr) minmax(28rem, 1.1fr);
+  }
+
+  .cba-auth__brand-panel {
+    display: flex;
+  }
+
+  .cba-auth__main {
+    padding: 3rem;
+  }
+
+  .cba-auth__card {
+    padding: 2rem;
+  }
+}

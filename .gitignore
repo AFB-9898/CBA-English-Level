@@ -44,6 +44,16 @@ Thumbs.db
 *~
 .vscode/settings.json
 .idea/
+.windsurf/
+
+# ── Code intelligence ────────────────────────────────────
+.codegraph/
+
+# ── AI / Skills Registry ─────────────────────────────────
+.atl/
+
+# ── SDD archives ─────────────────────────────────────────
+openspec/changes/archive/
 
 # ── Node / npm ───────────────────────────────────────────
 npm-debug.log*

@@ -26,6 +26,7 @@ vi.mock('../../hooks/useExamAttempt', () => ({
   useExamAttempt: () => ({ attempt, receivedAt: Date.now(), loading: false, error: null, refetch, saveAnswer, waitForPendingAnswerSaves, savingQuestionId: null, savingAnswers, saveErrors, submitting: false, submit, recoverTimedOutSubmit }),
 }))
 vi.mock('../../hooks/useExamTimer', () => ({ useExamTimer: () => timerState }))
+vi.mock('../../components/auth/AuthContext', () => ({ useAuth: () => ({ logout: vi.fn() }) }))
 
 import StudentExamScreen from '../StudentExamScreen'
 
@@ -46,6 +47,8 @@ describe('StudentExamScreen', () => {
 
   it('navigates questions, saves a selection, and refreshes on focus', async () => {
     renderScreen()
+    expect(screen.getByText('CBA Tarija')).toBeInTheDocument()
+    expect(screen.getByRole('main')).toHaveClass('cba-student__content')
     expect(screen.getByText('First question')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('radio', { name: 'First option' }))
     await waitFor(() => expect(saveAnswer).toHaveBeenCalledWith('q1', 'o1'))
@@ -106,5 +109,6 @@ describe('StudentExamScreen', () => {
     await waitFor(() => expect(recoverTimedOutSubmit).toHaveBeenCalledTimes(1))
     expect(await screen.findByText('Your placement result')).toBeInTheDocument()
     expect(screen.getByText((_, element) => element?.textContent === '80%')).toBeInTheDocument()
+    expect(screen.getByText('B2 - Vantage')).toBeInTheDocument()
   })
 })

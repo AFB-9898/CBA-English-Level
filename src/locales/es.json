@@ -93,6 +93,7 @@
     "backToDashboard": "Volver al panel",
     "backToHistory": "Volver al historial de exámenes",
     "loadFailed": "No pudimos cargar tu historial de exámenes.",
+    "loadDetailFailed": "No pudimos cargar esta entrada del historial de exámenes.",
     "notFound": "Esta entrada del historial de exámenes no está disponible.",
     "empty": "Aún no tenés intentos de examen finalizados."
   },

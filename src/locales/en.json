@@ -93,6 +93,7 @@
     "backToDashboard": "Back to dashboard",
     "backToHistory": "Back to exam history",
     "loadFailed": "We could not load your exam history.",
+    "loadDetailFailed": "We could not load this exam history entry.",
     "notFound": "This exam history entry is unavailable.",
     "empty": "You have no finalized exam attempts yet."
   },

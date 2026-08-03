@@ -76,3 +76,33 @@
 .cba-student-exam__result .cba-student__primary-action, .cba-student-exam__message .cba-student__primary-action { margin-top: 1.75rem; }
 .cba-student-exam__question-index:focus-visible, .cba-student-exam__option:has(input:focus-visible), .cba-student-exam__secondary-action:focus-visible { outline: 3px solid color-mix(in srgb, var(--cba-secondary-blue) 40%, transparent); outline-offset: 2px; }
 @media (min-width: 640px) { .cba-student-exam__footer { grid-template-columns: auto auto 1fr; } .cba-student-exam__submit { width: auto; } }
+
+.cba-student-history { max-width: 64rem; }
+.cba-student-history__back { margin-top: 0; }
+.cba-student-history__heading { margin-top: 1.25rem; }
+.cba-student-history__list { display: grid; gap: 0.875rem; }
+.cba-student-history__attempt { display: grid; gap: 1rem; }
+.cba-student-history__attempt-summary, .cba-student-history__attempt-result { min-width: 0; }
+.cba-student-history__date, .cba-student-history__result-label { color: var(--cba-secondary-text); font-size: 0.8125rem; font-weight: 700; margin: 0; }
+.cba-student-history__level { color: var(--cba-primary-text); font-size: 1rem; font-weight: 800; line-height: 1.35; margin: 0.25rem 0 0; }
+.cba-student-history__attempt-result { align-items: center; display: flex; gap: 0.75rem; justify-content: space-between; }
+.cba-student-history__score-inline { color: var(--cba-navy); font-size: 1.5rem; font-weight: 800; letter-spacing: -0.04em; line-height: 1; margin: 0; }
+.cba-student-history__status { background: color-mix(in srgb, var(--cba-success) 9%, var(--cba-white)); border: 1px solid color-mix(in srgb, var(--cba-success) 32%, var(--cba-white)); border-radius: 999px; color: #166534; display: inline-block; font-size: 0.75rem; font-weight: 800; line-height: 1; padding: 0.45rem 0.6rem; }
+.cba-student-history__details-link { align-items: center; border-top: 1px solid var(--cba-soft-border); color: var(--cba-secondary-blue); display: flex; font-size: 0.875rem; font-weight: 800; justify-content: space-between; padding-top: 1rem; text-decoration: none; }
+.cba-student-history__details-link::after { content: '→'; font-size: 1.125rem; line-height: 1; }
+.cba-student-history__details-link:hover { color: var(--cba-navy); text-decoration: underline; }
+.cba-student-history__details-link:focus-visible { outline: 3px solid color-mix(in srgb, var(--cba-secondary-blue) 40%, transparent); outline-offset: 3px; }
+.cba-student-history__empty { max-width: 42rem; }
+.cba-student-history__detail, .cba-student-history__message, .cba-student-history__skeleton { margin-left: auto; margin-right: auto; max-width: 42rem; }
+.cba-student-history__result { text-align: center; }
+.cba-student-history__result .cba-student-history__result-label { margin: 0; }
+.cba-student-history__score { color: var(--cba-navy); font-size: clamp(4rem, 15vw, 6rem); font-weight: 800; letter-spacing: -0.075em; line-height: 1; margin-top: 0.5rem; white-space: nowrap; }
+.cba-student-history__score small { font-size: 0.3em; letter-spacing: 0; margin-left: 0.1em; }
+.cba-student-history__result .cba-student-history__level { background: color-mix(in srgb, var(--cba-secondary-blue) 8%, var(--cba-white)); border-left: 3px solid var(--cba-institutional-red); font-size: 1.125rem; margin-top: 1.25rem; padding: 0.875rem; }
+.cba-student-history__detail-grid { display: grid; gap: 1px; grid-template-columns: 1fr; margin: 1.25rem 0 0; overflow: hidden; }
+.cba-student-history__detail-grid > div { background: var(--cba-white); border: 1px solid var(--cba-soft-border); padding: 1rem; }
+.cba-student-history__detail-grid dt { color: var(--cba-secondary-text); font-size: 0.8125rem; font-weight: 700; }
+.cba-student-history__detail-grid dd { color: var(--cba-primary-text); font-weight: 800; margin: 0.35rem 0 0; }
+.cba-student-history__message .cba-student__primary-action { margin-top: 1rem; }
+.cba-student-history__skeleton--list { max-width: 64rem; }
+@media (min-width: 640px) { .cba-student-history__attempt { align-items: center; grid-template-columns: minmax(0, 1fr) auto auto; } .cba-student-history__attempt-result { display: grid; justify-items: end; } .cba-student-history__details-link { border-left: 1px solid var(--cba-soft-border); border-top: 0; padding-left: 1.25rem; padding-top: 0; } .cba-student-history__detail-grid { grid-template-columns: repeat(2, 1fr); } }

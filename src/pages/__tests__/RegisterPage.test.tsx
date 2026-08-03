@@ -44,6 +44,7 @@ describe('RegisterPage', () => {
     renderPage()
     expect(screen.getByText('CBA — Student Registration')).toBeInTheDocument()
     expect(screen.getByText('Create an account to take placement exams')).toBeInTheDocument()
+    expect(screen.getAllByRole('img', { name: 'CBA Tarija, Bolivia and Tarija flags' })).not.toHaveLength(0)
   })
 
   it('updates registration visual content when switching between English and Spanish', async () => {
@@ -60,6 +61,7 @@ describe('RegisterPage', () => {
       expect(screen.getByText('Examen de colocación')).toBeInTheDocument()
       expect(screen.getByText('Creá tu perfil y descubrí el nivel de inglés adecuado para vos.')).toBeInTheDocument()
       expect(screen.getByText('CBA — Registro de estudiante')).toBeInTheDocument()
+      expect(screen.getAllByRole('img', { name: 'CBA Tarija, banderas de Bolivia y Tarija' })).not.toHaveLength(0)
       expect(screen.getByTitle('Cambiar a inglés')).toBeInTheDocument()
     })
 

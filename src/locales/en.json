@@ -13,6 +13,8 @@
     "signIn": "Sign In",
     "signingIn": "Signing in…",
     "logout": "Logout",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
     "retry": "Try again"
   },
   "loginPage": {
@@ -27,6 +29,10 @@
     "brand": "CBA",
     "organizationName": "Centro Boliviano Americano",
     "panelLabel": "Centro Boliviano Americano",
+    "localIdentity": {
+      "name": "CBA Tarija",
+      "label": "CBA Tarija, Bolivia and Tarija flags"
+    },
     "placementExam": "Placement Exam",
     "loginBrandCopy": "Your English learning journey starts with the right level.",
     "registerBrandCopy": "Create your profile and discover the English level that fits you.",
@@ -68,6 +74,11 @@
     "errors": { "loadFailed": "We could not load your dashboard.", "startFailed": "We could not open your exam." },
     "empty": "Your student dashboard is currently unavailable.",
     "history": "View exam history"
+  },
+  "studentNavigation": {
+    "label": "Student navigation",
+    "dashboard": "Dashboard",
+    "history": "Exam history"
   },
   "studentHistory": {
     "title": "Exam history",

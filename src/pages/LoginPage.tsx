@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Navigate, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../components/auth/AuthContext'
+import CbaTarijaIdentity from '../components/atoms/CbaTarijaIdentity'
 import LanguageSwitcher from '../components/atoms/LanguageSwitcher'
 import '../styles/cba-auth.css'
 
@@ -14,6 +15,7 @@ function PageShell({ children }: { children: React.ReactNode }) {
         <div className="cba-auth__brand-content">
           <div className="cba-auth__mark" aria-hidden="true">{t('authPresentation.brand')}</div>
           <p className="cba-auth__brand-kicker">{t('authPresentation.organizationName')}</p>
+          <CbaTarijaIdentity onDark />
           <p className="cba-auth__brand-name">{t('authPresentation.placementExam')}</p>
           <p className="cba-auth__brand-copy">{t('authPresentation.loginBrandCopy')}</p>
         </div>
@@ -23,6 +25,7 @@ function PageShell({ children }: { children: React.ReactNode }) {
           <div className="cba-auth__heading">
             <div>
               <p className="cba-auth__eyebrow">{t('authPresentation.organizationName')}</p>
+              <CbaTarijaIdentity compact />
               <h1 className="cba-auth__title">{t('loginPage.title')}</h1>
               <p className="cba-auth__subtitle">{t('loginPage.subtitle')}</p>
             </div>

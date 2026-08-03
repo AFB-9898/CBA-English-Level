@@ -2,6 +2,11 @@ import { render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 
+const logout = vi.fn()
+vi.mock('../../components/auth/AuthContext', () => ({
+  useAuth: () => ({ logout }),
+}))
+
 const history = [{ attempt_id: '00000000-0000-0000-0000-000000000124', completed_at: '2026-07-22T12:00:00Z', score: 88, cefr_level_code: 'B2', cefr_level_name: 'Vantage', cefr_level_version: 1, historical_status: 'finalized' as const }]
 const newlyFinalizedAttempt = { attempt_id: '00000000-0000-0000-0000-000000000125', completed_at: '2026-07-23T12:00:00Z', score: 92, cefr_level_code: 'C1', cefr_level_name: 'Effective Operational Proficiency', cefr_level_version: 1, historical_status: 'finalized' as const }
 let listState = { history, loading: false, error: null as string | null }
@@ -31,7 +36,9 @@ describe('StudentExamHistoryScreen', () => {
 
   it('shows finalized attempts without answer data or internal identifiers', () => {
     renderAt('/student/history')
-    expect(screen.getByText('Exam history')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Exam history' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Exam history' })).toHaveAttribute('aria-current', 'page')
+    expect(screen.getByRole('link', { name: 'Dashboard' })).toHaveAttribute('href', '/student')
     expect(screen.getByText('88%')).toBeInTheDocument()
     expect(screen.getByText('B2 - Vantage (v1)')).toBeInTheDocument()
     expect(screen.getByText('Finalized')).toBeInTheDocument()

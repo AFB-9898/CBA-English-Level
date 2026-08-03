@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../components/auth/AuthContext'
+import CbaTarijaIdentity from '../components/atoms/CbaTarijaIdentity'
 
 const navItems = [
   { key: 'dashboard', to: '/admin', icon: '📊' },
@@ -49,7 +50,7 @@ export default function AdminLayout() {
                 type="button"
                 className="md:hidden p-1.5 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100"
                 onClick={() => setMobileOpen((o) => !o)}
-                aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+                aria-label={mobileOpen ? t('common.closeMenu') : t('common.openMenu')}
               >
                 {mobileOpen ? (
                   <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
@@ -62,9 +63,12 @@ export default function AdminLayout() {
                 )}
               </button>
 
-              <h1 className="text-lg font-semibold text-gray-800">
-                {t('adminPanel.title')}
-              </h1>
+              <div>
+                <h1 className="text-lg font-semibold text-gray-800">
+                  {t('adminPanel.title')}
+                </h1>
+                <CbaTarijaIdentity compact />
+              </div>
             </div>
 
             <div className="flex items-center gap-4">

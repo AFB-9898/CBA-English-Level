@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import i18n from '../../i18n'
 import AdminLayout from '../AdminLayout'
 
 const mockLogout = vi.fn()
@@ -17,8 +18,9 @@ vi.mock('../../components/auth/AuthContext', () => ({
   useAuth: () => mockAuthState,
 }))
 
-beforeEach(() => {
+beforeEach(async () => {
   vi.clearAllMocks()
+  await i18n.changeLanguage('en')
   mockAuthState = {
     user: { id: '1', email: 'admin@cba.edu.bo' },
     adminName: null,
@@ -50,6 +52,7 @@ describe('AdminLayout', () => {
     renderAdminLayout()
 
     expect(screen.getByText('CBA — Admin Panel')).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'CBA Tarija, Bolivia and Tarija flags' })).toBeInTheDocument()
     expect(screen.getByText('Logout')).toBeInTheDocument()
   })
 
@@ -57,6 +60,17 @@ describe('AdminLayout', () => {
     renderAdminLayout()
 
     expect(screen.getByTestId('dashboard-content')).toBeInTheDocument()
+  })
+
+  it('uses Spanish labels for the mobile menu button', async () => {
+    await i18n.changeLanguage('es')
+    const user = userEvent.setup()
+
+    renderAdminLayout()
+
+    await user.click(screen.getByRole('button', { name: 'Abrir menú' }))
+
+    expect(screen.getByRole('button', { name: 'Cerrar menú' })).toBeInTheDocument()
   })
 
   it('displays user email in the header', () => {

@@ -13,6 +13,8 @@
     "signIn": "Iniciar sesión",
     "signingIn": "Iniciando sesión…",
     "logout": "Cerrar sesión",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
     "retry": "Intentar de nuevo"
   },
   "loginPage": {
@@ -27,6 +29,10 @@
     "brand": "CBA",
     "organizationName": "Centro Boliviano Americano",
     "panelLabel": "Centro Boliviano Americano",
+    "localIdentity": {
+      "name": "CBA Tarija",
+      "label": "CBA Tarija, banderas de Bolivia y Tarija"
+    },
     "placementExam": "Examen de colocación",
     "loginBrandCopy": "Tu recorrido de aprendizaje de inglés comienza con el nivel adecuado.",
     "registerBrandCopy": "Creá tu perfil y descubrí el nivel de inglés adecuado para vos.",
@@ -68,6 +74,11 @@
     "errors": { "loadFailed": "No pudimos cargar tu panel.", "startFailed": "No pudimos abrir tu examen." },
     "empty": "Tu panel de estudiante no está disponible en este momento.",
     "history": "Ver historial de exámenes"
+  },
+  "studentNavigation": {
+    "label": "Navegación del estudiante",
+    "dashboard": "Panel",
+    "history": "Historial de exámenes"
   },
   "studentHistory": {
     "title": "Historial de exámenes",

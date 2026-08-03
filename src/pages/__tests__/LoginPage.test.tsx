@@ -67,6 +67,7 @@ describe('LoginPage', () => {
 
     expect(document.querySelector('.cba-auth')).toBeInTheDocument()
     expect(document.querySelector('.cba-auth__mark')).toHaveTextContent('CBA')
+    expect(screen.getAllByRole('img', { name: 'CBA Tarija, Bolivia and Tarija flags' })).not.toHaveLength(0)
     expect(screen.getByLabelText('Email')).toBeInTheDocument()
     expect(screen.getByLabelText('Password')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /sign in/i })).toHaveClass('cba-auth__button')

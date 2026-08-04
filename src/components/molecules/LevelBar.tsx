@@ -1,4 +1,5 @@
 import type { LevelDistributionItem } from '../../types'
+import { useTranslation } from 'react-i18next'
 
 interface LevelBarProps {
   levels: LevelDistributionItem[]
@@ -17,9 +18,11 @@ const barColors = [
 ]
 
 export default function LevelBar({ levels, loading }: LevelBarProps) {
+  const { t } = useTranslation()
+
   if (loading) {
     return (
-      <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-200">
+      <div className="cba-dashboard__panel" aria-busy="true">
         <div className="h-5 bg-gray-200 rounded w-40 mb-4 animate-pulse" />
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
@@ -35,16 +38,16 @@ export default function LevelBar({ levels, loading }: LevelBarProps) {
 
   if (levels.length === 0) {
     return (
-      <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-200">
-        <h3 className="text-sm font-semibold text-gray-700 mb-3">Level Distribution</h3>
-        <p className="text-gray-400 text-sm">No data available</p>
+      <div className="cba-dashboard__panel">
+        <h3 className="cba-dashboard__panel-title text-sm mb-3">{t('dashboard.distribution.title')}</h3>
+        <p className="cba-admin__muted-text text-sm">{t('dashboard.distribution.empty')}</p>
       </div>
     )
   }
 
   return (
-    <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-200">
-      <h3 className="text-sm font-semibold text-gray-700 mb-4">Level Distribution</h3>
+    <div className="cba-dashboard__panel">
+      <h3 className="cba-dashboard__panel-title text-sm mb-4">{t('dashboard.distribution.title')}</h3>
       <div className="space-y-3">
         {levels.map((lvl, i) => (
           <div key={lvl.level_id}>
@@ -54,9 +57,9 @@ export default function LevelBar({ levels, loading }: LevelBarProps) {
                 {lvl.count} ({lvl.percentage}%)
               </span>
             </div>
-            <div className="w-full bg-gray-100 rounded-full h-5">
+            <div className="cba-dashboard__bar-track w-full rounded-full h-5">
               <div
-                className={`h-5 rounded-full ${barColors[i % barColors.length]} transition-all duration-300`}
+                className={`cba-dashboard__bar h-5 rounded-full ${barColors[i % barColors.length]} transition-all duration-300`}
                 style={{ width: `${lvl.percentage}%` }}
               />
             </div>

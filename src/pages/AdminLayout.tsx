@@ -1,8 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../components/auth/AuthContext'
 import CbaTarijaIdentity from '../components/atoms/CbaTarijaIdentity'
+import LanguageSwitcher from '../components/atoms/LanguageSwitcher'
+import '../styles/cba-admin.css'
 
 const navItems = [
   { key: 'dashboard', to: '/admin', icon: '📊' },
@@ -18,8 +20,8 @@ function sidebarLinkClass({ isActive }: { isActive: boolean }) {
   return [
     'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
     isActive
-      ? 'bg-blue-50 text-blue-700'
-      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900',
+      ? 'cba-admin__nav-link cba-admin__nav-link--active'
+      : 'cba-admin__nav-link',
   ].join(' ')
 }
 
@@ -28,10 +30,32 @@ export default function AdminLayout() {
   const { logout, user, adminName } = useAuth()
   const navigate = useNavigate()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [isDesktop, setIsDesktop] = useState(() => window.matchMedia?.('(min-width: 768px)').matches ?? false)
+  const [logoutError, setLogoutError] = useState(false)
+  const [loggingOut, setLoggingOut] = useState(false)
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia?.('(min-width: 768px)')
+    if (!mediaQuery) return
+
+    const updateViewport = () => setIsDesktop(mediaQuery.matches)
+    updateViewport()
+    mediaQuery.addEventListener('change', updateViewport)
+    return () => mediaQuery.removeEventListener('change', updateViewport)
+  }, [])
 
   async function handleLogout() {
-    await logout()
-    navigate('/login', { replace: true })
+    setLogoutError(false)
+    setLoggingOut(true)
+
+    try {
+      await logout()
+      navigate('/login', { replace: true })
+    } catch {
+      setLogoutError(true)
+    } finally {
+      setLoggingOut(false)
+    }
   }
 
   function closeMobile() {
@@ -39,16 +63,16 @@ export default function AdminLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="cba-admin">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200 fixed top-0 inset-x-0 z-30">
+      <header className="cba-admin__header fixed top-0 inset-x-0 z-30">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
               {/* Hamburger — visible only on mobile */}
               <button
                 type="button"
-                className="md:hidden p-1.5 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                className="cba-admin__menu-button md:hidden p-1.5 rounded-md"
                 onClick={() => setMobileOpen((o) => !o)}
                 aria-label={mobileOpen ? t('common.closeMenu') : t('common.openMenu')}
               >
@@ -64,22 +88,24 @@ export default function AdminLayout() {
               </button>
 
               <div>
-                <h1 className="text-lg font-semibold text-gray-800">
+                <h1 className="cba-admin__title">
                   {t('adminPanel.title')}
                 </h1>
-                <CbaTarijaIdentity compact />
+                <CbaTarijaIdentity compact onDark />
               </div>
             </div>
 
             <div className="flex items-center gap-4">
               {user && (
-                <span className="text-sm text-gray-500 hidden sm:inline">
+                <span className="cba-admin__user text-sm hidden sm:inline">
                   {adminName || user.email}
                 </span>
               )}
+              <LanguageSwitcher />
               <button
                 onClick={handleLogout}
-                className="text-sm text-gray-600 hover:text-red-600 transition-colors"
+                disabled={loggingOut}
+                className="cba-admin__logout text-sm transition-colors"
               >
                 {t('common.logout')}
               </button>
@@ -91,7 +117,8 @@ export default function AdminLayout() {
       {/* Mobile overlay backdrop */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 bg-black/40 z-30 md:hidden"
+          className="fixed inset-0 bg-black/40 z-20 md:hidden"
+          data-testid="mobile-menu-backdrop"
           onClick={closeMobile}
           aria-hidden="true"
         />
@@ -102,14 +129,15 @@ export default function AdminLayout() {
         {/* Sidebar — fixed on desktop, overlay on mobile */}
         <aside
           className={`
-            fixed top-16 bottom-0 left-0 w-60 bg-white border-r border-gray-200 z-40
+            cba-admin__sidebar fixed top-16 bottom-0 left-0 w-60 z-40
             overflow-y-auto transition-transform duration-200
             md:translate-x-0
             ${mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
           `}
           data-testid="sidebar"
+          inert={!isDesktop && !mobileOpen ? true : undefined}
         >
-          <nav className="p-4 space-y-1">
+          <nav className="cba-admin__navigation space-y-1" aria-label={t('adminPanel.title')}>
             {navItems.map((item) => (
               <NavLink
                 key={item.key}
@@ -118,7 +146,7 @@ export default function AdminLayout() {
                 className={sidebarLinkClass}
                 onClick={closeMobile}
               >
-                <span aria-hidden="true">{item.icon}</span>
+                <span className="cba-admin__nav-icon" aria-hidden="true">{item.icon}</span>
                 {t(`dashboard.nav.${item.key}`)}
               </NavLink>
             ))}
@@ -126,7 +154,15 @@ export default function AdminLayout() {
         </aside>
 
         {/* Main content — offset by sidebar width on desktop */}
-        <main className="flex-1 md:ml-60 px-4 sm:px-6 lg:px-8 py-6">
+        <main className="cba-admin__content flex-1 md:ml-60 mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {logoutError && (
+            <div role="alert" className="cba-admin__alert cba-admin__alert--error mb-6 flex items-center justify-between gap-4 rounded-lg p-4 text-sm">
+              <span>{t('common.logoutFailed')}</span>
+              <button type="button" onClick={handleLogout} disabled={loggingOut} className="cba-admin__action cba-admin__action--danger shrink-0">
+                {t('common.retry')}
+              </button>
+            </div>
+          )}
           <Outlet />
         </main>
       </div>

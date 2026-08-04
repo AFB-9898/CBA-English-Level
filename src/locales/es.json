@@ -15,7 +15,8 @@
     "logout": "Cerrar sesión",
     "openMenu": "Abrir menú",
     "closeMenu": "Cerrar menú",
-    "retry": "Intentar de nuevo"
+    "retry": "Intentar de nuevo",
+    "logoutFailed": "No se pudo cerrar sesión. Intentá de nuevo."
   },
   "loginPage": {
     "title": "CBA — Iniciar sesión",

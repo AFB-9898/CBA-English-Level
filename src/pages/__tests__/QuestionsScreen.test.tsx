@@ -63,6 +63,8 @@ describe('QuestionsScreen', () => {
     renderScreen()
     expect(screen.getByText('Question Bank')).toBeInTheDocument()
     expect(screen.getByText('New Question')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Question Bank' })).toHaveClass('cba-admin__module-title')
+    expect(screen.getByRole('button', { name: 'New Question' })).toHaveClass('cba-admin__button--primary')
   })
 
   it('renders the create form for the direct new-question URL', () => {
@@ -138,7 +140,7 @@ describe('QuestionsScreen', () => {
     mockUseLevels.mockReturnValue({ levels: [], loading: false, error: null })
 
     renderScreen()
-    expect(screen.getByText('No questions registered yet')).toBeInTheDocument()
+    expect(screen.getByText('No questions registered yet')).toHaveClass('cba-admin__muted-text')
   })
 
   it('renders questions in both table and card views', () => {
@@ -190,7 +192,7 @@ describe('QuestionsScreen', () => {
 
     renderScreen()
     expect(screen.getByText('Failed to load questions')).toBeInTheDocument()
-    expect(screen.getByText('connection refused')).toBeInTheDocument()
+    expect(screen.getByText('connection refused')).toHaveClass('cba-admin__alert-detail')
   })
 
   it('renders skeleton when loading', () => {

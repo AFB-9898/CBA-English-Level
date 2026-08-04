@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import ReportsScreen from '../ReportsScreen'
 import { useReports } from '../../hooks/useReports'
+import i18n from '../../i18n'
 
 vi.mock('../../hooks/useReports', () => ({ useReports: vi.fn() }))
 vi.mock('../../hooks/useLevels', () => ({ useLevels: () => ({ levels: [{ id: 'level-1', name: 'B2', code: 'B2', min_score: 61, max_score: 80, description: null }], loading: false, error: null }) }))
@@ -24,6 +25,18 @@ describe('ReportsScreen', () => {
     fireEvent.change(from, { target: { value: '2026-07-01' } })
     expect(from).toHaveValue('2026-07-01')
     expect(screen.getByLabelText('CEFR level')).toHaveValue('')
+    expect(screen.getByRole('heading', { name: 'Exam Reports' })).toHaveClass('cba-admin__module-title')
+    expect(screen.getByLabelText('Completed from')).toHaveClass('cba-admin__field')
+  })
+
+  it('formats completed dates using the active language locale', async () => {
+    await i18n.changeLanguage('es')
+    const { rerender } = render(<ReportsScreen />)
+    expect(screen.getByText('10 jul 2026')).toBeInTheDocument()
+
+    await i18n.changeLanguage('en')
+    rerender(<ReportsScreen />)
+    expect(screen.getByText('Jul 10, 2026')).toBeInTheDocument()
   })
 
   it('resets pagination when a filter changes and exports filtered rows', async () => {

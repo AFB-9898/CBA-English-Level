@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react'
 import { describe, it, expect } from 'vitest'
 import LevelBar from '../LevelBar'
 import type { LevelDistributionItem } from '../../../types'
+import i18n from '../../../i18n'
 
 const mockLevels: LevelDistributionItem[] = [
   { level_id: 'l1', name: 'A1', count: 30, percentage: 50 },
@@ -11,6 +12,14 @@ const mockLevels: LevelDistributionItem[] = [
 ]
 
 describe('LevelBar', () => {
+  it('renders Spanish title and empty state', async () => {
+    await i18n.changeLanguage('es')
+    render(<LevelBar levels={[]} loading={false} />)
+
+    expect(screen.getByText('Distribución por Nivel')).toBeInTheDocument()
+    expect(screen.getByText('No hay datos disponibles')).toHaveClass('cba-admin__muted-text')
+  })
+
   it('renders bars with correct labels and counts', () => {
     render(<LevelBar levels={mockLevels} loading={false} />)
 
@@ -30,13 +39,15 @@ describe('LevelBar', () => {
     expect(bars.length).toBeGreaterThanOrEqual(3)
   })
 
-  it('shows empty state when levels array is empty', () => {
+  it('shows empty state when levels array is empty', async () => {
+    await i18n.changeLanguage('en')
     render(<LevelBar levels={[]} loading={false} />)
 
     expect(screen.getByText('No data available')).toBeInTheDocument()
   })
 
-  it('shows skeleton when loading', () => {
+  it('shows skeleton when loading', async () => {
+    await i18n.changeLanguage('en')
     const { container } = render(<LevelBar levels={[]} loading={true} />)
 
     expect(screen.queryByText('No data available')).not.toBeInTheDocument()

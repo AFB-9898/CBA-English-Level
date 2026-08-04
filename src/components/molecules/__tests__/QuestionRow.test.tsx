@@ -1,8 +1,9 @@
 /// <reference types="vitest" />
 import { render, screen, fireEvent } from '@testing-library/react'
-import { describe, it, expect, vi } from 'vitest'
+import { beforeEach, describe, it, expect, vi } from 'vitest'
 import { QuestionTableRow, QuestionCard } from '../QuestionRow'
 import type { QuestionWithLevel } from '../../../types'
+import i18n from '../../../i18n'
 
 const mockQuestion: QuestionWithLevel = {
   id: 'q1',
@@ -13,6 +14,10 @@ const mockQuestion: QuestionWithLevel = {
   updated_at: '2025-07-10T12:00:00Z',
   level: { id: 'l1', name: 'A1', min_score: 0, max_score: 30, description: null },
 }
+
+beforeEach(async () => {
+  await i18n.changeLanguage('en')
+})
 
 describe('QuestionTableRow', () => {
   function renderRow(props = {}) {
@@ -45,9 +50,9 @@ describe('QuestionTableRow', () => {
     expect(screen.getByText('math')).toBeInTheDocument()
   })
 
-  it('renders formatted date', () => {
+  it('renders the date using the active English language', async () => {
     renderRow()
-    const dateStr = new Date('2025-07-10T12:00:00Z').toLocaleDateString()
+    const dateStr = new Intl.DateTimeFormat('en', { dateStyle: 'medium' }).format(new Date('2025-07-10T12:00:00Z'))
     expect(screen.getByText(dateStr)).toBeInTheDocument()
   })
 
@@ -105,6 +110,17 @@ describe('QuestionTableRow', () => {
 })
 
 describe('QuestionCard', () => {
+  it('renders the date using the active Spanish language', async () => {
+    await i18n.changeLanguage('es')
+
+    render(
+      <QuestionCard question={mockQuestion} onEdit={vi.fn()} onDelete={vi.fn()} />,
+    )
+
+    const dateStr = new Intl.DateTimeFormat('es', { dateStyle: 'medium' }).format(new Date('2025-07-10T12:00:00Z'))
+    expect(screen.getByText(dateStr)).toBeInTheDocument()
+  })
+
   it('renders question text', () => {
     render(
       <QuestionCard question={mockQuestion} onEdit={vi.fn()} onDelete={vi.fn()} />,

@@ -19,6 +19,8 @@ describe('ExamConfigurationScreen', () => {
     expect(screen.getByLabelText('Passing score (%)')).toHaveValue(70)
     expect(screen.getByText(/pass\/fail status only/)).toBeInTheDocument()
     expect(screen.getByText(/CEFR level is determined by the active score ranges/)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Exam Configuration' })).toHaveClass('cba-admin__module-title')
+    expect(screen.getByLabelText('Time limit (minutes)')).toHaveClass('cba-admin__field')
   })
 
   it('validates invalid and unchanged submissions without calling the RPC', () => {

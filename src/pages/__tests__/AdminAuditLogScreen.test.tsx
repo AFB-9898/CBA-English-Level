@@ -20,6 +20,8 @@ describe('AdminAuditLogScreen', () => {
     expect(screen.getByLabelText('Administrator')).toHaveValue('')
     expect(screen.getByLabelText('Entity')).toHaveValue('')
     expect(screen.queryByText('before')).not.toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Administrative Audit' })).toHaveClass('cba-admin__module-title')
+    expect(screen.getByLabelText('Administrator')).toHaveClass('cba-admin__field')
   })
 
   it('passes filter changes to the hook and requests the next keyset page', async () => {

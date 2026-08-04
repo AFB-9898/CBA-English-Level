@@ -10,15 +10,22 @@ export default function DashboardScreen() {
 
   if (error) {
     return (
-      <div className="text-center py-12">
-        <p className="text-red-600 font-medium">{t('dashboard.error')}</p>
-        <p className="text-sm text-gray-500 mt-1">{error}</p>
+      <div className="cba-dashboard__error rounded-lg p-5" role="alert">
+        <p className="font-bold">{t('dashboard.error')}</p>
+        <p className="mt-1 text-sm">{error}</p>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6">
+    <div className="cba-dashboard space-y-6">
+      <header className="cba-dashboard__hero">
+        <div>
+          <p className="cba-dashboard__eyebrow">CBA Tarija</p>
+          <h2 className="cba-dashboard__title">{t('dashboard.nav.dashboard')}</h2>
+        </div>
+        <div className="cba-dashboard__rule" aria-hidden="true" />
+      </header>
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard

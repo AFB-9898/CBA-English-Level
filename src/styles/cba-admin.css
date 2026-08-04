@@ -1,0 +1,301 @@
+.cba-admin {
+  --cba-navy: #003366;
+  --cba-institutional-red: #CC0000;
+  --cba-secondary-blue: #0066CC;
+  --cba-light-background: #F5F7FB;
+  --cba-white: #FFFFFF;
+  --cba-primary-text: #10213D;
+  --cba-secondary-text: #667085;
+  --cba-muted-text: #667085;
+  --cba-soft-border: #D9E0EA;
+  --cba-success: #16A34A;
+  --cba-warning: #F59E0B;
+  --cba-error: #DC2626;
+
+  background: var(--cba-light-background);
+  color: var(--cba-primary-text);
+  min-height: 100vh;
+}
+
+.cba-admin__header {
+  background: var(--cba-navy);
+  border-bottom: 3px solid var(--cba-institutional-red);
+  box-shadow: 0 0.5rem 1.5rem rgb(16 33 61 / 16%);
+}
+
+.cba-admin__menu-button,
+.cba-admin__logout,
+.cba-admin .cba-language-switcher {
+  color: var(--cba-white);
+}
+
+.cba-admin__menu-button:hover,
+.cba-admin__menu-button:focus-visible {
+  background: color-mix(in srgb, var(--cba-white) 14%, transparent);
+  color: var(--cba-white);
+}
+
+.cba-admin__title {
+  color: var(--cba-white);
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cba-admin__user {
+  color: color-mix(in srgb, var(--cba-white) 75%, transparent);
+}
+
+.cba-admin__logout {
+  border-left: 1px solid color-mix(in srgb, var(--cba-white) 24%, transparent);
+  font-weight: 700;
+  padding-left: 1rem;
+}
+
+.cba-admin__logout:hover { color: #FECACA; }
+
+.cba-admin .cba-language-switcher {
+  border: 1px solid color-mix(in srgb, var(--cba-white) 36%, transparent);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0.3rem 0.55rem;
+}
+
+.cba-admin .cba-language-switcher:hover {
+  background: var(--cba-white);
+  color: var(--cba-navy);
+}
+
+.cba-admin .cba-language-switcher:focus-visible {
+  box-shadow: 0 0 0 2px var(--cba-white), 0 0 0 4px var(--cba-institutional-red);
+  outline: 0;
+}
+
+.cba-admin__sidebar {
+  background: #082744;
+  border-right: 1px solid color-mix(in srgb, var(--cba-white) 15%, transparent);
+  box-shadow: 0.5rem 0 1.5rem rgb(16 33 61 / 8%);
+}
+
+.cba-admin__navigation { padding: 1.25rem 0.75rem; }
+
+.cba-admin__nav-link {
+  border-left: 3px solid transparent;
+  color: #E7EEF7;
+  letter-spacing: 0.01em;
+}
+
+.cba-admin__nav-link:hover {
+  background: #16466F;
+  color: var(--cba-white);
+}
+
+.cba-admin__nav-link:focus-visible {
+  background: #16466F;
+  box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px var(--cba-institutional-red);
+  color: var(--cba-white);
+  outline: 0;
+}
+
+.cba-admin__nav-link--active {
+  background: #FFFFFF;
+  border-left-color: var(--cba-institutional-red);
+  box-shadow: 0 0.35rem 0.8rem rgb(0 20 48 / 20%);
+  color: var(--cba-navy);
+}
+
+.cba-admin__nav-link--active:focus-visible {
+  box-shadow: 0 0 0 2px #FFFFFF, 0 0 0 4px #DC2626;
+}
+
+.cba-admin__nav-icon {
+  align-items: center;
+  background: #16466F;
+  border: 1px solid #4E769B;
+  border-radius: 0.5rem;
+  color: var(--cba-white);
+  display: inline-flex;
+  height: 2rem;
+  justify-content: center;
+  width: 2rem;
+}
+
+.cba-admin__nav-link--active .cba-admin__nav-icon {
+  background: #DCEAF8;
+  border-color: #A9C8E5;
+  color: var(--cba-navy);
+}
+
+.cba-admin__content { max-width: 96rem; }
+
+/* Shared administrative module presentation. These classes only affect content
+   rendered inside the existing admin shell and do not change interaction logic. */
+.cba-admin__module-header {
+  border-bottom: 1px solid var(--cba-soft-border);
+  padding-bottom: 1rem;
+}
+
+.cba-admin__module-title {
+  color: var(--cba-primary-text);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.cba-admin__module-subtitle { color: var(--cba-secondary-text); }
+.cba-admin__muted-text { color: var(--cba-muted-text); }
+
+.cba-admin__panel,
+.cba-admin__record,
+.cba-admin__table-wrap {
+  background: var(--cba-white);
+  border: 1px solid var(--cba-soft-border);
+  box-shadow: 0 0.75rem 2rem rgb(16 33 61 / 6%);
+}
+
+.cba-admin__panel,
+.cba-admin__record { border-radius: 0.75rem; }
+.cba-admin__table-wrap { border-radius: 0.75rem; }
+
+.cba-admin__field {
+  border-color: var(--cba-soft-border);
+  color: var(--cba-primary-text);
+}
+
+.cba-admin__field:focus {
+  border-color: var(--cba-secondary-blue);
+  box-shadow: 0 0 0 3px rgb(0 102 204 / 18%);
+  outline: 0;
+}
+
+.cba-admin__button {
+  border-radius: 0.5rem;
+  font-weight: 700;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease;
+}
+
+.cba-admin__button:focus-visible,
+.cba-admin__action:focus-visible {
+  box-shadow: 0 0 0 2px var(--cba-white), 0 0 0 4px var(--cba-secondary-blue);
+  outline: 0;
+}
+
+.cba-admin__button--primary { background: var(--cba-navy); }
+.cba-admin__button--primary:hover { background: #004985; }
+.cba-admin__button--secondary { border-color: #A9C8E5; color: var(--cba-navy); }
+.cba-admin__button--secondary:hover { background: #EAF3FC; }
+.cba-admin__button--danger { border-color: #F3B4B4; color: #A41414; }
+.cba-admin__button--danger:hover { background: #FFF1F1; }
+
+.cba-admin__alert { border-left-width: 4px; }
+.cba-admin__alert--error { border-left-color: var(--cba-error); }
+.cba-admin__alert-detail { color: var(--cba-primary-text); }
+.cba-admin__alert--success { border-left-color: var(--cba-success); }
+.cba-admin__alert--notice { border-left-color: var(--cba-secondary-blue); }
+
+.cba-admin__table { color: var(--cba-primary-text); }
+.cba-admin__table thead { background: #F0F5FA; color: #4C6178; }
+.cba-admin__table tbody tr { border-color: #E5EBF2; }
+.cba-admin__table tbody tr:hover { background: #F8FBFE; }
+.cba-admin__action { color: var(--cba-secondary-blue); font-weight: 700; }
+.cba-admin__action:hover { color: var(--cba-navy); text-decoration: underline; }
+.cba-admin__action--danger { color: #B42318; }
+.cba-admin__action--danger:hover { color: #8A1710; }
+
+.cba-admin__badge { background: #EAF3FC; color: var(--cba-navy); }
+.cba-admin__status--active { background: #DCFCE7; color: #166534; }
+.cba-admin__status--inactive { background: #E8EDF5; color: #4B5563; }
+
+@media (max-width: 767px) {
+  .cba-admin__module-header { gap: 0.75rem; }
+  .cba-admin__module-header > .cba-admin__button,
+  .cba-admin__alert > .cba-admin__button { width: 100%; }
+}
+
+.cba-dashboard__hero {
+  align-items: end;
+  border-bottom: 1px solid var(--cba-soft-border);
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 1.25rem;
+}
+
+.cba-dashboard__eyebrow {
+  color: var(--cba-institutional-red);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.cba-dashboard__title {
+  color: var(--cba-primary-text);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  margin: 0.4rem 0 0;
+}
+
+.cba-dashboard__rule {
+  background: var(--cba-institutional-red);
+  height: 0.25rem;
+  width: 3.5rem;
+}
+
+.cba-dashboard__stat-card,
+.cba-dashboard__panel {
+  background: var(--cba-white);
+  border: 1px solid var(--cba-soft-border);
+  box-shadow: 0 0.75rem 2rem rgb(16 33 61 / 6%);
+}
+
+.cba-dashboard__stat-card {
+  border-radius: 0.75rem;
+  min-height: 8.5rem;
+  padding: 1.25rem;
+}
+
+.cba-dashboard__stat-icon {
+  align-items: center;
+  background: color-mix(in srgb, var(--cba-secondary-blue) 10%, var(--cba-white));
+  border-radius: 999px;
+  display: inline-flex;
+  height: 2.5rem;
+  justify-content: center;
+  width: 2.5rem;
+}
+
+.cba-dashboard__stat-value { color: var(--cba-navy); }
+
+.cba-dashboard__panel {
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+}
+
+.cba-dashboard__panel-title {
+  color: var(--cba-primary-text);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.cba-dashboard__bar-track { background: #E8EDF5; }
+.cba-dashboard__bar { background: var(--cba-secondary-blue); }
+.cba-dashboard__status--completed { background: #DCFCE7; color: #166534; }
+.cba-dashboard__status--in-progress { background: #FEF3C7; color: #92400E; }
+.cba-dashboard__status--pending { background: #E8EDF5; color: #4B5563; }
+
+.cba-dashboard__error {
+  background: color-mix(in srgb, var(--cba-error) 8%, var(--cba-white));
+  border-left: 4px solid var(--cba-error);
+  color: var(--cba-primary-text);
+}
+
+@media (max-width: 767px) {
+  .cba-admin__logout { border-left: 0; padding-left: 0; }
+  .cba-dashboard__hero { align-items: start; flex-direction: column; gap: 1rem; }
+}

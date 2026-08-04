@@ -15,7 +15,8 @@
     "logout": "Logout",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
-    "retry": "Try again"
+    "retry": "Try again",
+    "logoutFailed": "Unable to log out. Try again."
   },
   "loginPage": {
     "title": "CBA — Login",

@@ -53,36 +53,36 @@ export default function QuestionsScreen() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <h1 className="text-xl font-semibold text-gray-900">{t('questions.title')}</h1>
+    <div className="cba-admin__module space-y-6">
+      <div className="cba-admin__module-header flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <h1 className="cba-admin__module-title">{t('questions.title')}</h1>
         <button
           onClick={() => navigate('/admin/questions/new')}
-          className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+          className="cba-admin__button cba-admin__button--primary inline-flex items-center justify-center px-4 py-2 text-sm text-white"
         >
           {t('questions.newQuestion')}
         </button>
       </div>
 
       {deleteError && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <div role="alert" className="cba-admin__alert cba-admin__alert--error bg-red-50 border border-red-200 rounded-lg p-4">
           <p className="text-red-700 text-sm font-medium">{deleteError}</p>
         </div>
       )}
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <div role="alert" className="cba-admin__alert cba-admin__alert--error bg-red-50 border border-red-200 rounded-lg p-4">
           <p className="text-red-700 text-sm font-medium">{t('questions.errors.fetchFailed')}</p>
-          <p className="text-red-500 text-xs mt-1">{error}</p>
+          <p className="cba-admin__alert-detail text-xs mt-1">{error}</p>
         </div>
       )}
 
-      <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200 flex flex-col sm:flex-row gap-3">
+      <div className="cba-admin__panel p-4 flex flex-col sm:flex-row gap-3">
         <select
           value={levelFilter}
           onChange={(e) => { setLevelFilter(e.target.value); setPage(1) }}
           disabled={levelsLoading}
-          className="flex-1 min-w-0 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+          className="cba-admin__field flex-1 min-w-0 px-3 py-2 border rounded-lg text-sm bg-white disabled:opacity-50"
         >
           <option value="">{t('questions.form.levelRequired')}</option>
           {levels.map((level) => (
@@ -95,18 +95,18 @@ export default function QuestionsScreen() {
           value={categoryFilter}
           onChange={(e) => { setCategoryFilter(e.target.value); setPage(1) }}
           placeholder={t('questions.form.categoryPlaceholder')}
-          className="flex-1 min-w-0 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="cba-admin__field flex-1 min-w-0 px-3 py-2 border rounded-lg text-sm bg-white"
         />
 
         {(levelFilter || categoryFilter) && (
-          <button onClick={handleClearFilters} className="px-3 py-2 text-sm text-gray-600 hover:text-gray-800 font-medium whitespace-nowrap">
+          <button onClick={handleClearFilters} className="cba-admin__button cba-admin__button--secondary px-3 py-2 text-sm whitespace-nowrap">
             {t('questions.form.cancel', 'Cancel')}
           </button>
         )}
       </div>
 
       {loading && (
-        <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-200">
+        <div className="cba-admin__panel p-5">
           <div className="space-y-2">
             {[1, 2, 3, 4, 5].map((i) => (
               <div key={i} className="h-10 bg-gray-100 rounded animate-pulse" />
@@ -116,10 +116,10 @@ export default function QuestionsScreen() {
       )}
 
       {!loading && questions.length > 0 && (
-        <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-200 overflow-x-auto hidden md:block">
-          <table className="w-full text-sm">
+        <div className="cba-admin__table-wrap p-5 overflow-x-auto hidden md:block">
+          <table className="cba-admin__table w-full text-sm">
             <thead>
-              <tr className="text-left text-gray-500 border-b border-gray-100">
+              <tr className="text-left border-b">
                 <th className="pb-2 font-medium">{t('questions.table.text')}</th>
                 <th className="pb-2 font-medium">{t('questions.table.level')}</th>
                 <th className="pb-2 font-medium">{t('questions.table.category')}</th>
@@ -145,8 +145,8 @@ export default function QuestionsScreen() {
       )}
 
       {!loading && questions.length === 0 && (
-        <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-200 text-center">
-          <p className="text-gray-400 text-sm">{t('questions.table.empty')}</p>
+        <div className="cba-admin__panel p-8 text-center">
+          <p className="cba-admin__muted-text text-sm">{t('questions.table.empty')}</p>
         </div>
       )}
 
@@ -155,7 +155,7 @@ export default function QuestionsScreen() {
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="cba-admin__button cba-admin__button--secondary px-3 py-1.5 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {t('questions.table.previous', 'Previous')}
           </button>
@@ -163,7 +163,7 @@ export default function QuestionsScreen() {
             <button
               key={p}
               onClick={() => setPage(p)}
-              className={`px-3 py-1.5 text-sm font-medium rounded-lg ${p === page ? 'bg-blue-600 text-white' : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50'}`}
+              className={`cba-admin__button px-3 py-1.5 text-sm ${p === page ? 'cba-admin__button--primary text-white' : 'cba-admin__button--secondary border'}`}
             >
               {p}
             </button>
@@ -171,7 +171,7 @@ export default function QuestionsScreen() {
           <button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="cba-admin__button cba-admin__button--secondary px-3 py-1.5 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {t('questions.table.next', 'Next')}
           </button>

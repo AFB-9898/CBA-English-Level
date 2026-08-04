@@ -1,35 +1,66 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { BrowserRouter } from 'react-router-dom'
 import AdminStudentsScreen from '../AdminStudentsScreen'
-import { useAdminStudents } from '../../hooks/useAdminStudents'
+import i18n from '../../i18n'
 
-vi.mock('../../hooks/useAdminStudents', () => ({ useAdminStudents: vi.fn() }))
-const mockUseAdminStudents = vi.mocked(useAdminStudents)
+let rpc: ReturnType<typeof vi.fn>
 
-function base(): ReturnType<typeof useAdminStudents> {
-  return { students: [{ student_id: 'student-1', full_name: 'Ada Student', ci: 'CI-1', email: 'ada@test.local', created_at: '2026-07-01T00:00:00Z' }], loading: false, loadingNextPage: false, error: null, hasNextPage: true, loadNextPage: vi.fn(), refetch: vi.fn() }
-}
+vi.mock('../../lib/supabase', () => ({
+  get supabase() { return { rpc } },
+}))
 
-beforeEach(() => { vi.clearAllMocks(); mockUseAdminStudents.mockReturnValue(base()) })
+beforeEach(async () => {
+  vi.clearAllMocks()
+  await i18n.changeLanguage('en')
+  rpc = vi.fn().mockResolvedValue({
+    data: [{ student_id: 'student-1', full_name: 'Ada Student', ci: 'CI-1', email: 'ada@test.local', created_at: '2026-07-01T00:00:00Z' }],
+    error: null,
+  })
+})
 
 describe('AdminStudentsScreen', () => {
-  it('renders a searchable student projection and links only to detail', async () => {
+  it('renders students returned by the admin student RPC', async () => {
     render(<BrowserRouter><AdminStudentsScreen /></BrowserRouter>)
-    expect(screen.getAllByText('Ada Student')).toHaveLength(2)
+    expect(await screen.findAllByText('Ada Student')).toHaveLength(2)
     expect(screen.getAllByRole('link', { name: 'View profile' })).toHaveLength(2)
     expect(screen.getAllByRole('link', { name: 'View profile' })[0]).toHaveAttribute('href', '/admin/students/student-1')
-    expect(screen.queryByRole('button', { name: /delete/i })).not.toBeInTheDocument()
-    fireEvent.change(screen.getByLabelText('Search students'), { target: { value: 'ada' } })
-    await waitFor(() => expect(mockUseAdminStudents).toHaveBeenLastCalledWith('ada'))
+    expect(rpc).toHaveBeenCalledWith('get_admin_students', {
+      p_search: null,
+      p_cursor_full_name: null,
+      p_cursor_id: null,
+      p_page_size: 26,
+    })
   })
 
-  it('shows load errors and requests the next page', () => {
-    const state = base()
-    mockUseAdminStudents.mockReturnValue({ ...state, error: 'denied' })
+  it('shows the translated error and retry state instead of empty content when the admin student RPC fails', async () => {
+    rpc
+      .mockResolvedValueOnce({ data: null, error: { message: 'RPC unavailable' } })
+      .mockResolvedValueOnce({
+        data: [{ student_id: 'student-1', full_name: 'Ada Student', ci: 'CI-1', email: 'ada@test.local', created_at: '2026-07-01T00:00:00Z' }],
+        error: null,
+      })
+    const user = userEvent.setup()
+
     render(<BrowserRouter><AdminStudentsScreen /></BrowserRouter>)
-    expect(screen.getByRole('alert')).toHaveTextContent('We could not load student data.')
-    fireEvent.click(screen.getByRole('button', { name: 'Load more' }))
-    expect(state.loadNextPage).toHaveBeenCalled()
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('We could not load student data.')
+    expect(screen.getByRole('button', { name: 'Try again' })).toBeVisible()
+    expect(screen.queryByText('No students match this search.')).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Try again' }))
+
+    expect(await screen.findAllByText('Ada Student')).toHaveLength(2)
+    expect(rpc).toHaveBeenCalledTimes(2)
+  })
+
+  it('shows the empty state when the admin student RPC returns no students', async () => {
+    rpc.mockResolvedValue({ data: [], error: null })
+
+    render(<BrowserRouter><AdminStudentsScreen /></BrowserRouter>)
+
+    expect(await screen.findAllByText('No students match this search.')).toHaveLength(2)
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 })

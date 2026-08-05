@@ -12,7 +12,7 @@ The RPC accepts an inclusive completed-date range, assigned CEFR level ID, and e
 
 ## Pagination and exports
 
-Pages are bounded to 1 through 100 rows. Exports request the same filtered RPC with a maximum of 5,000 rows, preventing unbounded downloads. The UI exports exactly the filtered rows returned by that bounded request.
+Pages are bounded to 1 through 100 rows. Exports request the same filtered RPC with a maximum of 5,000 rows, preventing unbounded downloads. The UI exports exactly the filtered rows returned by that bounded request. CSV and XLSX contain only completed date, student full name, CI, exam status, score, and CEFR level code; internal IDs are not exported.
 
 ## Spreadsheet safety
 

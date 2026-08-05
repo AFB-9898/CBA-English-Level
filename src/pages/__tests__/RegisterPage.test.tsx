@@ -53,6 +53,9 @@ describe('RegisterPage', () => {
 
     expect(screen.getByText('Placement Exam')).toBeInTheDocument()
     expect(screen.getByText('Create your profile and discover the English level that fits you.')).toBeInTheDocument()
+    expect(screen.getByText('Your next opportunity starts with the right level.')).toBeInTheDocument()
+    expect(screen.getByText('A placement experience tailored to you')).toBeInTheDocument()
+    expect(screen.getByText('Clear results to guide your first step')).toBeInTheDocument()
     expect(screen.getByTitle('Switch to Spanish')).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'EN' }))
@@ -60,6 +63,9 @@ describe('RegisterPage', () => {
     await waitFor(() => {
       expect(screen.getByText('Examen de colocación')).toBeInTheDocument()
       expect(screen.getByText('Creá tu perfil y descubrí el nivel de inglés adecuado para vos.')).toBeInTheDocument()
+      expect(screen.getByText('Tu próxima oportunidad empieza con el nivel adecuado.')).toBeInTheDocument()
+      expect(screen.getByText('Una evaluación de nivel pensada para vos')).toBeInTheDocument()
+      expect(screen.getByText('Resultados claros para dar tu primer paso')).toBeInTheDocument()
       expect(screen.getByText('CBA — Registro de estudiante')).toBeInTheDocument()
       expect(screen.getAllByRole('img', { name: 'CBA Tarija, banderas de Bolivia y Tarija' })).not.toHaveLength(0)
       expect(screen.getByTitle('Cambiar a inglés')).toBeInTheDocument()
@@ -70,9 +76,18 @@ describe('RegisterPage', () => {
     await waitFor(() => {
       expect(screen.getByText('Placement Exam')).toBeInTheDocument()
       expect(screen.getByText('Create your profile and discover the English level that fits you.')).toBeInTheDocument()
+      expect(screen.getByText('Your next opportunity starts with the right level.')).toBeInTheDocument()
       expect(screen.getByText('CBA — Student Registration')).toBeInTheDocument()
       expect(screen.getByTitle('Switch to Spanish')).toBeInTheDocument()
     })
+  })
+
+  it('keeps the registration panel decorations out of the accessibility tree', () => {
+    const { container } = renderPage()
+
+    expect(container.querySelector('.cba-auth__brand-panel--register')).toBeInTheDocument()
+    expect(container.querySelectorAll('.cba-auth__panel-shape[aria-hidden="true"]')).toHaveLength(2)
+    expect(container.querySelector('.cba-auth__register-benefits')).toBeInTheDocument()
   })
 
   it('shows toast on successful registration', () => {

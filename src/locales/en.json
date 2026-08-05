@@ -37,6 +37,11 @@
     "placementExam": "Placement Exam",
     "loginBrandCopy": "Your English learning journey starts with the right level.",
     "registerBrandCopy": "Create your profile and discover the English level that fits you.",
+    "registerPanelMessage": "Your next opportunity starts with the right level.",
+    "registerBenefits": {
+      "personalized": "A placement experience tailored to you",
+      "immediate": "Clear results to guide your first step"
+    },
     "switchToEnglish": "Switch to English",
     "switchToSpanish": "Switch to Spanish",
     "fullNamePlaceholder": "Juan Perez",

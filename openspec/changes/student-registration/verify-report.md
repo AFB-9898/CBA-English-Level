@@ -70,7 +70,7 @@ Files covering the change:
 | R4: Duplicate Error Handling | ✅ Implemented | `mapAuthError.ts` handles: signup_disabled, email_address_not_valid, duplicate CI (student trigger), duplicate email (User already registered), 23505 unique violation. |
 | R5: Network Error Handling | ✅ Implemented | Fallback in `mapAuthError.ts` returns `{ field: null, message: 'Network error. Please try again.' }`. RegisterForm renders `generalError` as banner. |
 | R6: Navigation Links | ✅ Implemented | LoginPage has `<Link to="/register">Register</Link>`. RegisterForm has "Already have an account?" `<Link to="/login">`. |
-| R7: Responsive Layout | ✅ Implemented | RegisterPage PageShell uses identical Tailwind classes to LoginPage PageShell: `min-h-screen`, `flex items-center justify-center`, `max-w-sm`, `px-4`. Mobile-first responsive. |
+| R7: Responsive Layout | ✅ Implemented | `cba-auth.css` supplies the mobile-first layout: the auth shell is a single-column grid and hides the brand panel by default; at `min-width: 896px` it switches to two columns, shows the panel, and increases main/card padding. |
 
 ### Coherence (Design)
 
@@ -80,7 +80,7 @@ Files covering the change:
 | Separate RegisterForm organism | ✅ Yes | `src/components/organisms/RegisterForm.tsx` — 220 lines, 5 fields + validation + error handling. Clean separation. |
 | Controlled useState + validate() | ✅ Yes | `useState<RegistrationFields>`, `useState<FieldErrors>`, calls `validateRegistration()` on submit. No form library. |
 | mapAuthError() dedicated util | ✅ Yes | `src/utils/mapAuthError.ts` — 40 lines, handles 6 error categories. Matches design interface exactly. |
-| navigate() state for success | ✅ Yes | `onSuccess={() => navigate('/login', { state: { registered: true } })}`. RegisterPage reads via `useLocation().state?.registered`. |
+| Success callback and navigation | ✅ Yes | `RegisterForm` invokes its `onSuccess` callback. `RegisterPage` shows the success `Toast` and navigates to `/login` after 2500 ms; it does not use `useLocation` or route state. |
 | Public route placement | ✅ Yes | `/register` Route is before `<ProtectedRoute>` in App.tsx (line 14), same level as `/login` (line 13). |
 
 ### Issues Found
@@ -99,4 +99,4 @@ Files covering the change:
 
 **PASS WITH WARNINGS (warnings resolved)**
 
-All 10 tasks complete. Build clean, 58/58 tests pass. Code correctly implements all 7 requirements. 9 of 12 scenarios have full test coverage; 2 are partial (unit-only or link-only); 1 is partial (G11 — link verified by href, no click simulation). Both original warnings (G10 and G12) have been resolved with dedicated tests. No critical issues remain.
+All 10 tasks complete. Build clean, 56/56 tests pass. Code correctly implements all 7 requirements. 9 of 12 scenarios have full test coverage; 2 are partial (unit-only or link-only); 1 is partial (G11 — link verified by href, no click simulation). Both original warnings (G10 and G12) have been resolved with dedicated tests. No critical issues remain.

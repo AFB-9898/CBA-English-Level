@@ -1,6 +1,6 @@
 \section{Modelo de Datos}
 
-La base de datos está implementada en \textbf{PostgreSQL 15} administrado por Supabase. El diseño cumple con la \textbf{Tercera Forma Normal (3FN)} y sigue las siguientes convenciones:
+La base de datos está implementada en PostgreSQL administrado por Supabase. El esquema actual contiene \textbf{14 tablas} y cumple con la \textbf{Tercera Forma Normal (3FN)}. Sigue las siguientes convenciones:
 
 \begin{itemize}
     \item Nombres de tablas en singular.
@@ -12,35 +12,76 @@ La base de datos está implementada en \textbf{PostgreSQL 15} administrado por S
 
 \section{Diagrama Entidad-Relación}
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=\textwidth]{imagenes/diagrama-conceptual.png}
-\caption{Diagrama Entidad-Relación (modelo conceptual)}
-\end{figure}
+El ERD vigente de las \textbf{14 tablas} se mantiene como fuente PlantUML en \texttt{database/diagrama-uml.puml}. La secuencia versionada de \texttt{supabase/migrations/} es la autoridad del esquema; el diagrama y el modelo relacional documentan su estado acumulado.
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=\textwidth]{imagenes/diagrama-relacional.png}
-\caption{Diagrama Relacional (tablas con columnas)}
-\end{figure}
-
-\section{Diagrama UML Definitivo}
-
-A partir del diseño conceptual y relacional, se consolidó el esquema final de la base de datos con 10 tablas interconectadas. A continuación se presentan dos versiones del diagrama completo:
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=\textwidth]{imagenes/Imagen-10-Tablas.png}
-\caption{Diagrama visual de las 10 tablas (vista estética)}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=\textwidth]{imagenes/Diagrama-UML-10-Tablas.png}
-\caption{Diagrama UML preciso con columnas, tipos y relaciones (generado con PlantUML)}
-\end{figure}
+\begin{IHBoxInfo}{Consulta del esquema vigente}
+Para revisar las entidades, sus claves y relaciones, renderice \texttt{database/diagrama-uml.puml} con PlantUML o consulte \texttt{database/modelo-relacional.md}. No se incluyen imágenes PNG heredadas porque no representan el esquema vigente.
+\end{IHBoxInfo}
 
 \section{Tablas}
+
+\subsection{Resumen del esquema vigente}
+
+La Tabla \ref{tab:resumen-esquema} presenta las 14 tablas de aplicación y sus relaciones principales. Los perfiles de autenticación de Supabase pertenecen al esquema \texttt{auth} y no se contabilizan como tablas de aplicación.
+
+\begin{longtable}{p{3.5cm} p{5cm} p{5cm}}
+\toprule
+\textbf{Tabla} & \textbf{Propósito} & \textbf{Relaciones principales} \\
+\midrule
+\endhead
+student & Perfil del estudiante autenticado & \texttt{exam} \\
+admin & Perfil del administrador autenticado & \texttt{audit\_log} \\
+level & Versiones de niveles y rangos CEFR & \texttt{question}, \texttt{exam}, \texttt{exam\_level\_snapshot} y autorreferencia histórica \\
+level\_partition\_revision & Revisión singleton de la distribución activa de niveles & Sin clave foránea; coordina el reemplazo atómico de rangos \\
+exam\_config & Configuración singleton del examen & \texttt{exam\_config\_snapshot} \\
+exam\_config\_snapshot & Configuración inmutable aplicada a un intento & \texttt{exam\_config} y \texttt{exam} \\
+question & Banco de preguntas & \texttt{level}, \texttt{question\_option} y \texttt{exam\_question} \\
+question\_option & Opciones del banco de preguntas & \texttt{question} y \texttt{exam\_question\_option} \\
+exam & Intento de examen de un estudiante & \texttt{student}, \texttt{level}, snapshots, preguntas y respuestas \\
+exam\_question & Pregunta asignada a un intento & \texttt{exam}, \texttt{question} y \texttt{exam\_question\_option} \\
+exam\_question\_option & Opción inmutable de una pregunta asignada & \texttt{exam\_question} y \texttt{question\_option} \\
+exam\_level\_snapshot & Nivel inmutable usado para calificar un intento & \texttt{exam} y \texttt{level} \\
+student\_answer & Respuesta registrada durante un intento & \texttt{exam}, pregunta y opciones fuente e inmutables \\
+audit\_log & Auditoría append-only de acciones administrativas & \texttt{admin} \\
+\bottomrule
+\caption{Resumen de las 14 tablas del esquema vigente}
+\label{tab:resumen-esquema}
+\end{longtable}
+
+\subsection{Relaciones y cardinalidades}
+
+La Tabla \ref{tab:relaciones-esquema} detalla las cardinalidades del ERD vigente. Las referencias a \texttt{auth.users} corresponden al esquema de autenticación administrado por Supabase y no agregan tablas de aplicación al conteo anterior.
+
+\begin{longtable}{p{4cm} p{2.5cm} p{7cm}}
+\toprule
+\textbf{Origen y destino} & \textbf{Cardinalidad} & \textbf{Significado} \\
+\midrule
+\endhead
+\texttt{auth.users} -- \texttt{student} & 1 a 0..1 & Un usuario autenticado puede tener un perfil de estudiante. \\
+\texttt{auth.users} -- \texttt{admin} & 1 a 0..1 & Un usuario autenticado puede tener un perfil de administrador. \\
+\texttt{student} -- \texttt{exam} & 1 a N & Un estudiante puede registrar múltiples intentos a lo largo del tiempo. \\
+\texttt{level} -- \texttt{question} & 1 a N & Un nivel clasifica las preguntas del banco. \\
+\texttt{question} -- \texttt{question\_option} & 1 a N & Una pregunta dispone de opciones ordenadas. \\
+\texttt{exam\_config} -- \texttt{exam\_config\_snapshot} & 1 a N & Cada revisión de configuración puede respaldar múltiples snapshots. \\
+\texttt{exam\_config\_snapshot} -- \texttt{exam} & 1 a N & Un snapshot de configuración puede estar asociado a los intentos creados con esa revisión. \\
+\texttt{level} -- \texttt{exam} & 1 a N & Un nivel puede ser el resultado asignado a múltiples exámenes. \\
+\texttt{exam} -- \texttt{exam\_question} & 1 a N & Un intento contiene sus preguntas asignadas y ordenadas. \\
+\texttt{question} -- \texttt{exam\_question} & 1 a N & Una pregunta fuente puede ser seleccionada en diferentes intentos. \\
+\texttt{exam\_question} -- \texttt{exam\_question\_option} & 1 a N & Cada pregunta del intento conserva sus opciones inmutables. \\
+\texttt{question\_option} -- \texttt{exam\_question\_option} & 1 a N & Una opción fuente puede generar snapshots en distintos intentos. \\
+\texttt{exam} -- \texttt{exam\_level\_snapshot} & 1 a N & Un intento conserva los niveles activos usados durante su calificación. \\
+\texttt{level} -- \texttt{exam\_level\_snapshot} & 1 a N & Un nivel fuente puede quedar preservado en varios intentos. \\
+\texttt{exam} -- \texttt{student\_answer} & 1 a N & Un intento agrupa las respuestas del estudiante. \\
+\texttt{question} -- \texttt{student\_answer} & 1 a N & Una pregunta fuente puede tener respuestas en múltiples intentos. \\
+\texttt{exam\_question} -- \texttt{student\_answer} & 1 a N & La respuesta puede referenciar la pregunta snapshot del intento. \\
+\texttt{question\_option} -- \texttt{student\_answer} & 1 a N & La respuesta puede preservar la opción fuente seleccionada. \\
+\texttt{exam\_question\_option} -- \texttt{student\_answer} & 1 a N & La respuesta puede preservar la opción snapshot seleccionada. \\
+\texttt{admin} -- \texttt{audit\_log} & 1 a N & Un administrador puede generar múltiples eventos de auditoría. \\
+\texttt{level} -- \texttt{level} & 1 a N & Un nivel puede estar reemplazado por otro mediante \texttt{supersedes\_level\_id}. \\
+\bottomrule
+\caption{Cardinalidades del esquema relacional vigente}
+\label{tab:relaciones-esquema}
+\end{longtable}
 
 \subsection{student}
 
@@ -52,9 +93,9 @@ Almacena los datos de los estudiantes registrados en el sistema.
 \midrule
 \endhead
 id & UUID & PK & Identificador único \\
-ci & VARCHAR(20) & NOT NULL, UNIQUE & Carnet de Identidad (login) \\
+ci & VARCHAR(20) & NOT NULL, UNIQUE & Carnet de Identidad (dato de perfil) \\
 full\_name & VARCHAR(200) & NOT NULL & Nombre completo \\
-email & VARCHAR(200) & NOT NULL, UNIQUE & Correo electrónico (login alterno) \\
+email & VARCHAR(200) & NOT NULL, UNIQUE & Correo electrónico de la cuenta Auth \\
 phone & VARCHAR(20) & NULLABLE & Teléfono de contacto \\
 created\_at & TIMESTAMPTZ & NOT NULL & Fecha de registro \\
 \bottomrule
@@ -92,8 +133,27 @@ name & VARCHAR(100) & NOT NULL & Nombre del nivel \\
 min\_score & INTEGER & NOT NULL, CHECK($\ge$ 0) & Puntaje mínimo \\
 max\_score & INTEGER & NOT NULL & Puntaje máximo \\
 description & TEXT & NULLABLE & Descripción del nivel \\
+code & VARCHAR(10) & NOT NULL & Código CEFR \\
+version & INTEGER & NOT NULL & Versión positiva del nivel \\
+is\_active & BOOLEAN & NOT NULL & Indica la versión activa \\
+supersedes\_level\_id & UUID & FK $\rightarrow$ level.id, NULLABLE & Versión anterior reemplazada \\
 \bottomrule
 \caption{Tabla \texttt{level}}
+\end{longtable}
+
+\subsection{level\_partition\_revision}
+
+Mantiene la revisión singleton que serializa los cambios de la distribución activa de rangos CEFR.
+
+\begin{longtable}{l l l p{5cm}}
+\toprule
+\textbf{Columna} & \textbf{Tipo} & \textbf{Restricción} & \textbf{Descripción} \\
+\midrule
+\endhead
+id & BOOLEAN & PK, siempre TRUE & Identificador de la única fila \\
+revision & BIGINT & NOT NULL, CHECK($>$ 0) & Revisión de concurrencia de la partición \\
+\bottomrule
+\caption{Tabla \texttt{level\_partition\_revision}}
 \end{longtable}
 
 \newpage
@@ -135,11 +195,11 @@ order & INTEGER & NOT NULL, CHECK($\ge$ 0) & Orden de la opción \\
 \caption{Tabla \texttt{question\_option}}
 \end{longtable}
 
-\textbf{Restricciones adicionales:} UNIQUE(question\_id, order) evita opciones duplicadas en una pregunta. Cada pregunta debe tener exactamente una opción correcta.
+\textbf{Restricciones adicionales:} UNIQUE(question\_id, order) evita opciones duplicadas en una pregunta. La condición de al menos dos opciones y exactamente una correcta se valida en \texttt{start\_exam} al seleccionar preguntas para un nuevo intento; no existe una restricción general de tabla que fuerce esa condición en todo momento.
 
 \subsection{exam\_config}
 
-Configuración global del examen. Funciona como \textit{singleton} — una sola fila activa define los parámetros del sistema.
+Configuración global del examen. Funciona como \textit{singleton} \textemdash{} una sola fila activa define los parámetros del sistema.
 
 \begin{longtable}{l l l p{5cm}}
 \toprule
@@ -151,6 +211,9 @@ time\_limit\_minutes & INTEGER & NOT NULL, CHECK($>$ 0) & Tiempo límite en minu
 questions\_per\_exam & INTEGER & NOT NULL, CHECK($>$ 0) & Cantidad de preguntas por examen \\
 passing\_score & INTEGER & NOT NULL, CHECK(0-100) & Puntaje mínimo de aprobación (\%) \\
 updated\_at & TIMESTAMPTZ & NOT NULL & Fecha de modificación \\
+singleton & BOOLEAN & NOT NULL, UNIQUE & Identifica la única configuración vigente \\
+revision & BIGINT & NOT NULL & Revisión con incremento controlado \\
+question\_selection\_rule & TEXT & NOT NULL & Regla fija \texttt{random\_all\_questions} \\
 \bottomrule
 \caption{Tabla \texttt{exam\_config}}
 \end{longtable}
@@ -174,6 +237,9 @@ score & INTEGER & NULLABLE, CHECK($\ge$ 0) & Puntaje obtenido (\%) \\
 level\_id & UUID & FK $\rightarrow$ level.id, NULLABLE & Nivel asignado \\
 status & exam\_status & NOT NULL, DEFAULT 'pending' & Estado del examen \\
 created\_at & TIMESTAMPTZ & NOT NULL & Fecha de creación \\
+config\_snapshot\_id & UUID & FK $\rightarrow$ exam\_config\_snapshot.id, NULLABLE & Configuración congelada del intento \\
+start\_request\_id & UUID & UNIQUE por estudiante, NULLABLE & Identificador idempotente de inicio \\
+deadline\_at & TIMESTAMPTZ & NULLABLE & Límite calculado desde el snapshot \\
 \bottomrule
 \caption{Tabla \texttt{exam}}
 \end{longtable}
@@ -182,7 +248,7 @@ created\_at & TIMESTAMPTZ & NOT NULL & Fecha de creación \\
 
 \subsection{exam\_question}
 
-Relación muchos-a-muchos entre examen y preguntas. Define qué preguntas específicas tuvo cada examen y en qué orden.
+Registra las preguntas específicas asignadas a cada examen, su orden y el texto snapshot usado durante el intento.
 
 \begin{longtable}{l l l p{5cm}}
 \toprule
@@ -193,6 +259,8 @@ id & UUID & PK & Identificador único \\
 exam\_id & UUID & FK $\rightarrow$ exam.id, NOT NULL & Examen asociado \\
 question\_id & UUID & FK $\rightarrow$ question.id, NOT NULL & Pregunta asociada \\
 order & INTEGER & NOT NULL, CHECK($\ge$ 0) & Orden de la pregunta \\
+question\_text & TEXT & NULLABLE & Enunciado congelado para el intento \\
+question\_category & VARCHAR(100) & NULLABLE & Categoría congelada para el intento \\
 \bottomrule
 \caption{Tabla \texttt{exam\_question}}
 \end{longtable}
@@ -212,6 +280,8 @@ id & UUID & PK & Identificador único \\
 exam\_id & UUID & FK $\rightarrow$ exam.id, NOT NULL & Examen asociado \\
 question\_id & UUID & FK $\rightarrow$ question.id, NOT NULL & Pregunta asociada \\
 selected\_option\_id & UUID & FK $\rightarrow$ question\_option.id & Opción seleccionada \\
+exam\_question\_id & UUID & FK $\rightarrow$ exam\_question.id, NULLABLE & Pregunta snapshot respondida \\
+selected\_exam\_question\_option\_id & UUID & FK $\rightarrow$ exam\_question\_option.id, NULLABLE & Opción snapshot seleccionada \\
 is\_correct & BOOLEAN & NULLABLE & Indica si es correcta \\
 answered\_at & TIMESTAMPTZ & DEFAULT NOW() & Fecha de respuesta \\
 \bottomrule
@@ -240,96 +310,69 @@ created\_at & TIMESTAMPTZ & NOT NULL & Fecha de la acción \\
 \caption{Tabla \texttt{audit\_log}}
 \end{longtable}
 
-\section{Funciones SQL}
+\subsection{exam\_config\_snapshot}
 
-\subsection{Cálculo de Nivel}
+Conserva la revisión de configuración aplicada a un intento: configuración fuente, revisión, límite de tiempo, cantidad de preguntas, puntaje de aprobación y regla de selección. Sus filas no se pueden actualizar ni eliminar.
 
-Determina el nivel de inglés correspondiente a un puntaje obtenido:
+\begin{longtable}{l l l p{5cm}}
+\toprule
+\textbf{Columna} & \textbf{Tipo} & \textbf{Restricción} & \textbf{Descripción} \\
+\midrule
+\endhead
+id & UUID & PK & Identificador único \\
+source\_config\_id & UUID & FK $\rightarrow$ exam\_config.id, NOT NULL & Configuración de origen \\
+source\_revision & BIGINT & NOT NULL & Revisión de la configuración de origen \\
+time\_limit\_minutes & INTEGER & NOT NULL & Límite de tiempo congelado \\
+questions\_per\_exam & INTEGER & NOT NULL & Cantidad de preguntas congelada \\
+passing\_score & INTEGER & NOT NULL & Puntaje de aprobación congelado \\
+question\_selection\_rule & TEXT & NOT NULL & Regla de selección congelada \\
+created\_at & TIMESTAMPTZ & NOT NULL & Fecha de creación del snapshot \\
+\bottomrule
+\caption{Tabla \texttt{exam\_config\_snapshot}}
+\end{longtable}
 
-\begin{lstlisting}[language=PostgreSQL, caption=Función \texttt{fn\_calculate\_level}]
-CREATE OR REPLACE FUNCTION fn_calculate_level(p_score INTEGER)
-RETURNS UUID AS $$
-DECLARE
-    v_level_id UUID;
-BEGIN
-    SELECT id INTO v_level_id
-    FROM level
-    WHERE p_score BETWEEN min_score AND max_score
-    ORDER BY min_score ASC
-    LIMIT 1;
+\subsection{exam\_question\_option}
 
-    RETURN v_level_id;
-END;
-$$ LANGUAGE plpgsql STABLE;
-\end{lstlisting}
+Conserva las opciones de cada \texttt{exam\_question}, incluidos texto, orden y corrección. Las opciones snapshot son inmutables y no se exponen al estudiante con su marca de corrección.
 
-\subsection{Selección Aleatoria de Preguntas}
+\begin{longtable}{l l l p{5cm}}
+\toprule
+\textbf{Columna} & \textbf{Tipo} & \textbf{Restricción} & \textbf{Descripción} \\
+\midrule
+\endhead
+id & UUID & PK & Identificador único \\
+exam\_question\_id & UUID & FK $\rightarrow$ exam\_question.id, NOT NULL & Pregunta asignada al intento \\
+source\_option\_id & UUID & FK $\rightarrow$ question\_option.id, NOT NULL & Opción de origen \\
+option\_text & TEXT & NOT NULL & Texto congelado de la opción \\
+order & INTEGER & NOT NULL, CHECK($\ge$ 0) & Orden dentro de la pregunta del intento \\
+is\_correct & BOOLEAN & NOT NULL & Corrección preservada para la calificación \\
+\bottomrule
+\caption{Tabla \texttt{exam\_question\_option}}
+\end{longtable}
 
-Selecciona preguntas al azar del banco para conformar un examen:
+\subsection{exam\_level\_snapshot}
 
-\begin{lstlisting}[language=PostgreSQL, caption=Función \texttt{fn\_get\_random\_questions}]
-CREATE OR REPLACE FUNCTION fn_get_random_questions(p_count INTEGER)
-RETURNS TABLE (id UUID) AS $$
-BEGIN
-    RETURN QUERY
-    SELECT q.id
-    FROM question q
-    ORDER BY RANDOM()
-    LIMIT p_count;
-END;
-$$ LANGUAGE plpgsql STABLE;
-\end{lstlisting}
+Conserva por intento el código, nombre, versión y rango de cada nivel CEFR activo. La calificación final consulta este snapshot, por lo que cambios posteriores de niveles no alteran resultados históricos.
 
-\subsection{Finalización de Examen}
+\begin{longtable}{l l l p{5cm}}
+\toprule
+\textbf{Columna} & \textbf{Tipo} & \textbf{Restricción} & \textbf{Descripción} \\
+\midrule
+\endhead
+id & UUID & PK & Identificador único \\
+exam\_id & UUID & FK $\rightarrow$ exam.id, NOT NULL & Intento al que pertenece \\
+source\_level\_id & UUID & FK $\rightarrow$ level.id, NOT NULL & Nivel de origen \\
+code & VARCHAR(10) & NOT NULL & Código CEFR congelado \\
+name & VARCHAR(100) & NOT NULL & Nombre del nivel congelado \\
+version & INTEGER & NOT NULL & Versión del nivel congelada \\
+min\_score & INTEGER & NOT NULL & Límite inferior congelado \\
+max\_score & INTEGER & NOT NULL & Límite superior congelado \\
+\bottomrule
+\caption{Tabla \texttt{exam\_level\_snapshot}}
+\end{longtable}
 
-Calcula el puntaje final, asigna el nivel y actualiza el registro del examen:
+\section{Funciones SQL y reglas críticas}
 
-\begin{lstlisting}[language=PostgreSQL, caption=Función \texttt{fn\_complete\_exam}]
-CREATE OR REPLACE FUNCTION fn_complete_exam(p_exam_id UUID)
-RETURNS TABLE (score INTEGER, level_id UUID, level_name VARCHAR) AS $$
-DECLARE
-    v_score     INTEGER;
-    v_level_id  UUID;
-    v_level_name VARCHAR;
-    v_total     INTEGER;
-    v_correct   INTEGER;
-BEGIN
-    -- Contar respuestas correctas
-    SELECT COUNT(*) INTO v_correct
-    FROM student_answer sa
-    WHERE sa.exam_id = p_exam_id AND sa.is_correct = TRUE;
+El acceso del estudiante al ciclo de examen se realiza por las RPC \texttt{start\_exam}, \texttt{get\_exam\_attempt}, \texttt{save\_exam\_answer} y \texttt{submit\_exam}. \texttt{start\_exam} serializa la creación por estudiante, devuelve un intento en curso cuando existe y rechaza un nuevo intento si ya hay uno completado en la fecha de negocio CBA, calculada con \texttt{America/La\_Paz}. También exige que haya suficientes preguntas elegibles: cada una debe tener al menos dos opciones y exactamente una correcta.
 
-    SELECT COUNT(*) INTO v_total
-    FROM student_answer sa
-    WHERE sa.exam_id = p_exam_id;
-
-    -- Calcular porcentaje
-    v_score := ROUND((v_correct::NUMERIC / v_total) * 100);
-
-    -- Obtener nivel
-    SELECT l.id, l.name INTO v_level_id, v_level_name
-    FROM level l
-    WHERE v_score BETWEEN l.min_score AND l.max_score
-    ORDER BY l.min_score ASC
-    LIMIT 1;
-
-    -- Actualizar examen
-    UPDATE exam
-    SET score = v_score,
-        level_id = v_level_id,
-        completed_at = NOW(),
-        status = 'completed'
-    WHERE id = p_exam_id;
-
-    RETURN QUERY SELECT v_score, v_level_id, v_level_name;
-END;
-$$ LANGUAGE plpgsql;
-\end{lstlisting}
-
-\section{Triggers}
-
-\begin{itemize}
-    \item \textbf{trg\_check\_daily\_exam}: Impide que un estudiante rinda más de un examen por día. Se ejecuta antes de INSERT en la tabla \texttt{exam}.
-    \item \textbf{trg\_prevent\_historical\_change}: Impide modificar respuestas de un examen que ya fue completado. Se ejecuta antes de UPDATE en \texttt{student\_answer}.
-    \item \textbf{trg\_question\_updated\_at}: Actualiza automáticamente la columna \texttt{updated\_at} en \texttt{question}.
-\end{itemize}
+La entrega calcula el porcentaje sobre los snapshots de preguntas y opciones, asigna el nivel desde \texttt{exam\_level\_snapshot} y marca el examen como completado. Los triggers impiden cambiar o eliminar snapshots, exámenes finalizados y respuestas de exámenes finalizados; la configuración vigente tampoco puede eliminarse.

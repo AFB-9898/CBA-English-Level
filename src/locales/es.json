@@ -37,6 +37,11 @@
     "placementExam": "Examen de colocación",
     "loginBrandCopy": "Tu recorrido de aprendizaje de inglés comienza con el nivel adecuado.",
     "registerBrandCopy": "Creá tu perfil y descubrí el nivel de inglés adecuado para vos.",
+    "registerPanelMessage": "Tu próxima oportunidad empieza con el nivel adecuado.",
+    "registerBenefits": {
+      "personalized": "Una evaluación de nivel pensada para vos",
+      "immediate": "Resultados claros para dar tu primer paso"
+    },
     "switchToEnglish": "Cambiar a inglés",
     "switchToSpanish": "Cambiar a español",
     "fullNamePlaceholder": "Juan Pérez",

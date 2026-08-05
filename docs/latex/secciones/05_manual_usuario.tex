@@ -16,41 +16,23 @@ El estudiante debe registrarse en el sistema proporcionando los siguientes datos
     \item Teléfono (opcional)
 \end{itemize}
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.7\textwidth]{imagenes/registro.png}
-\caption{Pantalla de registro de estudiante}
-\end{figure}
+La pantalla de registro muestra estos campos y un enlace al inicio de sesión. El CI es obligatorio como dato de perfil; no se utiliza para iniciar sesión ni la interfaz anuncia una verificación externa del registro.
 
 \subsection{Inicio de Sesión}
 
-El estudiante puede iniciar sesión ingresando su CI o correo electrónico junto con su contraseña.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.7\textwidth]{imagenes/login.png}
-\caption{Pantalla de inicio de sesión}
-\end{figure}
+El estudiante puede iniciar sesión ingresando su correo electrónico y contraseña. El sistema no ofrece inicio de sesión con Google ni con otros proveedores externos.
 
 \subsection{Rendir Examen}
 
 Una vez autenticado, el estudiante puede solicitar un nuevo examen. El sistema presenta las preguntas de forma aleatoria con un temporizador visible. Al agotarse el tiempo, el examen se envía automáticamente.
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.7\textwidth]{imagenes/mockup.png}
-\caption{Pantalla principal del examen}
-\end{figure}
+La pantalla del examen muestra el progreso de respuestas, el temporizador, la navegación numerada entre preguntas, las opciones de la pregunta activa y los controles Anterior, Siguiente y Entregar examen. Cada respuesta se guarda durante el intento.
 
 \subsection{Resultado}
 
 Al finalizar el examen, el sistema muestra el puntaje obtenido y el nivel de inglés asignado de forma inmediata.
 
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.7\textwidth]{imagenes/resultado.png}
-\caption{Pantalla de resultado del examen}
-\end{figure}
+El resultado presenta el porcentaje y el código y nombre del nivel CEFR asignado. No muestra un estado de aprobado o reprobado.
 
 \section{Módulo Administrador}
 
@@ -60,13 +42,7 @@ El administrador accede al panel de administración mediante un inicio de sesió
 
 \subsection{Dashboard}
 
-El dashboard principal muestra estadísticas generales del sistema: cantidad de estudiantes registrados, exámenes rendidos, distribución de niveles y actividad reciente.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.7\textwidth]{imagenes/dashboard.png}
-\caption{Dashboard administrativo}
-\end{figure}
+El dashboard principal muestra cuatro indicadores: total de estudiantes, total de exámenes, exámenes del día y puntaje promedio. También presenta barras de distribución por nivel y una tabla de exámenes recientes con estudiante, puntaje, nivel, estado y fecha de finalización.
 
 \subsection{Gestión de Preguntas}
 
@@ -74,7 +50,7 @@ El administrador puede crear, editar y eliminar preguntas. Cada pregunta incluye
 
 \begin{itemize}
     \item Enunciado de la pregunta.
-    \item Cuatro opciones de respuesta (con una correcta).
+    \item Entre cuatro y diez opciones de respuesta, con una correcta.
     \item Nivel de inglés asociado.
     \item Categoría opcional (grammar, vocabulary, reading).
 \end{itemize}
@@ -104,15 +80,17 @@ El administrador puede modificar los parámetros globales del examen:
 El sistema permite exportar reportes en los siguientes formatos:
 
 \begin{itemize}
-    \item \textbf{CSV}: Datos de estudiantes, exámenes y resultados.
-    \item \textbf{Excel}: Reportes detallados con formato profesional.
+    \item \textbf{CSV}: Filas del reporte filtrado.
+    \item \textbf{Excel}: Las mismas filas del reporte filtrado.
 \end{itemize}
 
-Los reportes incluyen:
+Cada archivo contiene exactamente los siguientes campos:
 
 \begin{itemize}
-    \item Listado de estudiantes registrados.
-    \item Historial de exámenes por estudiante.
-    \item Distribución de niveles alcanzados.
-    \item Estadísticas de aprobación por período.
+    \item Fecha de finalización.
+    \item Nombre completo del estudiante.
+    \item CI del estudiante.
+    \item Estado del examen.
+    \item Puntaje.
+    \item Nivel CEFR.
 \end{itemize}

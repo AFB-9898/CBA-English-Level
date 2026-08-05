@@ -99,4 +99,13 @@ It starts the checkout's Docker stack, inserts disposable markers and a managed-
 
 The HMAC authenticates the manifest and its dump SHA-256 checksum before every restore. Protect and rotate the HMAC key separately from backups: losing it makes existing backups intentionally unverifiable. HMAC does not provide encrypted-at-rest backups; use separately managed encrypted storage when that is required.
 
-To disable the scheduler, run `sudo systemctl disable --now cba-supabase-backup.timer`; existing backups remain untouched. Removing only `scripts/backup-daily.sh`, `scripts/restore-backup-local.sh`, `scripts/verify-backup-local.sh`, `deploy/systemd/cba-supabase-backup.*`, and this guide rolls back this capability without changing application or database behavior.
+To roll back the scheduler, first disable and stop the installed timer, then stop the service in case it was started manually:
+
+```bash
+sudo systemctl disable --now cba-supabase-backup.timer
+sudo systemctl stop cba-supabase-backup.service
+sudo rm /etc/systemd/system/cba-supabase-backup.service /etc/systemd/system/cba-supabase-backup.timer
+sudo systemctl daemon-reload
+```
+
+The service is a static `Type=oneshot` unit and therefore has no `[Install]` section to disable separately. Existing backups remain untouched. After disabling the installed units, removing `scripts/backup-daily.sh`, `scripts/restore-backup-local.sh`, `scripts/verify-backup-local.sh`, `deploy/systemd/cba-supabase-backup.*`, and this guide rolls back this capability without changing application or database behavior.

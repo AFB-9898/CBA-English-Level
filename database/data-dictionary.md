@@ -1,186 +1,148 @@
-# Diccionario de Datos — CBA English Level
+# Diccionario de datos
 
-> Sistema de Exámenes de Colocación — Centro Boliviano Americano
+Estado acumulado de las migraciones `001` a `016`. Las tablas usan nombres singulares, `snake_case`, UUID como clave primaria y `TIMESTAMPTZ` para instantes. Las referencias a `auth.users` son de identidad lógica: el trigger de registro sincroniza `student.id` con el usuario autenticado.
 
----
+## Identidad y administración
 
-## Convenciones
+### `student`
 
-- Nombres de tablas en **singular**
-- Nombres de columnas en **snake_case**
-- Clave primaria: `id` (UUID)
-- Claves foráneas: `tabla_id` (ej: `student_id`, `level_id`)
-- `TIMESTAMPTZ` para campos de fecha/hora
+| Columna | Tipo | Restricción | Descripción |
+|---|---|---|---|
+| `id` | UUID | PK | Identificador del estudiante y usuario Auth. |
+| `ci` | VARCHAR(20) | NOT NULL, UNIQUE | Documento de identidad. |
+| `full_name` | VARCHAR(200) | NOT NULL | Nombre completo. |
+| `email` | VARCHAR(200) | NOT NULL, UNIQUE | Correo de la cuenta. |
+| `phone` | VARCHAR(20) | Nullable | Teléfono; edición administrativa limitada. |
+| `created_at` | TIMESTAMPTZ | NOT NULL, default `now()` | Registro del perfil. |
 
----
+### `admin`
 
-## Tablas
+| Columna | Tipo | Restricción | Descripción |
+|---|---|---|---|
+| `id` | UUID | PK | Identificador del administrador y usuario Auth. |
+| `email` | VARCHAR(200) | NOT NULL, UNIQUE | Correo del administrador. |
+| `full_name` | VARCHAR(200) | NOT NULL | Nombre para UI y auditoría. |
+| `created_at` | TIMESTAMPTZ | NOT NULL, default `now()` | Registro del perfil. |
 
-### student
+### `audit_log`
 
-Registro de estudiantes que rinden el examen.
+| Columna | Tipo | Restricción | Descripción |
+|---|---|---|---|
+| `id` | UUID | PK | Evento de auditoría. |
+| `admin_id` | UUID | FK `admin.id`, nullable | Actor, o nulo para sistema. |
+| `action` | VARCHAR(100) | NOT NULL | Acción auditada. |
+| `entity` | VARCHAR(100) | NOT NULL | Entidad afectada. |
+| `entity_id` | UUID | Nullable | Registro afectado. |
+| `details` | JSONB | Nullable | Datos internos antes/después; no se proyectan a clientes. |
+| `created_at` | TIMESTAMPTZ | NOT NULL, default `now()` | Instante del evento. |
 
-| Columna     | Tipo          | Restricciones              | Descripción                        |
-|-------------|---------------|----------------------------|------------------------------------|
-| id          | UUID          | PK, DEFAULT gen_random_uuid | Identificador único                |
-| ci          | VARCHAR(20)   | NOT NULL, UNIQUE            | Carnet de Identidad (login)        |
-| full_name   | VARCHAR(200)  | NOT NULL                    | Nombre completo del estudiante     |
-| email       | VARCHAR(200)  | NOT NULL, UNIQUE            | Correo electrónico (login alterno) |
-| phone       | VARCHAR(20)   | NULLABLE                    | Teléfono de contacto               |
-| created_at  | TIMESTAMPTZ   | NOT NULL, DEFAULT NOW()     | Fecha de registro                  |
+## Catálogos y configuración
 
-### admin
+### `level`
 
-Administradores del sistema.
+| Columna | Tipo | Restricción | Descripción |
+|---|---|---|---|
+| `id` | UUID | PK | Versión concreta de nivel CEFR. |
+| `code` | VARCHAR(10) | NOT NULL | Código CEFR, por ejemplo A1. |
+| `name` | VARCHAR(100) | NOT NULL | Nombre mostrado. |
+| `min_score`, `max_score` | INTEGER | 0..100, `min_score <= max_score` | Rango de puntaje. |
+| `description` | TEXT | Nullable | Descripción del nivel. |
+| `version` | INTEGER | NOT NULL, >= 1 | Versión histórica del código. |
+| `is_active` | BOOLEAN | NOT NULL | Participa en la distribución actual. |
+| `supersedes_level_id` | UUID | FK `level.id`, nullable | Versión que reemplaza. |
 
-| Columna     | Tipo          | Restricciones              | Descripción                        |
-|-------------|---------------|----------------------------|------------------------------------|
-| id          | UUID          | PK, DEFAULT gen_random_uuid | Identificador único                |
-| email       | VARCHAR(200)  | NOT NULL, UNIQUE            | Correo electrónico (login)         |
-| full_name   | VARCHAR(200)  | NOT NULL                    | Nombre completo del administrador  |
-| created_at  | TIMESTAMPTZ   | NOT NULL, DEFAULT NOW()     | Fecha de registro                  |
+`(code, version)` es único y solo puede existir una versión activa por código. Los niveles activos cubren 0..100 sin huecos ni solapamientos.
 
-### level
+### `level_partition_revision`
 
-Niveles de inglés según puntaje (basado en MCERL).
+| Columna | Tipo | Restricción | Descripción |
+|---|---|---|---|
+| `id` | BOOLEAN | PK, siempre `true` | Fila singleton. |
+| `revision` | BIGINT | NOT NULL, > 0 | Control de concurrencia de distribución. |
 
-| Columna     | Tipo          | Restricciones              | Descripción                        |
-|-------------|---------------|----------------------------|------------------------------------|
-| id          | UUID          | PK, DEFAULT gen_random_uuid | Identificador único                |
-| name        | VARCHAR(100)  | NOT NULL                    | Nombre del nivel (Beginner, Elementary, etc.) |
-| min_score   | INTEGER       | NOT NULL, CHECK(>=0)       | Puntaje mínimo para este nivel     |
-| max_score   | INTEGER       | NOT NULL, CHECK(>min_score) | Puntaje máximo para este nivel     |
-| description | TEXT          | NULLABLE                    | Descripción del nivel              |
+### `exam_config`
 
-### exam_config
+| Columna | Tipo | Restricción | Descripción |
+|---|---|---|---|
+| `id` | UUID | PK | Configuración actual. |
+| `singleton` | BOOLEAN | UNIQUE, siempre `true` | Garantiza una única configuración. |
+| `revision` | BIGINT | NOT NULL, > 0 | Revisión optimista. |
+| `time_limit_minutes` | INTEGER | > 0 | Tiempo del intento. |
+| `questions_per_exam` | INTEGER | > 0 | Cantidad solicitada. |
+| `passing_score` | INTEGER | 0..100 | Puntaje de aprobación configurado; no genera estado actual. |
+| `question_selection_rule` | TEXT | `random_all_questions` | Regla de selección vigente. |
+| `updated_at` | TIMESTAMPTZ | NOT NULL | Última actualización. |
 
-Configuración global del examen (singleton).
+### `exam_config_snapshot`
 
-| Columna              | Tipo          | Restricciones              | Descripción                        |
-|----------------------|---------------|----------------------------|------------------------------------|
-| id                   | UUID          | PK, DEFAULT gen_random_uuid | Identificador único                |
-| time_limit_minutes   | INTEGER       | NOT NULL, CHECK(>0)        | Tiempo límite en minutos           |
-| questions_per_exam   | INTEGER       | NOT NULL, CHECK(>0)        | Cantidad de preguntas por examen   |
-| passing_score        | INTEGER       | NOT NULL, CHECK(0-100)     | Puntaje mínimo para aprobar (%)    |
-| updated_at           | TIMESTAMPTZ   | NOT NULL, DEFAULT NOW()    | Fecha de última modificación       |
+| Columna | Tipo | Restricción | Descripción |
+|---|---|---|---|
+| `id` | UUID | PK | Snapshot de una revisión. |
+| `source_config_id`, `source_revision` | UUID, BIGINT | FK y UNIQUE conjunto | Configuración que originó el snapshot. |
+| `time_limit_minutes`, `questions_per_exam`, `passing_score` | INTEGER | Valores validados | Valores usados por el intento. |
+| `question_selection_rule` | TEXT | `random_all_questions` | Regla congelada. |
+| `created_at` | TIMESTAMPTZ | default `now()` | Creación. |
 
-### question
+No admite `UPDATE` ni `DELETE`.
 
-Preguntas del banco de examen.
+### `question` y `question_option`
 
-| Columna     | Tipo          | Restricciones              | Descripción                        |
-|-------------|---------------|----------------------------|------------------------------------|
-| id          | UUID          | PK, DEFAULT gen_random_uuid | Identificador único                |
-| text        | TEXT          | NOT NULL                    | Enunciado de la pregunta           |
-| level_id    | UUID          | FK → level.id, NOT NULL    | Nivel al que pertenece             |
-| category    | VARCHAR(100)  | NULLABLE                    | Categoría (grammar, vocabulary, reading, etc.) |
-| created_at  | TIMESTAMPTZ   | NOT NULL, DEFAULT NOW()    | Fecha de creación                  |
-| updated_at  | TIMESTAMPTZ   | NOT NULL, DEFAULT NOW()    | Fecha de última modificación       |
+| Tabla | Columnas relevantes | Restricciones |
+|---|---|---|
+| `question` | `id`, `text`, `level_id`, `category`, `created_at`, `updated_at` | `level_id` FK; texto obligatorio. |
+| `question_option` | `id`, `question_id`, `text`, `is_correct`, `order` | `(question_id, order)` único; orden >= 0. |
 
-### question_option
+El inicio de examen solo selecciona preguntas con al menos dos opciones y exactamente una marcada correcta. La UI administrativa exige de cuatro a diez opciones, pero esa cardinalidad no es una restricción SQL general.
 
-Opciones de respuesta para cada pregunta.
+## Intentos y snapshots
 
-| Columna      | Tipo          | Restricciones              | Descripción                        |
-|--------------|---------------|----------------------------|------------------------------------|
-| id           | UUID          | PK, DEFAULT gen_random_uuid | Identificador único                |
-| question_id  | UUID          | FK → question.id, NOT NULL | Pregunta asociada                  |
-| text         | TEXT          | NOT NULL                    | Texto de la opción                 |
-| is_correct   | BOOLEAN       | NOT NULL, DEFAULT FALSE    | Indica si es la respuesta correcta |
-| order        | INTEGER       | NOT NULL, CHECK(>=0)       | Orden de la opción (0, 1, 2, 3)    |
+### `exam`
 
-**Restricciones adicionales:**
-- UNIQUE(question_id, order) — evita opciones duplicadas en una pregunta
-- Cada pregunta debe tener exactamente una opción con is_correct = TRUE (se valida desde el frontend/backend)
+| Columna | Tipo | Restricción | Descripción |
+|---|---|---|---|
+| `id` | UUID | PK | Intento. |
+| `student_id` | UUID | FK `student.id` | Propietario. |
+| `config_snapshot_id` | UUID | FK, nullable para legado | Configuración utilizada. |
+| `start_request_id` | UUID | UNIQUE con `student_id` | Idempotencia de inicio. |
+| `started_at`, `deadline_at`, `completed_at` | TIMESTAMPTZ | Nullable según estado | Ciclo temporal. |
+| `score` | INTEGER | 0..100 al completar | Porcentaje calculado. |
+| `level_id` | UUID | FK `level.id` | Nivel fuente asignado. |
+| `status` | `exam_status` | `pending`, `in_progress`, `completed` | Estado. |
+| `created_at` | TIMESTAMPTZ | default `now()` | Creación. |
 
-### exam
+Un índice parcial impide dos intentos `in_progress` por estudiante. Los completados no se actualizan ni eliminan.
 
-Examen rendido por un estudiante.
+### `exam_question` y `exam_question_option`
 
-| Columna      | Tipo          | Restricciones              | Descripción                        |
-|--------------|---------------|----------------------------|------------------------------------|
-| id           | UUID          | PK, DEFAULT gen_random_uuid | Identificador único                |
-| student_id   | UUID          | FK → student.id, NOT NULL  | Estudiante que rinde el examen     |
-| started_at   | TIMESTAMPTZ   | NULLABLE                    | Fecha de inicio                    |
-| completed_at | TIMESTAMPTZ   | NULLABLE                    | Fecha de finalización              |
-| score        | INTEGER       | NULLABLE, CHECK(>=0)       | Puntaje obtenido (porcentaje)      |
-| level_id     | UUID          | FK → level.id, NULLABLE    | Nivel asignado                     |
-| status       | exam_status   | NOT NULL, DEFAULT 'pending'| Estado del examen                  |
-| created_at   | TIMESTAMPTZ   | NOT NULL, DEFAULT NOW()    | Fecha de creación                  |
+| Tabla | Columnas relevantes | Restricciones |
+|---|---|---|
+| `exam_question` | `exam_id`, `question_id`, `order`, `question_text`, `question_category` | Pregunta y orden únicos por examen; el texto/categoría snapshot no se modifica. |
+| `exam_question_option` | `exam_question_id`, `source_option_id`, `option_text`, `order`, `is_correct` | Opción y orden únicos por pregunta del intento; inmutable. |
 
-**exam_status** (ENUM): `pending` | `in_progress` | `completed`
+### `exam_level_snapshot`
 
-### exam_question
+| Columna | Tipo | Descripción |
+|---|---|---|
+| `exam_id`, `source_level_id` | UUID | Intento y nivel fuente. |
+| `code`, `name`, `version` | Texto, texto, entero | Identidad histórica CEFR. |
+| `min_score`, `max_score` | INTEGER | Rango usado para asignar el resultado. |
 
-Relación muchos-a-muchos entre examen y preguntas (las preguntas específicas que tuvo un examen).
+Los snapshots de nivel son inmutables y un examen tiene una fila por nivel fuente/rango mínimo.
 
-| Columna      | Tipo          | Restricciones              | Descripción                        |
-|--------------|---------------|----------------------------|------------------------------------|
-| id           | UUID          | PK, DEFAULT gen_random_uuid | Identificador único                |
-| exam_id      | UUID          | FK → exam.id, NOT NULL     | Examen asociado                    |
-| question_id  | UUID          | FK → question.id, NOT NULL | Pregunta asociada                  |
-| order        | INTEGER       | NOT NULL, CHECK(>=0)       | Orden de la pregunta en el examen  |
+### `student_answer`
 
-**Restricciones adicionales:**
-- UNIQUE(exam_id, question_id) — evita preguntas duplicadas en un examen
+| Columna | Tipo | Restricción | Descripción |
+|---|---|---|---|
+| `id` | UUID | PK | Respuesta registrada. |
+| `exam_id`, `question_id` | UUID | FK, UNIQUE conjunto | Intento y pregunta fuente. |
+| `exam_question_id` | UUID | FK, nullable para legado | Pregunta snapshot asignada. |
+| `selected_exam_question_option_id` | UUID | FK, nullable | Opción snapshot elegida. |
+| `selected_option_id` | UUID | FK, nullable | Referencia a opción fuente conservada. |
+| `is_correct` | BOOLEAN | Nullable | Corrección tomada del snapshot. |
+| `answered_at` | TIMESTAMPTZ | default `now()` | Último guardado. |
 
-### student_answer
+Las respuestas se pueden actualizar solo mientras el intento está en curso; después de completarlo son inmutables.
 
-Respuesta individual a una pregunta dentro de un examen.
+## Acceso y funciones públicas
 
-| Columna            | Tipo          | Restricciones              | Descripción                        |
-|--------------------|---------------|----------------------------|------------------------------------|
-| id                 | UUID          | PK, DEFAULT gen_random_uuid | Identificador único                |
-| exam_id            | UUID          | FK → exam.id, NOT NULL     | Examen asociado                    |
-| question_id        | UUID          | FK → question.id, NOT NULL | Pregunta asociada                  |
-| selected_option_id | UUID          | FK → question_option.id, NULLABLE | Opción seleccionada          |
-| is_correct         | BOOLEAN       | NULLABLE                    | Indica si la respuesta es correcta |
-| answered_at        | TIMESTAMPTZ   | DEFAULT NOW()              | Fecha de respuesta                 |
-
-**Restricciones adicionales:**
-- UNIQUE(exam_id, question_id) — evita respuestas duplicadas por pregunta
-- Trigger impide modificar respuestas si el examen ya está completado
-
-### audit_log
-
-Registro de auditoría para acciones administrativas.
-
-| Columna     | Tipo          | Restricciones              | Descripción                        |
-|-------------|---------------|----------------------------|------------------------------------|
-| id          | UUID          | PK, DEFAULT gen_random_uuid | Identificador único                |
-| admin_id    | UUID          | FK → admin.id, NULLABLE    | Administrador que realizó la acción |
-| action      | VARCHAR(100)  | NOT NULL                    | Tipo de acción (CREATE, UPDATE, DELETE) |
-| entity      | VARCHAR(100)  | NOT NULL                    | Tabla afectada                     |
-| entity_id   | UUID          | NULLABLE                    | ID del registro afectado           |
-| details     | JSONB         | NULLABLE                    | Detalles adicionales de la acción  |
-| created_at  | TIMESTAMPTZ   | NOT NULL, DEFAULT NOW()    | Fecha de la acción                 |
-
----
-
-## Reglas de Negocio (base de datos)
-
-| Regla | Implementación |
-|-------|---------------|
-| Un estudiante solo puede rendir un examen por día | Trigger `trg_check_daily_exam` en INSERT a exam |
-| Los resultados históricos no pueden modificarse | Trigger `trg_prevent_historical_change` en UPDATE a student_answer |
-| El nivel se calcula automáticamente según puntaje | Función `fn_complete_exam()` |
-| Las preguntas son aleatorias por examen | Función `fn_get_random_questions()` |
-| Las opciones tienen orden definido | CHECK("order" >= 0) + UNIQUE(question_id, order) |
-| Configuración del examen es global (singleton) | Tabla exam_config con única fila activa |
-| Las respuestas incorrectas se marcan en el momento | Columna is_correct en student_answer |
-
----
-
-## Índices
-
-| Índice | Tabla | Columna(s) | Propósito |
-|--------|-------|------------|-----------|
-| idx_student_ci | student | ci | Búsqueda rápida por CI (login) |
-| idx_student_email | student | email | Búsqueda rápida por email (login) |
-| idx_question_level_id | question | level_id | Filtro de preguntas por nivel |
-| idx_exam_student_id | exam | student_id | Historial de exámenes por estudiante |
-| idx_exam_status | exam | status | Filtro por estado |
-| idx_exam_question_exam_id | exam_question | exam_id | Carga de preguntas de un examen |
-| idx_student_answer_exam_id | student_answer | exam_id | Carga de respuestas de un examen |
-| idx_audit_log_admin_id | audit_log | admin_id | Auditoría por administrador |
-| idx_audit_log_created_at | audit_log | created_at DESC | Ordenamiento cronológico |
+RLS está habilitado en las tablas de aplicación. Los estudiantes acceden al ciclo del examen exclusivamente mediante `start_exam`, `get_exam_attempt`, `save_exam_answer` y `submit_exam`; también usan RPC de dashboard e historial. Las funciones administrativas verifican `fn_is_admin()` para reportes, auditoría, estudiantes, niveles y configuración. Las proyecciones RPC limitan las columnas devueltas y evitan conceder acceso directo a datos sensibles.

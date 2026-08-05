@@ -23,7 +23,7 @@ Desarrollar una aplicación web que permita administrar y rendir exámenes de co
 
 \begin{itemize}
     \item Diseñar e implementar una base de datos relacional que cumpla con la Tercera Forma Normal (3FN) para almacenar la información de estudiantes, administradores, preguntas, exámenes y resultados.
-    \item Implementar un módulo de autenticación que permita el ingreso al sistema mediante CI (Carnet de Identidad) o correo electrónico.
+    \item Implementar un módulo de autenticación mediante correo electrónico y contraseña; el CI (Carnet de Identidad) se conserva como dato de perfil del estudiante.
     \item Desarrollar un módulo de administración para la gestión completa de preguntas, niveles y configuración del examen.
     \item Implementar un sistema de generación aleatoria de exámenes con tiempo límite configurable.
     \item Calcular automáticamente el nivel de inglés del estudiante en función del puntaje obtenido.
@@ -39,7 +39,7 @@ Desarrollar una aplicación web que permita administrar y rendir exámenes de co
     \item Módulo Estudiante: registro, inicio de sesión, rendir examen, ver resultado.
     \item Módulo Administrador: gestión de preguntas, niveles, configuración, dashboard, reportes.
     \item Base de datos relacional con funciones SQL, triggers y Row Level Security.
-    \item Autenticación mediante Supabase Auth con soporte para CI o email.
+    \item Autenticación mediante Supabase Auth con correo electrónico y contraseña; el CI se almacena como dato de perfil.
     \item Documentación técnica y manual de usuario.
 \end{itemize}
 
@@ -84,9 +84,9 @@ Frontend (React + Supabase SDK)
         |
         v
    Supabase
-   ├── PostgreSQL (datos + RLS)
-   ├── Auth (autenticación)
-   └── Edge Functions (lógica adicional)
+   |-- PostgreSQL (datos + RLS)
+   |-- Auth (autenticación)
+   `-- Edge Functions (lógica adicional)
 \end{lstlisting}
 \caption{Diagrama de arquitectura general}
 \end{figure}

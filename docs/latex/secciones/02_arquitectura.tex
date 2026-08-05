@@ -23,7 +23,7 @@ Edge Functions
 
 \section{Frontend}
 
-El frontend está desarrollado con \textbf{React 19} y \textbf{TypeScript}, utilizando \textbf{Vite 8} como herramienta de construcción. Los estilos se implementan con \textbf{Tailwind CSS 4} siguiendo un enfoque \textit{mobile-first} y responsive.
+El frontend está desarrollado con \textbf{React 19.2}, \textbf{TypeScript 6.0}, \textbf{Vite 8.1} y \textbf{Tailwind CSS 4.1}, según las dependencias versionadas del proyecto. Los estilos siguen un enfoque \textit{mobile-first} y responsive.
 
 \subsection{Organización de Componentes}
 
@@ -40,28 +40,24 @@ Los componentes se organizan siguiendo el patrón \textbf{Atomic Design}, que pe
 
 \begin{verbatim}
 src/
-├── components/
-│   ├── atoms/           # Botones, inputs, badges
-│   ├── molecules/       # Formularios, tarjetas
-│   └── organisms/       # Navbar, tablas, paneles
-├── hooks/               # Custom hooks (useExam, useAuth)
-├── lib/                 # Configuración (supabase.ts)
-├── screens/             # Páginas completas
-├── services/            # Llamadas a Supabase
-├── types/               # Interfaces TypeScript
-└── utils/               # Utilidades y helpers
+|-- components/
+|   |-- atoms/           # Botones, inputs, badges
+|   |-- molecules/       # Formularios, tarjetas
+|   `-- organisms/       # Navbar, tablas, paneles
+|-- hooks/               # Acceso a Supabase y estado de las pantallas
+|-- lib/                 # Configuración (supabase.ts)
+|-- pages/               # Rutas y pantallas completas
+|-- types/               # Interfaces TypeScript
+|-- App.tsx              # Rutas y protección por rol
+`-- i18n.ts              # Internacionalización
 \end{verbatim}
 
 \subsection{Principales Screens}
 
 \begin{itemize}
-    \item \textbf{LoginScreen}: Autenticación con CI o email + contraseña.
-    \item \textbf{RegisterScreen}: Registro de nuevos estudiantes.
-    \item \textbf{ExamScreen}: Rendir examen con temporizador y auto-envío.
-    \item \textbf{ResultScreen}: Resultado inmediato con nivel asignado.
-    \item \textbf{AdminDashboard}: Panel de administración con estadísticas.
-    \item \textbf{QuestionManager}: CRUD de preguntas y opciones.
-    \item \textbf{ReportScreen}: Exportación de reportes CSV/Excel.
+    \item \textbf{LoginPage} y \textbf{RegisterPage}: autenticación y registro con email y contraseña.
+    \item \textbf{StudentWelcomeScreen}, \textbf{StudentExamScreen} y \textbf{StudentExamHistoryScreen}: estado, intento temporizado y resultados históricos.
+    \item \textbf{DashboardScreen}, \textbf{QuestionsScreen}, \textbf{LevelsScreen}, \textbf{ExamConfigurationScreen}, \textbf{ReportsScreen} y \textbf{AdminAuditLogScreen}: administración y reportes.
 \end{itemize}
 
 \section{Supabase (Backend)}
@@ -73,20 +69,15 @@ Supabase actúa como \textbf{Backend as a Service}, proporcionando los siguiente
 Base de datos relacional que almacena toda la información del sistema. Incluye:
 
 \begin{itemize}
-    \item 10 tablas normalizadas (3FN) con claves primarias, foráneas y restricciones.
-    \item Funciones SQL para lógica de negocio (cálculo de nivel, selección aleatoria de preguntas).
-    \item Triggers para reglas críticas (límite diario de exámenes, protección de históricos).
+    \item 14 tablas normalizadas (3FN), incluidas la revisión de partición de niveles e instantáneas de configuración, preguntas/opciones y niveles por intento.
+    \item RPC SQL para crear, consultar, guardar y entregar intentos, además de cálculo y selección aleatoria dentro de \texttt{start\_exam}.
+    \item Triggers para proteger snapshots e intentos finalizados.
     \item Row Level Security (RLS) para control de acceso a nivel de fila.
 \end{itemize}
 
 \subsection{Autenticación (Auth)}
 
-Supabase Auth gestiona el registro e inicio de sesión de usuarios. El sistema soporta dos modalidades de inicio de sesión para estudiantes:
-
-\begin{itemize}
-    \item \textbf{Por email}: Autenticación directa con Supabase Auth.
-    \item \textbf{Por CI (Carnet de Identidad)}: El frontend busca el email asociado al CI en la tabla \texttt{student} y autentica contra Supabase Auth con ese email.
-\end{itemize}
+Supabase Auth gestiona el registro e inicio de sesión de estudiantes y administradores mediante \textbf{email y contraseña}. El CI se conserva como dato de perfil y de consulta administrativa; no interviene en la autenticación.
 
 \subsection{Edge Functions (Opcional)}
 
@@ -98,10 +89,10 @@ Para lógica compleja que no puede expresarse eficientemente en SQL, se pueden i
     \item El estudiante se registra en el sistema (datos personales + credenciales).
     \item El administrador configura el examen (tiempo, cantidad de preguntas, puntaje mínimo).
     \item El administrador da de alta preguntas con sus opciones y las asigna a niveles.
-    \item El estudiante inicia sesión (CI o email + contraseña).
+    \item El estudiante inicia sesión con email y contraseña.
     \item El estudiante solicita un nuevo examen.
-    \item El sistema verifica que no haya rendido examen en el día (trigger SQL).
-    \item El sistema selecciona preguntas aleatorias (función SQL) y crea el examen.
+    \item La RPC \texttt{start\_exam} verifica que no exista un examen completado en la fecha de negocio CBA (zona \texttt{America/La\_Paz}) y reanuda un intento en curso si existe.
+    \item \texttt{start\_exam} selecciona preguntas aleatorias elegibles, crea los snapshots del intento y fija el plazo desde la configuración capturada.
     \item El estudiante responde las preguntas dentro del tiempo límite.
     \item Al finalizar, el sistema calcula el puntaje y asigna el nivel (función SQL).
     \item El resultado se muestra inmediatamente y queda registrado en el historial.

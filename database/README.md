@@ -2,7 +2,7 @@
 
 > Diseño de base de datos del **Sistema de Exámenes de Colocación** del **Centro Boliviano Americano (CBA)**.
 >
-> 10 tablas en **3ra Forma Normal**, con RLS policies, triggers de protección de históricos, funciones SQL para cálculo de nivel, y auditoría administrativa.
+> 14 tablas en **3ra Forma Normal**, con RLS, snapshots inmutables de intentos, funciones SQL para el ciclo del examen y auditoría administrativa.
 
 ---
 
@@ -12,27 +12,16 @@
 |---|---|
 | [`../supabase/migrations/`](../supabase/migrations/) | Fuente única y oficial de migraciones versionadas de esquema, datos, funciones, triggers y RLS |
 | [`data-dictionary.md`](./data-dictionary.md) | Diccionario de datos con todas las tablas, columnas y restricciones |
-| [`diagrama-uml.puml`](./diagrama-uml.puml) | Código fuente PlantUML del diagrama entidad-relación |
-| [`diagrama-conceptual.png`](./diagrama-conceptual.png) | Diagrama conceptual (vista de alto nivel del negocio) |
-| [`diagrama-relacional.png`](./diagrama-relacional.png) | Modelo relacional completo con claves y relaciones |
-| [`Diagrama-UML-10-Tablas.png`](./Diagrama-UML-10-Tablas.png) | Diagrama UML generado desde PlantUML |
-| [`Imagen-10-Tablas.png`](./Imagen-10-Tablas.png) | Esquema visual generado por IA |
+| [`modelo-relacional.md`](./modelo-relacional.md) | Relaciones, claves y restricciones del modelo vigente de 14 tablas |
+| [`diagrama-uml.puml`](./diagrama-uml.puml) | Fuente PlantUML mantenida del diagrama entidad-relación vigente |
+| [`../docs/latex/main.pdf`](../docs/latex/main.pdf) | Manual técnico compilado, con la descripción actual del modelo de datos |
 
 ---
 
-## Diagramas
+## Diagrama vigente
 
-### Modelo Relacional
-
-![Modelo Relacional](./diagrama-relacional.png)
-
-### Diagrama UML
-
-![Diagrama UML](./Diagrama-UML-10-Tablas.png)
-
-### Diagrama Conceptual
-
-![Diagrama Conceptual](./diagrama-conceptual.png)
+El ERD mantenido corresponde a las 14 tablas documentadas en este directorio.
+Renderizá [`diagrama-uml.puml`](./diagrama-uml.puml) con PlantUML para obtener una vista gráfica actualizada. Los PNG heredados permanecen únicamente como archivos no publicados y no deben utilizarse para describir el esquema.
 
 ---
 
@@ -43,13 +32,17 @@
 | `student` | Registro de estudiantes (CI, email, nombre) |
 | `admin` | Administradores del sistema |
 | `level` | Niveles de inglés con rangos de puntaje (MCERL) |
+| `level_partition_revision` | Revisión singleton para controlar concurrencia de la distribución CEFR |
 | `exam_config` | Configuración global del examen (singleton) |
 | `question` | Banco de preguntas clasificadas por nivel y categoría |
-| `question_option` | Opciones de respuesta (una correcta por pregunta) |
+| `question_option` | Opciones de respuesta del banco |
 | `exam` | Examen rendido por un estudiante |
 | `exam_question` | Preguntas específicas asignadas a un examen |
 | `student_answer` | Respuestas individuales del estudiante |
 | `audit_log` | Auditoría de acciones administrativas |
+| `exam_config_snapshot` | Configuración inmutable asociada a un intento |
+| `exam_question_option` | Opciones inmutables asignadas a una pregunta del intento |
+| `exam_level_snapshot` | Niveles CEFR inmutables usados para calificar un intento |
 
 ---
 
@@ -57,13 +50,14 @@
 
 | Regla | Implementación |
 |---|---|
-| Un estudiante solo puede rendir **un examen por día** | Trigger `trg_check_daily_exam` en `INSERT` a `exam` |
-| Los **resultados históricos nunca se modifican** | Trigger `trg_prevent_historical_change` en `UPDATE` a `student_answer` |
-| El nivel se calcula automáticamente | Función `fn_complete_exam()` |
-| Las preguntas se asignan aleatoriamente | Función `fn_get_random_questions()` |
+| Un estudiante solo puede rendir **un examen por día** | RPC `start_exam()` bloquea una nueva creación si existe un examen completado en la fecha de negocio CBA (`America/La_Paz`) |
+| Los **resultados históricos nunca se modifican** | Triggers protegen snapshots, exámenes finalizados y sus respuestas |
+| El nivel se calcula automáticamente | Finalización interna del ciclo de RPC sobre los snapshots del intento |
+| Las preguntas se asignan aleatoriamente | RPC `start_exam()` selecciona preguntas elegibles y crea sus snapshots |
+| Preguntas elegibles para un intento | `start_exam()` exige al menos dos opciones y exactamente una correcta; es una validación al iniciar el intento, no una restricción general de `question_option` |
 | Las opciones tienen orden definido | `CHECK("order" >= 0)` + `UNIQUE(question_id, order)` |
 | Auditoría de acciones administrativas | Tabla `audit_log` + trigger base `fn_audit_admin_action` |
-| Acceso por fila (RLS) | Políticas por rol: estudiante ve solo lo suyo, admin ve todo |
+| Acceso por fila (RLS) | Acceso administrativo por rol; el estudiante usa proyecciones RPC limitadas a su identidad |
 
 ---
 
@@ -98,8 +92,8 @@ contiene documentación, diagramas y el diccionario de datos.
 
 | Componente | Tecnología |
 |---|---|
-| Motor de BD | PostgreSQL 15+ (vía Supabase) |
-| Autenticación | Supabase Auth (email/CI + contraseña) |
+| Motor de BD | PostgreSQL administrado por Supabase |
+| Autenticación | Supabase Auth (email + contraseña) |
 | Autorización | Row Level Security (RLS) |
 | Lenguaje de funciones | PL/pgSQL |
 | Diagramas | PlantUML + AI-generated |

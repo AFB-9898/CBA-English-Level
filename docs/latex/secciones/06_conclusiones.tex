@@ -6,7 +6,7 @@ El desarrollo del Sistema de Exámenes de Colocación para el Centro Boliviano A
     \item La arquitectura Frontend + BaaS (Supabase) demostró ser una solución eficiente, eliminando la necesidad de un servidor REST intermedio y reduciendo la complejidad operativa del sistema.
     \item El diseño de la base de datos en Tercera Forma Normal (3FN) garantiza la integridad y consistencia de los datos, mientras que las funciones SQL y triggers automatizan las reglas de negocio críticas directamente en la base de datos.
     \item La implementación de Row Level Security (RLS) proporciona un control de acceso granular a nivel de fila, asegurando que cada usuario solo pueda acceder a los datos que le corresponden.
-    \item El sistema de autenticación dual (CI o email) facilita el acceso a los estudiantes, eliminando la necesidad de recordar un correo electrónico institucional.
+    \item El sistema de autenticación mediante correo electrónico y contraseña separa las credenciales de acceso del CI, que se conserva como dato de perfil del estudiante.
     \item La protección de resultados históricos mediante triggers SQL garantiza la integridad de las evaluaciones, cumpliendo con uno de los requisitos más críticos del sistema.
 \end{itemize}
 

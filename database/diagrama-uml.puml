@@ -1,145 +1,154 @@
 @startuml
-' ============================================================
-' Diagrama Entidad-Relación — Sistema de Exámenes de Colocación
-' Centro Boliviano Americano (CBA)
-' 
-' PEGÁ ESTO EN https://www.plantuml.com
-' ============================================================
+' Modelo entidad-relación vigente. Fuente: supabase/migrations/001..016.
+hide circle
+skinparam linetype ortho
 
-skinparam backgroundColor #FEFEFE
-skinparam defaultFontName Arial
-skinparam defaultFontSize 12
-skinparam packageStyle rectangle
-skinparam shadowing true
-
-' ── TABLAS ─────────────────────────────────────────────────
-
-entity "estudiante" as student {
-  id: UUID [PK]
+entity student {
+  * id : uuid <<PK / auth.users>>
   --
-  ci: VARCHAR(20) [ÚNICO, OBLIGATORIO]
-  nombre_completo: VARCHAR(200) [OBLIGATORIO]
-  correo: VARCHAR(200) [ÚNICO, OBLIGATORIO]
-  telefono: VARCHAR(20) [OPCIONAL]
-  creado_en: TIMESTAMPTZ
+  ci : varchar(20) <<UQ>>
+  full_name : varchar(200)
+  email : varchar(200) <<UQ>>
+  phone : varchar(20)?
+  created_at : timestamptz
+}
+entity admin {
+  * id : uuid <<PK / auth.users>>
+  --
+  email : varchar(200) <<UQ>>
+  full_name : varchar(200)
+  created_at : timestamptz
+}
+entity level {
+  * id : uuid <<PK>>
+  --
+  code : varchar(10)
+  version : integer
+  is_active : boolean
+  min_score : integer
+  max_score : integer
+  supersedes_level_id : uuid? <<FK>>
+}
+entity level_partition_revision {
+  * id : boolean <<PK=true>>
+  --
+  revision : bigint
+}
+entity exam_config {
+  * id : uuid <<PK>>
+  --
+  singleton : boolean <<UQ=true>>
+  revision : bigint
+  time_limit_minutes : integer
+  questions_per_exam : integer
+  passing_score : integer
+  question_selection_rule : text
+}
+entity exam_config_snapshot {
+  * id : uuid <<PK>>
+  --
+  source_config_id : uuid <<FK>>
+  source_revision : bigint
+  time_limit_minutes : integer
+  questions_per_exam : integer
+  passing_score : integer
+}
+entity question {
+  * id : uuid <<PK>>
+  --
+  level_id : uuid <<FK>>
+  text : text
+  category : varchar(100)?
+}
+entity question_option {
+  * id : uuid <<PK>>
+  --
+  question_id : uuid <<FK>>
+  text : text
+  is_correct : boolean
+  order : integer
+}
+entity exam {
+  * id : uuid <<PK>>
+  --
+  student_id : uuid <<FK>>
+  config_snapshot_id : uuid? <<FK>>
+  level_id : uuid? <<FK>>
+  start_request_id : uuid?
+  started_at : timestamptz?
+  deadline_at : timestamptz?
+  completed_at : timestamptz?
+  score : integer?
+  status : exam_status
+}
+entity exam_question {
+  * id : uuid <<PK>>
+  --
+  exam_id : uuid <<FK>>
+  question_id : uuid <<FK>>
+  order : integer
+  question_text : text?
+  question_category : varchar(100)?
+}
+entity exam_question_option {
+  * id : uuid <<PK>>
+  --
+  exam_question_id : uuid <<FK>>
+  source_option_id : uuid <<FK>>
+  option_text : text
+  order : integer
+  is_correct : boolean
+}
+entity exam_level_snapshot {
+  * id : uuid <<PK>>
+  --
+  exam_id : uuid <<FK>>
+  source_level_id : uuid <<FK>>
+  code : varchar(10)
+  name : varchar(100)
+  version : integer
+  min_score : integer
+  max_score : integer
+}
+entity student_answer {
+  * id : uuid <<PK>>
+  --
+  exam_id : uuid <<FK>>
+  question_id : uuid <<FK>>
+  exam_question_id : uuid? <<FK>>
+  selected_option_id : uuid? <<FK>>
+  selected_exam_question_option_id : uuid? <<FK>>
+  is_correct : boolean?
+  answered_at : timestamptz?
+}
+entity audit_log {
+  * id : uuid <<PK>>
+  --
+  admin_id : uuid? <<FK>>
+  action : varchar(100)
+  entity : varchar(100)
+  entity_id : uuid?
+  details : jsonb?
+  created_at : timestamptz
 }
 
-entity "administrador" as admin {
-  id: UUID [PK]
-  --
-  correo: VARCHAR(200) [ÚNICO, OBLIGATORIO]
-  nombre_completo: VARCHAR(200) [OBLIGATORIO]
-  creado_en: TIMESTAMPTZ
-}
-
-entity "nivel" as level {
-  id: UUID [PK]
-  --
-  nombre: VARCHAR(100) [OBLIGATORIO]
-  puntaje_minimo: INTEGER [OBLIGATORIO]
-  puntaje_maximo: INTEGER [OBLIGATORIO]
-  descripcion: TEXT [OPCIONAL]
-}
-
-entity "config_examen" as exam_config {
-  id: UUID [PK]
-  --
-  tiempo_limite_min: INTEGER [OBLIGATORIO]
-  preguntas_por_examen: INTEGER [OBLIGATORIO]
-  puntaje_aprobacion: INTEGER [OBLIGATORIO]
-  actualizado_en: TIMESTAMPTZ
-}
-
-entity "pregunta" as question {
-  id: UUID [PK]
-  --
-  enunciado: TEXT [OBLIGATORIO]
-  nivel_id: UUID [FK]
-  categoria: VARCHAR(100) [OPCIONAL]
-  creado_en: TIMESTAMPTZ
-  actualizado_en: TIMESTAMPTZ
-}
-
-entity "opcion_pregunta" as question_option {
-  id: UUID [PK]
-  --
-  pregunta_id: UUID [FK]
-  texto: TEXT [OBLIGATORIO]
-  es_correcta: BOOLEAN
-  orden: INTEGER
-}
-
-entity "examen" as exam {
-  id: UUID [PK]
-  --
-  estudiante_id: UUID [FK]
-  iniciado_en: TIMESTAMPTZ [OPCIONAL]
-  completado_en: TIMESTAMPTZ [OPCIONAL]
-  puntaje: INTEGER [OPCIONAL]
-  nivel_id: UUID [FK]
-  estado: exam_status
-  creado_en: TIMESTAMPTZ
-}
-
-entity "examen_pregunta" as exam_question {
-  id: UUID [PK]
-  --
-  examen_id: UUID [FK]
-  pregunta_id: UUID [FK]
-  orden: INTEGER
-}
-
-entity "respuesta_estudiante" as student_answer {
-  id: UUID [PK]
-  --
-  examen_id: UUID [FK]
-  pregunta_id: UUID [FK]
-  opcion_seleccionada_id: UUID [FK]
-  es_correcta: BOOLEAN [OPCIONAL]
-  respondido_en: TIMESTAMPTZ
-}
-
-entity "registro_auditoria" as audit_log {
-  id: UUID [PK]
-  --
-  administrador_id: UUID [FK]
-  accion: VARCHAR(100)
-  entidad: VARCHAR(100)
-  entidad_id: UUID [OPCIONAL]
-  detalles: JSONB [OPCIONAL]
-  creado_en: TIMESTAMPTZ
-}
-
-' ── RELACIONES ─────────────────────────────────────────────
-
-' nivel → pregunta
-level ||--o{ question : "contiene"
-
-' pregunta → opcion_pregunta
-question ||--o{ question_option : "tiene"
-
-' estudiante → examen
-student ||--o{ exam : "rinde"
-
-' examen → examen_pregunta
-exam ||--o{ exam_question : "contiene"
-
-' pregunta → examen_pregunta
-question ||--o{ exam_question : "aparece en"
-
-' examen → respuesta_estudiante
-exam ||--o{ student_answer : "tiene"
-
-' pregunta → respuesta_estudiante
-question ||--o{ student_answer : "responde"
-
-' opcion_pregunta → respuesta_estudiante
-question_option ||--o{ student_answer : "selecciona"
-
-' nivel → examen
-level ||--o{ exam : "asigna"
-
-' administrador → registro_auditoria
-admin ||--o{ audit_log : "genera"
-
+student ||--o{ exam
+level ||--o{ question
+question ||--o{ question_option
+exam_config ||--o{ exam_config_snapshot : source_config
+exam_config_snapshot ||--o{ exam
+level ||--o{ exam : assigned_level
+exam ||--o{ exam_question
+question ||--o{ exam_question : source_question
+exam_question ||--o{ exam_question_option
+question_option ||--o{ exam_question_option : source_option
+exam ||--o{ exam_level_snapshot
+level ||--o{ exam_level_snapshot : source_level
+exam ||--o{ student_answer
+question ||--o{ student_answer
+exam_question ||--o{ student_answer
+question_option ||--o{ student_answer
+exam_question_option ||--o{ student_answer
+admin ||--o{ audit_log
+level ||--o{ level : supersedes
 @enduml

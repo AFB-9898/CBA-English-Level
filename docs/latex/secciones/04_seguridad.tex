@@ -14,30 +14,20 @@ La autenticación se gestiona mediante \textbf{Supabase Auth}, que proporciona:
     \item Protección contra ataques de fuerza bruta (rate limiting).
 \end{itemize}
 
-\subsection{Login Dual (CI / Email)}
+\subsection{Inicio de Sesión}
 
-El sistema permite el inicio de sesión mediante CI (Carnet de Identidad) o correo electrónico:
-
-\begin{enumerate}
-    \item El estudiante ingresa su identificador (CI o email) y contraseña.
-    \item Si el identificador contiene ``@'', se trata como email y se autentica directamente.
-    \item Si no contiene ``@'', se busca el CI en la tabla \texttt{student} para obtener el email asociado.
-    \item Se autentica contra Supabase Auth con ese email y la contraseña proporcionada.
-\end{enumerate}
+El sistema admite inicio de sesión únicamente con correo electrónico y contraseña. No se admiten proveedores de autenticación externos ni el uso del CI como credencial de inicio de sesión.
 
 \section{Control de Acceso (RLS)}
 
-\textbf{Row Level Security} (RLS) es el mecanismo principal de autorización. Cada tabla tiene políticas que definen qué filas puede leer, insertar, actualizar o eliminar cada usuario según su rol.
+\textbf{Row Level Security} (RLS) controla el acceso directo a los datos según el rol. El ciclo de examen del estudiante no expone acceso directo a sus tablas: la migración 013 revoca esos permisos y permite únicamente las RPC autorizadas.
 
 \subsection{Políticas para Estudiantes}
 
 \begin{itemize}
     \item \textbf{student}: SELECT y UPDATE solo de su propio registro. INSERT permitido (registro público).
-    \item \textbf{exam}: SELECT de sus propios exámenes. INSERT con \texttt{student\_id = auth.uid()}.
-    \item \textbf{exam\_question}: SELECT de preguntas de sus propios exámenes.
-    \item \textbf{student\_answer}: INSERT y UPDATE solo en exámenes en progreso.
-    \item \textbf{level}: SELECT de todos los niveles (para visualizar resultado).
-    \item \textbf{question}: SELECT de todas las preguntas (para responder el examen).
+    \item \textbf{Ciclo de examen}: acceso exclusivo mediante \texttt{start\_exam}, \texttt{get\_exam\_attempt}, \texttt{save\_exam\_answer} y \texttt{submit\_exam}; no se concede acceso directo de estudiante a \texttt{exam}, \texttt{exam\_question}, \texttt{student\_answer}, sus snapshots ni al banco de preguntas.
+    \item \textbf{start\_exam}: valida la identidad del estudiante, serializa la creación del intento, reanuda uno en curso y rechaza un nuevo intento si existe uno completado en la fecha de negocio CBA.
 \end{itemize}
 
 \subsection{Políticas para Administradores}

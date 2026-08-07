@@ -81,6 +81,7 @@ describe('LoginPage', () => {
     expect(screen.getByText('Your English learning journey starts with the right level.')).toBeInTheDocument()
     expect(screen.getByPlaceholderText('email@example.com')).toBeInTheDocument()
     expect(screen.getByTitle('Switch to Spanish')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Show password' })).toHaveAttribute('aria-pressed', 'false')
 
     await user.click(screen.getByRole('button', { name: 'EN' }))
 
@@ -89,6 +90,7 @@ describe('LoginPage', () => {
       expect(screen.getByText('Tu recorrido de aprendizaje de inglés comienza con el nivel adecuado.')).toBeInTheDocument()
       expect(screen.getByPlaceholderText('correo@ejemplo.com')).toBeInTheDocument()
       expect(screen.getByTitle('Cambiar a inglés')).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Mostrar contraseña' })).toHaveAttribute('aria-pressed', 'false')
     })
 
     await user.click(screen.getByRole('button', { name: 'ES' }))
@@ -99,6 +101,23 @@ describe('LoginPage', () => {
       expect(screen.getByPlaceholderText('email@example.com')).toBeInTheDocument()
       expect(screen.getByTitle('Switch to Spanish')).toBeInTheDocument()
     })
+  })
+
+  it('keeps the password masked by default and toggles it with the keyboard', async () => {
+    const user = userEvent.setup()
+    renderLoginPage()
+
+    const password = screen.getByLabelText('Password')
+    const toggle = screen.getByRole('button', { name: 'Show password' })
+
+    expect(password).toHaveAttribute('type', 'password')
+    expect(toggle).toHaveAttribute('aria-pressed', 'false')
+
+    toggle.focus()
+    await user.keyboard('{Enter}')
+
+    expect(password).toHaveAttribute('type', 'text')
+    expect(screen.getByRole('button', { name: 'Hide password' })).toHaveAttribute('aria-pressed', 'true')
   })
 
   it('retains input focus while typing consecutive email and password characters', async () => {

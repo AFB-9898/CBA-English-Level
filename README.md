@@ -5,8 +5,8 @@ Sistema web de exámenes de colocación del Centro Boliviano Americano, con iden
 ## Inicio rápido
 
 1. Instalá Node.js y npm, Docker y la Supabase CLI.
-2. Creá `.env.local` con `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` de tu proyecto o pila local.
-3. Aplicá el esquema con `supabase db reset --local`, instalá dependencias con `npm install` y ejecutá `npm run dev`.
+2. Instalá dependencias con `npm install`.
+3. Ejecutá `npm run dev:local` y abrí `http://localhost:5173`.
 
 La aplicación no configura esas variables automáticamente: `.env.local` sigue siendo obligatorio después de `supabase start` y para cualquier proyecto remoto. La aplicación falla al iniciar si falta alguna de las dos variables `VITE_*`; no se incluyen credenciales en el repositorio.
 
@@ -52,21 +52,21 @@ La fuente de verdad del esquema es `supabase/migrations/`, en orden numérico. `
 
 ## Configuración local
 
-```bash
-npm install
-supabase start
-supabase db reset --local
-npm run dev
-```
+El comando oficial para desarrollo local es `npm run dev:local`. Inicia Supabase,
+reinicia exclusivamente la base de datos local con todas las migraciones y fixtures,
+y abre Vite en `http://localhost:5173`. El reset elimina datos locales previos; nunca
+usar este comando contra un proyecto remoto.
 
 Ejemplo de `.env.local`:
 
 ```env
 VITE_SUPABASE_URL=http://127.0.0.1:54321
-VITE_SUPABASE_ANON_KEY=<anon-key-local-o-del-proyecto>
+VITE_SUPABASE_ANON_KEY=<publishable-key-local-de-supabase-status>
 ```
 
-Comandos disponibles: `npm run dev`, `npm run build`, `npm run preview`, `npm run lint` y `npm test`. La configuración local de Supabase expone API en el puerto `54321`, base de datos en `54322` y Studio en `54323`.
+`.env.local` se crea con los valores públicos que entrega `supabase status -o env`; no se documentan ni versionan claves secretas. `supabase/seed.sql` crea solamente los fixtures sintéticos de administrador y estudiante cuando se ejecuta `supabase db reset --local`.
+
+Comandos disponibles: `npm run dev:local`, `npm run dev`, `npm run build`, `npm run preview`, `npm run lint` y `npm test`. La configuración local de Supabase expone API en el puerto `54321`, base de datos en `54322` y Studio en `54323`.
 
 ## Límites operativos conocidos
 

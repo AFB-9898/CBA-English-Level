@@ -43,6 +43,7 @@ export default function LoginPage() {
   const { login, user, role, loading, principalError, retryPrincipal } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   if (!loading && user && role) {
@@ -104,16 +105,30 @@ export default function LoginPage() {
             <label htmlFor="password" className="cba-auth__label">
             {t('common.password')}
           </label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder={t('authPresentation.passwordPlaceholder')}
-            className="cba-auth__input"
-            disabled={submitting}
-            autoComplete="current-password"
-          />
+          <div className="cba-auth__password-control">
+            <input
+              id="password"
+              type={showPassword ? 'text' : 'password'}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder={t('authPresentation.passwordPlaceholder')}
+              className="cba-auth__input"
+              disabled={submitting}
+              autoComplete="current-password"
+            />
+            <button
+              type="button"
+              className="cba-auth__password-toggle"
+              aria-label={t(showPassword ? 'common.hidePassword' : 'common.showPassword')}
+              aria-pressed={showPassword}
+              onClick={() => setShowPassword((visible) => !visible)}
+              disabled={submitting}
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 5c-5 0-9.27 3.11-11 7.5C2.73 16.89 7 20 12 20s9.27-3.11 11-7.5C21.27 8.11 17 5 12 5Zm0 13a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11Zm0-2a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         {error && (

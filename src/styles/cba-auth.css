@@ -257,6 +257,45 @@
   cursor: not-allowed;
 }
 
+.cba-auth__password-control {
+  position: relative;
+}
+
+.cba-auth__password-control .cba-auth__input {
+  padding-right: 3rem;
+}
+
+.cba-auth__password-toggle {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 0.25rem;
+  color: var(--cba-secondary-text);
+  display: inline-flex;
+  height: 2.25rem;
+  justify-content: center;
+  padding: 0;
+  position: absolute;
+  right: 0.35rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2.25rem;
+}
+
+.cba-auth__password-toggle:hover:not(:disabled) {
+  color: var(--cba-navy);
+}
+
+.cba-auth__password-toggle:disabled {
+  cursor: not-allowed;
+}
+
+.cba-auth__password-toggle svg {
+  fill: currentColor;
+  height: 1.25rem;
+  width: 1.25rem;
+}
+
 .cba-auth__field--error .cba-auth__input {
   border-color: var(--cba-error);
 }
@@ -309,6 +348,7 @@
 .cba-auth__button:focus-visible,
 .cba-auth__alert-button:focus-visible,
 .cba-auth__link:focus-visible,
+.cba-auth__password-toggle:focus-visible,
 .cba-language-switcher:focus-visible {
   outline: 3px solid color-mix(in srgb, var(--cba-secondary-blue) 40%, transparent);
   outline-offset: 2px;

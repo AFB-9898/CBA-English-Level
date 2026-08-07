@@ -35,8 +35,24 @@ describe('RegisterForm', () => {
     expect(screen.getByLabelText(/ci/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/phone/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/^password$/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /register/i })).toHaveClass('cba-auth__button')
+  })
+
+  it('keeps the password masked by default and toggles its visibility', async () => {
+    const user = userEvent.setup()
+    renderForm()
+
+    const password = screen.getByLabelText(/^password$/i)
+    const toggle = screen.getByRole('button', { name: 'Show password' })
+
+    expect(password).toHaveAttribute('type', 'password')
+    expect(toggle).toHaveAttribute('aria-pressed', 'false')
+
+    await user.click(toggle)
+
+    expect(password).toHaveAttribute('type', 'text')
+    expect(screen.getByRole('button', { name: 'Hide password' })).toHaveAttribute('aria-pressed', 'true')
   })
 
   it('shows validation errors on empty submission', async () => {
@@ -64,7 +80,7 @@ describe('RegisterForm', () => {
     await user.type(screen.getByLabelText(/ci/i), '1234567')
     await user.type(screen.getByLabelText(/email/i), 'juan@example.com')
     await user.type(screen.getByLabelText(/phone/i), '71234567')
-    await user.type(screen.getByLabelText(/password/i), 'password123')
+    await user.type(screen.getByLabelText(/^password$/i), 'password123')
     await user.click(screen.getByRole('button', { name: /register/i }))
 
     await waitFor(() => {
@@ -95,7 +111,7 @@ describe('RegisterForm', () => {
     await user.type(screen.getByLabelText(/full name/i), 'Juan Pérez')
     await user.type(screen.getByLabelText(/ci/i), '1234567')
     await user.type(screen.getByLabelText(/email/i), 'duplicate@example.com')
-    await user.type(screen.getByLabelText(/password/i), 'password123')
+    await user.type(screen.getByLabelText(/^password$/i), 'password123')
     await user.click(screen.getByRole('button', { name: /register/i }))
 
     await waitFor(() => {
@@ -114,7 +130,7 @@ describe('RegisterForm', () => {
     await user.type(screen.getByLabelText(/full name/i), 'Juan Pérez')
     await user.type(screen.getByLabelText(/ci/i), '1234567')
     await user.type(screen.getByLabelText(/email/i), 'juan@example.com')
-    await user.type(screen.getByLabelText(/password/i), 'password123')
+    await user.type(screen.getByLabelText(/^password$/i), 'password123')
     await user.click(screen.getByRole('button', { name: /register/i }))
 
     await waitFor(() => {
@@ -129,7 +145,7 @@ describe('RegisterForm', () => {
     await user.type(screen.getByLabelText(/full name/i), 'Juan Pérez')
     await user.type(screen.getByLabelText(/ci/i), '1234567')
     await user.type(screen.getByLabelText(/email/i), 'juan@example.com')
-    await user.type(screen.getByLabelText(/password/i), 'short')
+    await user.type(screen.getByLabelText(/^password$/i), 'short')
     await user.click(screen.getByRole('button', { name: /register/i }))
 
     expect(screen.getByText('Password must be at least 8 characters')).toBeInTheDocument()
@@ -148,7 +164,7 @@ describe('RegisterForm', () => {
     expect(screen.getByLabelText(/ci/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/phone/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/^password$/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /register/i })).toBeInTheDocument()
 
     // Body should not have overflow-x hidden (no horizontal scroll needed)

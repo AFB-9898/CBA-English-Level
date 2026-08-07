@@ -2,6 +2,8 @@
   "common": {
     "email": "Email",
     "password": "Password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
     "fullName": "Full Name",
     "ci": "CI (Identity Card)",
     "phone": "Phone",

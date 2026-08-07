@@ -2,6 +2,8 @@
   "common": {
     "email": "Correo electrónico",
     "password": "Contraseña",
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña",
     "fullName": "Nombre completo",
     "ci": "CI (Cédula de Identidad)",
     "phone": "Teléfono",

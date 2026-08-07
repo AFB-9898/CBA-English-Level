@@ -23,6 +23,7 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
   const [errors, setErrors] = useState<FieldErrors>({})
   const [generalError, setGeneralError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   function handleChange(field: keyof RegistrationFields, value: string) {
     setFields((prev) => ({ ...prev, [field]: value }))
@@ -176,16 +177,30 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
         <label htmlFor="password" className="cba-auth__label">
           {t('common.password')}
         </label>
-        <input
-          id="password"
-          type="password"
-          value={fields.password}
-          onChange={(e) => handleChange('password', e.target.value)}
-          placeholder={t('authPresentation.passwordPlaceholder')}
-          className={inputClass}
-          disabled={submitting}
-          autoComplete="new-password"
-        />
+        <div className="cba-auth__password-control">
+          <input
+            id="password"
+            type={showPassword ? 'text' : 'password'}
+            value={fields.password}
+            onChange={(e) => handleChange('password', e.target.value)}
+            placeholder={t('authPresentation.passwordPlaceholder')}
+            className={inputClass}
+            disabled={submitting}
+            autoComplete="new-password"
+          />
+          <button
+            type="button"
+            className="cba-auth__password-toggle"
+            aria-label={t(showPassword ? 'common.hidePassword' : 'common.showPassword')}
+            aria-pressed={showPassword}
+            onClick={() => setShowPassword((visible) => !visible)}
+            disabled={submitting}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 5c-5 0-9.27 3.11-11 7.5C2.73 16.89 7 20 12 20s9.27-3.11 11-7.5C21.27 8.11 17 5 12 5Zm0 13a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11Zm0-2a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" />
+            </svg>
+          </button>
+        </div>
         {errors.password && (
           <p className="cba-auth__field-error" role="alert">
             {errors.password}

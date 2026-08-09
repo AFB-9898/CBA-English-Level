@@ -163,6 +163,7 @@
     "nav": {
       "dashboard": "Dashboard",
       "students": "Estudiantes",
+      "administrators": "Administradores",
       "questions": "Preguntas",
       "levels": "Niveles",
       "examConfiguration": "Configuración del examen",
@@ -192,6 +193,9 @@
     "error": "Error al cargar los datos del dashboard",
     "welcome": "Bienvenido al Panel de Administración",
     "subtitle": "Usá la navegación para gestionar exámenes, preguntas y reportes."
+  },
+  "administrators": {
+    "title": "Administradores", "subtitle": "Gestioná las cuentas y roles de administradores activos.", "refresh": "Actualizar", "invite": "Enviar invitación", "role": "Rol", "status": "Activo", "active": "Activo", "inactive": "Inactivo", "save": "Guardar", "loadFailed": "No se pudieron cargar los administradores.", "roles": { "masterAdmin": "Administrador maestro", "admin": "Administrador" }, "futureTeacher": "Teacher es una extensión futura y no es un rol activo."
   },
   "questions": {
     "title": "Banco de Preguntas",

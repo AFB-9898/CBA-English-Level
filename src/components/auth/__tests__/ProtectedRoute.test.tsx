@@ -14,11 +14,11 @@ beforeEach(() => {
   vi.clearAllMocks()
 })
 
-function renderAtPath(path: string, requiredRole: 'admin' | 'student' = 'admin') {
+function renderAtPath(path: string, requiredRole: 'master_admin' | 'admin' | 'student' = 'admin', capability?: 'administrator_management') {
   return render(
     <MemoryRouter initialEntries={[path]}>
       <Routes>
-        <Route path="/admin" element={<ProtectedRoute requiredRole={requiredRole} />}>
+        <Route path="/admin" element={<ProtectedRoute requiredRole={requiredRole} capability={capability} />}>
           <Route index element={<div data-testid="admin-content">Admin Dashboard</div>} />
         </Route>
         <Route path="/student" element={<div data-testid="student-content">Student Dashboard</div>} />
@@ -35,6 +35,7 @@ describe('ProtectedRoute', () => {
       isAdmin: true,
       role: 'admin',
       loading: false,
+      hasCapability: () => true,
     })
 
     renderAtPath('/admin')
@@ -49,6 +50,7 @@ describe('ProtectedRoute', () => {
       isAdmin: false,
       role: null,
       loading: false,
+      hasCapability: () => false,
     })
 
     renderAtPath('/admin')
@@ -63,6 +65,7 @@ describe('ProtectedRoute', () => {
       isAdmin: false,
       role: 'student',
       loading: false,
+      hasCapability: () => false,
     })
 
     renderAtPath('/admin')
@@ -77,6 +80,7 @@ describe('ProtectedRoute', () => {
       isAdmin: false,
       role: null,
       loading: true,
+      hasCapability: () => false,
     })
 
     renderAtPath('/admin')
@@ -85,6 +89,12 @@ describe('ProtectedRoute', () => {
     expect(screen.getByRole('status')).toBeInTheDocument()
     expect(screen.queryByTestId('admin-content')).not.toBeInTheDocument()
     expect(screen.queryByTestId('login-page')).not.toBeInTheDocument()
+  })
+
+  it('denies an operational admin that directly opens a master-only route', () => {
+    mockUseAuth.mockReturnValue({ user: { id: '1' }, isAdmin: true, role: 'admin', loading: false, hasCapability: () => false })
+    renderAtPath('/admin', 'admin', 'administrator_management')
+    expect(screen.queryByTestId('admin-content')).not.toBeInTheDocument()
   })
 
 })

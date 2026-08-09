@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState, useCallback, useRef, ty
 import type { User, Session } from '@supabase/supabase-js'
 import { useTranslation } from 'react-i18next'
 import { supabase } from '../../lib/supabase'
-import type { AuthContextValue, PrincipalRole } from '../../types/auth'
+import type { AdminCapability, AuthContextValue, PrincipalRole } from '../../types/auth'
 
 const AuthContext = createContext<AuthContextValue | null>(null)
 
@@ -73,9 +73,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setPrincipalError(t('auth.networkError'))
     } else if (result.data && typeof result.data === 'object' && !Array.isArray(result.data)) {
       const principal = result.data as { role?: unknown; admin_name?: unknown }
-      if (principal.role === 'admin' || principal.role === 'student') {
+      if (principal.role === 'master_admin' || principal.role === 'admin' || principal.role === 'student') {
         setRole(principal.role)
-        setAdminName(principal.role === 'admin' && typeof principal.admin_name === 'string' ? principal.admin_name : null)
+        setAdminName((principal.role === 'master_admin' || principal.role === 'admin') && typeof principal.admin_name === 'string' ? principal.admin_name : null)
       } else {
         setPrincipalError(t('auth.networkError'))
       }
@@ -113,8 +113,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [resetState, resolveSession, t])
 
-  const isAdmin = role === 'admin'
+  const isAdmin = role === 'master_admin' || role === 'admin'
+  const isMasterAdmin = role === 'master_admin'
   const isStudent = role === 'student'
+  const hasCapability = useCallback((capability: AdminCapability) => isMasterAdmin || (role === 'admin' && ['dashboard', 'students', 'questions', 'reports'].includes(capability)), [isMasterAdmin, role])
   const retryPrincipal = useCallback(async () => {
     await resolveSession(session)
   }, [resolveSession, session])
@@ -145,6 +147,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     role,
     principalError,
     isAdmin,
+    isMasterAdmin,
+    hasCapability,
     isStudent,
     adminName,
     login,

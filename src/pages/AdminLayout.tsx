@@ -2,19 +2,28 @@ import { useEffect, useState } from 'react'
 import { Outlet, NavLink, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../components/auth/AuthContext'
+import type { AdminCapability } from '../types/auth'
 import CbaTarijaIdentity from '../components/atoms/CbaTarijaIdentity'
 import LanguageSwitcher from '../components/atoms/LanguageSwitcher'
 import '../styles/cba-admin.css'
 
-const navItems = [
+type AdminNavItem = {
+  key: string
+  to: string
+  icon: string
+  capability?: AdminCapability
+}
+
+const navItems: AdminNavItem[] = [
   { key: 'dashboard', to: '/admin', icon: '📊' },
   { key: 'students', to: '/admin/students', icon: '👥' },
+  { key: 'administrators', to: '/admin/administrators', icon: '🛡️', capability: 'administrator_management' },
   { key: 'questions', to: '/admin/questions', icon: '❓' },
   { key: 'levels', to: '/admin/levels', icon: '📚' },
   { key: 'examConfiguration', to: '/admin/exam-configuration', icon: '⚙️' },
   { key: 'reports', to: '/admin/reports', icon: '📈' },
   { key: 'auditLog', to: '/admin/audit-log', icon: '📋' },
-] as const
+]
 
 function sidebarLinkClass({ isActive }: { isActive: boolean }) {
   return [
@@ -27,7 +36,7 @@ function sidebarLinkClass({ isActive }: { isActive: boolean }) {
 
 export default function AdminLayout() {
   const { t } = useTranslation()
-  const { logout, user, adminName } = useAuth()
+  const { logout, user, adminName, hasCapability } = useAuth()
   const navigate = useNavigate()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [isDesktop, setIsDesktop] = useState(() => window.matchMedia?.('(min-width: 768px)').matches ?? false)
@@ -138,7 +147,7 @@ export default function AdminLayout() {
           inert={!isDesktop && !mobileOpen ? true : undefined}
         >
           <nav className="cba-admin__navigation space-y-1" aria-label={t('adminPanel.title')}>
-            {navItems.map((item) => (
+            {navItems.filter((item) => !item.capability || hasCapability(item.capability)).map((item) => (
               <NavLink
                 key={item.key}
                 to={item.to}

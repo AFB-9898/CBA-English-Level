@@ -137,6 +137,7 @@ describe('App — Auth Flow Integration', () => {
   })
 
   it('makes the Levels screen reachable at /admin/levels for an authenticated admin', async () => {
+    mockRpc.mockResolvedValue({ data: { role: 'master_admin', admin_name: 'Master Admin' }, error: null })
     const mockUser = {
       id: 'admin-1',
       email: 'admin@cba.edu.bo',
@@ -169,6 +170,7 @@ describe('App — Auth Flow Integration', () => {
   )
 
   it('makes Exam Configuration reachable at /admin/exam-configuration for an authenticated admin', async () => {
+    mockRpc.mockResolvedValue({ data: { role: 'master_admin', admin_name: 'Master Admin' }, error: null })
     const mockUser = { id: 'admin-1', email: 'admin@cba.edu.bo', user_metadata: { role: 'admin' }, app_metadata: {}, aud: 'authenticated', created_at: new Date().toISOString() }
     mockGetSession.mockResolvedValue({ data: { session: { user: mockUser } }, error: null })
     mockOnAuthStateChange.mockReturnValue({ data: { subscription: { unsubscribe: vi.fn() } } })
@@ -205,6 +207,7 @@ describe('App — Auth Flow Integration', () => {
   })
 
   it('makes Administrative Audit reachable at /admin/audit-log for an authenticated admin', async () => {
+    mockRpc.mockResolvedValue({ data: { role: 'master_admin', admin_name: 'Master Admin' }, error: null })
     const mockUser = { id: 'admin-1', email: 'admin@cba.edu.bo', user_metadata: { role: 'admin' }, app_metadata: {}, aud: 'authenticated', created_at: new Date().toISOString() }
     mockGetSession.mockResolvedValue({ data: { session: { user: mockUser } }, error: null })
     mockOnAuthStateChange.mockReturnValue({ data: { subscription: { unsubscribe: vi.fn() } } })
@@ -212,6 +215,18 @@ describe('App — Auth Flow Integration', () => {
     render(<App />)
     await waitFor(() => expect(screen.getByTestId('audit-screen')).toBeInTheDocument())
   })
+
+  it.each(['/admin/levels', '/admin/exam-configuration', '/admin/audit-log', '/admin/administrators'])(
+    'redirects an operational admin away from master-only route %s',
+    async (path) => {
+      const mockUser = { id: 'admin-1', email: 'admin@cba.edu.bo', user_metadata: {}, app_metadata: {}, aud: 'authenticated', created_at: new Date().toISOString() }
+      mockGetSession.mockResolvedValue({ data: { session: { user: mockUser } }, error: null })
+      mockOnAuthStateChange.mockReturnValue({ data: { subscription: { unsubscribe: vi.fn() } } })
+      window.history.pushState({}, '', path)
+      render(<App />)
+      await waitFor(() => expect(window.location.pathname).toBe('/admin'))
+    },
+  )
 
   it('renders the student dashboard only for a trusted student principal', async () => {
     const mockUser = { id: 'student-1', email: 'student@test.local', user_metadata: { role: 'admin' }, app_metadata: {}, aud: 'authenticated', created_at: new Date().toISOString() }

@@ -1,9 +1,9 @@
 import { Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from './AuthContext'
-import type { PrincipalRole } from '../../types/auth'
+import type { AdminCapability, PrincipalRole } from '../../types/auth'
 
-export default function ProtectedRoute({ requiredRole }: { requiredRole: PrincipalRole }) {
-  const { user, role, loading } = useAuth()
+export default function ProtectedRoute({ requiredRole, capability }: { requiredRole?: PrincipalRole; capability?: AdminCapability }) {
+  const { user, role, loading, hasCapability } = useAuth()
 
   if (loading) {
     return (
@@ -17,8 +17,9 @@ export default function ProtectedRoute({ requiredRole }: { requiredRole: Princip
     return <Navigate to="/login" replace />
   }
 
-  if (role !== requiredRole) {
-    return <Navigate to={role === 'admin' ? '/admin' : '/student'} replace />
+  const roleDenied = requiredRole && !(requiredRole === 'admin' ? role === 'admin' || role === 'master_admin' : role === requiredRole)
+  if (roleDenied || (capability && !hasCapability(capability))) {
+    return <Navigate to={role === 'admin' || role === 'master_admin' ? '/admin' : '/student'} replace />
   }
 
   return <Outlet />

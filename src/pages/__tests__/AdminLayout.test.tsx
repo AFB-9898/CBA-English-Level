@@ -13,6 +13,7 @@ let rpc: ReturnType<typeof vi.fn>
 let mockAuthState: {
   user: any | null
   adminName: string | null
+  hasCapability: (capability: string) => boolean
   logout: ReturnType<typeof vi.fn>
 }
 
@@ -32,6 +33,7 @@ beforeEach(async () => {
     user: { id: '1', email: 'admin@cba.edu.bo' },
     adminName: null,
     logout: mockLogout,
+    hasCapability: (capability) => capability === 'administrator_management',
   }
 })
 
@@ -143,13 +145,14 @@ describe('AdminLayout', () => {
     expect(await screen.findByTestId('login-page')).toBeInTheDocument()
   })
 
-  it('renders sidebar with 7 navigation links including reports', () => {
+  it('renders the master-only Administrators item immediately after Students', () => {
     renderAdminLayout()
 
     const sidebar = screen.getByTestId('sidebar')
     expect(sidebar).toBeInTheDocument()
     expect(screen.getAllByText('Dashboard').length).toBeGreaterThanOrEqual(1)
     expect(screen.getByText('Students')).toBeInTheDocument()
+    expect(screen.getByText('Administrators')).toBeInTheDocument()
     expect(screen.getByText('Questions')).toBeInTheDocument()
     expect(screen.getByText('Levels')).toBeInTheDocument()
     expect(screen.getByText('Exam Configuration')).toBeInTheDocument()
@@ -159,12 +162,19 @@ describe('AdminLayout', () => {
     expect([...sidebar.querySelectorAll('a')].map((link) => link.getAttribute('href'))).toEqual([
       '/admin',
       '/admin/students',
+      '/admin/administrators',
       '/admin/questions',
       '/admin/levels',
       '/admin/exam-configuration',
       '/admin/reports',
       '/admin/audit-log',
     ])
+  })
+
+  it('hides Administrators for operational admins', () => {
+    mockAuthState.hasCapability = () => false
+    renderAdminLayout()
+    expect(screen.queryByText('Administrators')).not.toBeInTheDocument()
   })
 
   it('highlights the active link on current route', () => {

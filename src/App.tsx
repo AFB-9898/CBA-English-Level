@@ -13,6 +13,7 @@ import ReportsScreen from './pages/ReportsScreen'
 import AdminAuditLogScreen from './pages/AdminAuditLogScreen'
 import AdminStudentsScreen from './pages/AdminStudentsScreen'
 import AdminStudentDetailScreen from './pages/AdminStudentDetailScreen'
+import AdministratorsScreen from './pages/AdministratorsScreen'
 import StudentExamScreen from './pages/StudentExamScreen'
 import StudentExamHistoryScreen from './pages/StudentExamHistoryScreen'
 
@@ -29,13 +30,14 @@ function App() {
               <Route index element={<DashboardScreen />} />
               <Route path="students" element={<AdminStudentsScreen />} />
               <Route path="students/:studentId" element={<AdminStudentDetailScreen />} />
+              <Route element={<ProtectedRoute capability="administrator_management" />}><Route path="administrators" element={<AdministratorsScreen />} /></Route>
               <Route path="questions" element={<QuestionsScreen />} />
               <Route path="questions/new" element={<QuestionsScreen />} />
               <Route path="questions/:id/edit" element={<QuestionsScreen />} />
-              <Route path="levels" element={<LevelsScreen />} />
-              <Route path="exam-configuration" element={<ExamConfigurationScreen />} />
+              <Route element={<ProtectedRoute capability="levels" />}><Route path="levels" element={<LevelsScreen />} /></Route>
+              <Route element={<ProtectedRoute capability="exam_configuration" />}><Route path="exam-configuration" element={<ExamConfigurationScreen />} /></Route>
               <Route path="reports" element={<ReportsScreen />} />
-              <Route path="audit-log" element={<AdminAuditLogScreen />} />
+              <Route element={<ProtectedRoute capability="audit" />}><Route path="audit-log" element={<AdminAuditLogScreen />} /></Route>
             </Route>
           </Route>
           <Route element={<ProtectedRoute requiredRole="student" />}>

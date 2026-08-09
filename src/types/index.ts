@@ -24,6 +24,13 @@ export interface Admin {
   created_at: string
 }
 
+export type AdministratorRole = 'master_admin' | 'admin'
+
+export interface Administrator extends Admin {
+  role: AdministratorRole
+  is_active: boolean
+}
+
 export interface Level {
   id: string
   name: string

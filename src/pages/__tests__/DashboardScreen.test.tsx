@@ -38,7 +38,6 @@ describe('DashboardScreen', () => {
           created_at: '2025-07-10T12:00:00Z',
         },
       ],
-      levels: [],
       loading: false,
       error: null,
     })
@@ -68,7 +67,6 @@ describe('DashboardScreen', () => {
       stats: { totalStudents: 0, totalExams: 0, examsToday: 0, avgScore: 0 },
       distribution: [],
       recentExams: [],
-      levels: [],
       loading: false,
       error: 'Failed to fetch',
     })
@@ -89,7 +87,6 @@ describe('DashboardScreen', () => {
       stats: { totalStudents: 0, totalExams: 0, examsToday: 0, avgScore: 0 },
       distribution: [],
       recentExams: [],
-      levels: [],
       loading: true,
       error: null,
     })

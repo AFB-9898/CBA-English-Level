@@ -261,7 +261,7 @@ export interface RecentExam {
   score: number | null
   status: ExamStatus
   completed_at: string | null
-  created_at: string
+  created_at?: string
 }
 
 export type StudentExamState = 'available' | 'in_progress' | 'completed'

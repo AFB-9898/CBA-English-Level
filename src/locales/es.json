@@ -307,7 +307,8 @@
     "notFound": "Este perfil de estudiante no está disponible.",
     "actions": { "refresh": "Actualizar", "view": "Ver perfil", "loadMore": "Cargar más", "loadingMore": "Cargando...", "back": "Volver a estudiantes", "save": "Guardar perfil", "saving": "Guardando..." },
     "errors": { "load": "No pudimos cargar este perfil de estudiante.", "loadFailed": "No pudimos cargar los datos del estudiante.", "permission": "No tenés permiso para acceder a los perfiles de estudiantes.", "updateFailed": "No pudimos actualizar este perfil de estudiante." },
-    "attempts": { "title": "Intentos de examen", "subtitle": "Historial y resultados de solo lectura. Las respuestas no están disponibles aquí.", "status": "Estado", "completedAt": "Finalizado", "score": "Puntaje", "level": "Nivel CEFR", "notCompleted": "No finalizado", "empty": "Este estudiante no tiene intentos de examen." }
+    "attempts": { "title": "Intentos de examen", "subtitle": "Historial y resultados de solo lectura. Las respuestas no están disponibles aquí.", "status": "Estado", "completedAt": "Finalizado", "score": "Puntaje", "level": "Nivel CEFR", "notCompleted": "No finalizado", "empty": "Este estudiante no tiene intentos de examen." },
+    "exception": { "title": "Excepción de examen del día", "subtitle": "Permite un examen adicional durante el día hábil actual del CBA.", "status": "Estado", "reason": "Motivo obligatorio", "expiresAt": "Vence", "enable": "Habilitar un intento adicional", "revoke": "Revocar excepción", "states": { "pending": "Pendiente", "consumed": "Consumida", "revoked": "Revocada", "expired": "Vencida" } }
   },
   "errors": {
     "registrationDisabled": "El registro está actualmente deshabilitado",

@@ -308,7 +308,8 @@
     "notFound": "This student profile is unavailable.",
     "actions": { "refresh": "Refresh", "view": "View profile", "loadMore": "Load more", "loadingMore": "Loading...", "back": "Back to students", "save": "Save profile", "saving": "Saving..." },
     "errors": { "load": "We could not load this student profile.", "loadFailed": "We could not load student data.", "permission": "You do not have permission to access student profiles.", "updateFailed": "We could not update this student profile." },
-    "attempts": { "title": "Exam attempts", "subtitle": "Read-only history and results. Answers are not available here.", "status": "Status", "completedAt": "Completed", "score": "Score", "level": "CEFR level", "notCompleted": "Not completed", "empty": "This student has no exam attempts." }
+    "attempts": { "title": "Exam attempts", "subtitle": "Read-only history and results. Answers are not available here.", "status": "Status", "completedAt": "Completed", "score": "Score", "level": "CEFR level", "notCompleted": "Not completed", "empty": "This student has no exam attempts." },
+    "exception": { "title": "Same-day exam exception", "subtitle": "Allows one additional placement exam on the current CBA business day.", "status": "Status", "reason": "Required reason", "expiresAt": "Expires", "enable": "Enable one extra attempt", "revoke": "Revoke exception", "states": { "pending": "Pending", "consumed": "Consumed", "revoked": "Revoked", "expired": "Expired" } }
   },
   "administrators": {
     "title": "Administrators", "subtitle": "Manage active administrator accounts and roles.", "refresh": "Refresh", "invite": "Send invitation", "role": "Role", "status": "Active", "active": "Active", "inactive": "Inactive", "save": "Save", "loadFailed": "Administrators could not be loaded.", "roles": { "masterAdmin": "Master administrator", "admin": "Administrator" }, "futureTeacher": "Teacher is a future extension and is not an active role."

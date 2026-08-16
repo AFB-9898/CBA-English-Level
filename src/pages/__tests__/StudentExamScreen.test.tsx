@@ -3,7 +3,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const refetch = vi.fn()
-const saveAnswer = vi.fn().mockResolvedValue({ status: 'in_progress' })
+const saveAnswer = vi.fn<(questionId: string, optionId: string) => Promise<{ status: 'in_progress' } | { saved: boolean } | null>>().mockResolvedValue({ status: 'in_progress' })
 const waitForPendingAnswerSaves = vi.fn().mockResolvedValue(true)
 const submit = vi.fn().mockResolvedValue(null)
 const recoverTimedOutSubmit = vi.fn().mockResolvedValue(null)
@@ -13,8 +13,8 @@ let saveErrors: Record<string, string> = {}
 const inProgressAttempt = {
   attempt_id: 'attempt-1', status: 'in_progress' as const, deadline_at: '2026-01-01T01:00:00Z', server_now: '2026-01-01T00:00:00Z',
   questions: [
-    { exam_question_id: 'q1', order: 0, text: 'First question', category: null, selected_option_id: null, options: [{ id: 'o1', text: 'First option', order: 0 }] },
-    { exam_question_id: 'q2', order: 1, text: 'Second question', category: null, selected_option_id: null, options: [{ id: 'o2', text: 'Second option', order: 0 }] },
+    { exam_question_id: 'q1', order: 0, text: 'First question', category: null, selected_option_id: null as string | null, options: [{ id: 'o1', text: 'First option', order: 0 }] },
+    { exam_question_id: 'q2', order: 1, text: 'Second question', category: null, selected_option_id: null as string | null, options: [{ id: 'o2', text: 'Second option', order: 0 }] },
   ], result: null,
 }
 let attempt: Omit<typeof inProgressAttempt, 'status' | 'result'> & {
@@ -56,6 +56,27 @@ describe('StudentExamScreen', () => {
     expect(screen.getByText('Second question')).toBeInTheDocument()
     fireEvent.focus(window)
     expect(refetch).toHaveBeenCalled()
+  })
+
+  it('keeps rendering after selecting an answer when saving returns only an acknowledgement', async () => {
+    saveAnswer.mockResolvedValueOnce({ saved: true })
+    renderScreen()
+
+    fireEvent.click(screen.getByRole('radio', { name: 'First option' }))
+
+    await waitFor(() => expect(saveAnswer).toHaveBeenCalledWith('q1', 'o1'))
+    expect(screen.getByText('First question')).toBeInTheDocument()
+    expect(screen.getByRole('radio', { name: 'First option' })).toBeChecked()
+  })
+
+  it('resumes at the first unanswered question', () => {
+    attempt = {
+      ...inProgressAttempt,
+      questions: [{ ...inProgressAttempt.questions[0], selected_option_id: 'o1' }, inProgressAttempt.questions[1]],
+    }
+    renderScreen()
+
+    expect(screen.getByText('Second question')).toBeInTheDocument()
   })
 
   it('disables manual submission until an answer save completes', async () => {

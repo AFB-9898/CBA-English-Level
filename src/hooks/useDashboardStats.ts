@@ -1,14 +1,27 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import type { DashboardStats, LevelDistributionItem, RecentExam, Level } from '../types'
+import type { DashboardStats, LevelDistributionItem, RecentExam } from '../types'
 
 interface UseDashboardStatsResult {
   stats: DashboardStats
   distribution: LevelDistributionItem[]
   recentExams: RecentExam[]
-  levels: Level[]
   loading: boolean
   error: string | null
+}
+
+interface AdminDashboardPayload {
+  totals: { students: number; exams: number }
+  completed_today: number
+  completed_score_average: number
+  level_distribution: LevelDistributionItem[]
+  recent_completed: Array<{
+    id: string
+    student_full_name: string | null
+    level_name: string | null
+    score: number | null
+    completed_at: string | null
+  }>
 }
 
 const initialStats: DashboardStats = {
@@ -18,11 +31,16 @@ const initialStats: DashboardStats = {
   avgScore: 0,
 }
 
+function errorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message
+  if (typeof error === 'object' && error !== null && 'message' in error && typeof error.message === 'string') return error.message
+  return 'Unknown error'
+}
+
 export function useDashboardStats(): UseDashboardStatsResult {
   const [stats, setStats] = useState<DashboardStats>(initialStats)
   const [distribution, setDistribution] = useState<LevelDistributionItem[]>([])
   const [recentExams, setRecentExams] = useState<RecentExam[]>([])
-  const [levels, setLevels] = useState<Level[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -33,88 +51,31 @@ export function useDashboardStats(): UseDashboardStatsResult {
       setLoading(true)
       setError(null)
 
-      const today = new Date().toISOString().split('T')[0]
-
       try {
-        const [
-          studentsRes,
-          examsRes,
-          todayRes,
-          scoresRes,
-          levelIdsRes,
-          recentRes,
-          levelsRes,
-        ] = await Promise.all([
-          supabase.from('student').select('id', { count: 'exact', head: true }),
-          supabase.from('exam').select('id', { count: 'exact', head: true }),
-          supabase
-            .from('exam')
-            .select('id', { count: 'exact', head: true })
-            .eq('status', 'completed')
-            .gte('completed_at', today),
-          supabase.from('exam').select('score').eq('status', 'completed'),
-          supabase.from('exam').select('level_id').eq('status', 'completed'),
-          supabase
-            .from('exam')
-            .select('*, student:student_id(full_name), level:level_id(name)')
-            .eq('status', 'completed')
-            .order('created_at', { ascending: false })
-            .limit(10),
-          supabase.from('level').select('*'),
-        ])
+        const { data, error: rpcError } = await supabase.rpc('get_admin_dashboard_statistics')
 
         if (cancelled) return
-
-        // Check for errors
-        const errors = [studentsRes, examsRes, todayRes, scoresRes, levelIdsRes, recentRes, levelsRes]
-          .filter((r) => r.error)
-          .map((r) => r.error!.message)
-
-        if (errors.length > 0) {
-          throw new Error(errors[0])
-        }
-
-        // Compute average score
-        const scores = (scoresRes.data ?? [])
-          .map((e) => e.score)
-          .filter((s): s is number => s !== null)
-        const avgScore =
-          scores.length > 0
-            ? Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 10) / 10
-            : 0
-
-        // Compute level distribution
-        const levelRows = levelsRes.data ?? []
-        const examLevelIds = (levelIdsRes.data ?? []).map((e) => e.level_id)
-        const totalExamsForDist = examLevelIds.length
-
-        const levelCountMap: Record<string, number> = {}
-        for (const lid of examLevelIds) {
-          levelCountMap[lid] = (levelCountMap[lid] ?? 0) + 1
-        }
-
-        const computedDistribution: LevelDistributionItem[] = levelRows.map((lvl) => ({
-          level_id: lvl.id,
-          name: lvl.name,
-          count: levelCountMap[lvl.id] ?? 0,
-          percentage:
-            totalExamsForDist > 0
-              ? Math.round(((levelCountMap[lvl.id] ?? 0) / totalExamsForDist) * 100)
-              : 0,
-        }))
+        if (rpcError) throw rpcError
+        const payload = data as AdminDashboardPayload
 
         setStats({
-          totalStudents: studentsRes.count ?? 0,
-          totalExams: examsRes.count ?? 0,
-          examsToday: todayRes.count ?? 0,
-          avgScore,
+          totalStudents: payload.totals.students,
+          totalExams: payload.totals.exams,
+          examsToday: payload.completed_today,
+          avgScore: payload.completed_score_average,
         })
-        setDistribution(computedDistribution)
-        setRecentExams((recentRes.data ?? []) as RecentExam[])
-        setLevels(levelRows as Level[])
+        setDistribution(payload.level_distribution)
+        setRecentExams(payload.recent_completed.map((exam) => ({
+          id: exam.id,
+          student: exam.student_full_name ? { full_name: exam.student_full_name } : null,
+          level: exam.level_name ? { name: exam.level_name } : null,
+          score: exam.score,
+          status: 'completed',
+          completed_at: exam.completed_at,
+        })))
       } catch (err) {
         if (!cancelled) {
-          setError(err instanceof Error ? err.message : 'Unknown error')
+          setError(errorMessage(err))
         }
       } finally {
         if (!cancelled) setLoading(false)
@@ -128,5 +89,5 @@ export function useDashboardStats(): UseDashboardStatsResult {
     }
   }, [])
 
-  return { stats, distribution, recentExams, levels, loading, error }
+  return { stats, distribution, recentExams, loading, error }
 }

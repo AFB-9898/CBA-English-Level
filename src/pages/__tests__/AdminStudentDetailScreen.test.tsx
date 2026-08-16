@@ -4,18 +4,21 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import AdminStudentDetailScreen from '../AdminStudentDetailScreen'
 import { useAdminStudentDetail } from '../../hooks/useAdminStudentDetail'
 
+let isMasterAdmin = false
+vi.mock('../../components/auth/AuthContext', () => ({ useAuth: () => ({ isMasterAdmin }) }))
+
 vi.mock('../../hooks/useAdminStudentDetail', () => ({ useAdminStudentDetail: vi.fn() }))
 const mockUseAdminStudentDetail = vi.mocked(useAdminStudentDetail)
 
 function base(): ReturnType<typeof useAdminStudentDetail> {
-  return { student: { student_id: 'student-1', full_name: 'Ada Student', ci: 'CI-1', email: 'ada@test.local', phone: '71234567', created_at: '2026-07-01T00:00:00Z' }, attempts: [{ attempt_id: 'attempt-1', status: 'completed', started_at: '2026-07-01T10:00:00Z', completed_at: '2026-07-01T10:20:00Z', score: 88, cefr_level_code: 'B2', cefr_level_name: 'Vantage', cefr_level_version: 1 }], loading: false, saving: false, loadError: null, saveError: null, saveProfile: vi.fn().mockResolvedValue(true), refetch: vi.fn() }
+  return { student: { student_id: 'student-1', full_name: 'Ada Student', ci: 'CI-1', email: 'ada@test.local', phone: '71234567', created_at: '2026-07-01T00:00:00Z' }, attempts: [{ attempt_id: 'attempt-1', status: 'completed', started_at: '2026-07-01T10:00:00Z', completed_at: '2026-07-01T10:20:00Z', score: 88, cefr_level_code: 'B2', cefr_level_name: 'Vantage', cefr_level_version: 1 }], exception: null, loading: false, saving: false, loadError: null, saveError: null, saveProfile: vi.fn().mockResolvedValue(true), grantException: vi.fn().mockResolvedValue(true), revokeException: vi.fn().mockResolvedValue(true), refetch: vi.fn() }
 }
 
 function renderScreen() {
   return render(<MemoryRouter initialEntries={['/admin/students/student-1']}><Routes><Route path="/admin/students/:studentId" element={<AdminStudentDetailScreen />} /></Routes></MemoryRouter>)
 }
 
-beforeEach(() => { vi.clearAllMocks(); mockUseAdminStudentDetail.mockReturnValue(base()) })
+beforeEach(() => { vi.clearAllMocks(); isMasterAdmin = false; mockUseAdminStudentDetail.mockReturnValue(base()) })
 
 describe('AdminStudentDetailScreen', () => {
   it('allows only permitted profile fields and shows read-only attempt summaries', () => {
@@ -46,5 +49,18 @@ describe('AdminStudentDetailScreen', () => {
     mockUseAdminStudentDetail.mockReturnValue({ ...base(), [field]: error })
     renderScreen()
     expect(screen.getByRole('alert')).toHaveTextContent(message)
+  })
+
+  it('shows the exception controls only to master administrators and requires a reason', () => {
+    isMasterAdmin = true
+    const state = base()
+    mockUseAdminStudentDetail.mockReturnValue(state)
+    renderScreen()
+    expect(screen.getByText('Same-day exam exception')).toBeInTheDocument()
+    const reason = screen.getByLabelText('Required reason')
+    expect(reason).toBeRequired()
+    fireEvent.change(reason, { target: { value: 'Documented exception reason' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Enable one extra attempt' }))
+    expect(state.grantException).toHaveBeenCalledWith('Documented exception reason')
   })
 })

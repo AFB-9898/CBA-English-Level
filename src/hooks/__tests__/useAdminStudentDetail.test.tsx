@@ -53,4 +53,19 @@ describe('useAdminStudentDetail', () => {
     expect(result.current.student).toEqual(updatedStudent)
     expect(result.current.saveError).toBeNull()
   })
+
+  it('does not invoke the master-only exception RPC for standard administrators', async () => {
+    const { result } = renderHook(() => useAdminStudentDetail('student-1', false))
+    await waitFor(() => expect(result.current.loading).toBe(false))
+    expect(rpc).not.toHaveBeenCalledWith('get_exam_attempt_exception', expect.anything())
+  })
+
+  it('loads and changes an exception only when the master-only surface is enabled', async () => {
+    rpc.mockImplementation((name: string) => Promise.resolve({ data: name === 'get_admin_student_detail' ? [student] : name === 'get_exam_attempt_exception' ? [{ exception_id: 'exception-1', state: 'pending' }] : [], error: null }))
+    const { result } = renderHook(() => useAdminStudentDetail('student-1', true))
+    await waitFor(() => expect(result.current.loading).toBe(false))
+    expect(result.current.exception?.exception_id).toBe('exception-1')
+    await act(async () => { await result.current.grantException('Documented local exception') })
+    expect(rpc).toHaveBeenCalledWith('grant_exam_attempt_exception', { p_student_id: 'student-1', p_reason: 'Documented local exception' })
+  })
 })

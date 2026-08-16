@@ -215,6 +215,18 @@ export interface AdminStudentDetail extends AdminStudentListRow {
   phone: string | null
 }
 
+export interface ExamAttemptException {
+  exception_id: string
+  cba_business_date: string
+  reason: string
+  state: 'pending' | 'consumed' | 'revoked' | 'expired'
+  granted_at: string
+  expires_at: string
+  consumed_at: string | null
+  consumed_exam_id: string | null
+  revoked_at: string | null
+}
+
 export interface AdminStudentAttempt {
   attempt_id: string
   status: ExamStatus

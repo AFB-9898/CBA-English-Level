@@ -33,7 +33,11 @@ export default function StudentExamScreen() {
       attempt.questions.forEach((question) => { if (!(question.exam_question_id in next)) next[question.exam_question_id] = question.selected_option_id })
       return next
     })
-    setActiveIndex((index) => Math.min(index, Math.max(0, attempt.questions.length - 1)))
+    setActiveIndex((index) => {
+      const firstUnanswered = attempt.questions.findIndex((question) => !question.selected_option_id)
+      if (firstUnanswered >= 0) return firstUnanswered
+      return Math.min(index, Math.max(0, attempt.questions.length - 1))
+    })
   }, [attempt])
 
   useEffect(() => {

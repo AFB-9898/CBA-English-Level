@@ -7,6 +7,15 @@ function errorMessage(error: unknown): string {
   return value?.message || (error instanceof Error ? error.message : 'Unknown error')
 }
 
+function isExamAttempt(value: unknown): value is ExamAttempt {
+  const attempt = value as Partial<ExamAttempt> | null
+  return Boolean(
+    attempt
+    && (attempt.status === 'in_progress' || attempt.status === 'completed')
+    && Array.isArray(attempt.questions),
+  )
+}
+
 export function useExamAttempt(attemptId: string | undefined) {
   const [attempt, setAttempt] = useState<ExamAttempt | null>(null)
   const [receivedAt, setReceivedAt] = useState<number | null>(null)
@@ -80,16 +89,19 @@ export function useExamAttempt(attemptId: string | undefined) {
       })
       if (rpcError) throw rpcError
       if (!data) throw new Error('Save answer returned no response')
-      const response = data as ExamAttempt
       if (
         latestSaveRequestIdByQuestion.current.get(questionId) === requestId
         && requestId > latestAppliedSaveRequestId.current
       ) {
         failedSaveQuestionIds.current.delete(questionId)
         latestAppliedSaveRequestId.current = requestId
-        applyAttempt(response)
+        if (isExamAttempt(data)) {
+          applyAttempt(data)
+        } else {
+          void refetch()
+        }
       }
-      return response
+      return data
     } catch (err) {
       if (latestSaveRequestIdByQuestion.current.get(questionId) === requestId) {
         failedSaveQuestionIds.current.add(questionId)
@@ -105,7 +117,7 @@ export function useExamAttempt(attemptId: string | undefined) {
         setSavingAnswers(pendingSaves.current > 0)
       }
     }
-  }, [applyAttempt, attemptId])
+  }, [applyAttempt, attemptId, refetch])
 
   const waitForPendingAnswerSaves = useCallback(async () => {
     await Promise.all(pendingSaveCompletions.current)

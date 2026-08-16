@@ -18,6 +18,26 @@ describe('useExamAttempt', () => {
     expect(rpc).toHaveBeenNthCalledWith(2, 'save_exam_answer', { p_attempt_id: 'attempt-1', p_exam_question_id: 'question-1', p_option_id: 'option-1' })
   })
 
+  it('retains the rendered attempt and refetches after an acknowledgement-only save response', async () => {
+    let resolveRefetch: ((value: { data: ExamAttempt; error: null }) => void) | undefined
+    const persistedAttempt = {
+      ...attempt,
+      questions: [{ ...attempt.questions[0], selected_option_id: 'option-1' }],
+    }
+    rpc.mockResolvedValueOnce({ data: attempt, error: null })
+      .mockResolvedValueOnce({ data: { saved: true }, error: null })
+      .mockImplementationOnce(() => new Promise((resolve) => { resolveRefetch = resolve }))
+    const { result } = renderHook(() => useExamAttempt('attempt-1'))
+    await waitFor(() => expect(result.current.loading).toBe(false))
+
+    await act(async () => { await result.current.saveAnswer('question-1', 'option-1') })
+    expect(result.current.attempt).toEqual(attempt)
+    expect(rpc).toHaveBeenLastCalledWith('get_exam_attempt', { p_attempt_id: 'attempt-1' })
+
+    await act(async () => { resolveRefetch?.({ data: persistedAttempt, error: null }) })
+    await waitFor(() => expect(result.current.attempt).toEqual(persistedAttempt))
+  })
+
   it('uses submit_exam and replaces the attempt with the stable result payload', async () => {
     const completed = { ...attempt, status: 'completed' as const, result: { score: 80, level: { id: 'level-1', code: 'B2', name: 'Vantage', version: 1 } } }
     rpc.mockResolvedValueOnce({ data: attempt, error: null }).mockResolvedValueOnce({ data: completed, error: null })

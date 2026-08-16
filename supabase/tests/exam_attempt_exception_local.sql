@@ -1,7 +1,7 @@
 -- Local-only contract tests for migration 019. Fixture data is rolled back.
 \set ON_ERROR_STOP on
 CREATE EXTENSION IF NOT EXISTS pgtap WITH SCHEMA public;
-SELECT plan(24);
+SELECT plan(28);
 SET search_path = public, extensions;
 
 BEGIN;
@@ -12,7 +12,8 @@ TRUNCATE public.exam_attempt_exception, public.student_answer, public.exam_quest
 INSERT INTO public.student (id, ci, full_name, email) VALUES
   ('00000000-0000-0000-0000-000000000801', 'EX-801', 'Exception Student', 'exception-801@test.local'),
   ('00000000-0000-0000-0000-000000000802', 'EX-802', 'Revoked Student', 'exception-802@test.local'),
-  ('00000000-0000-0000-0000-000000000803', 'EX-803', 'Expired Student', 'exception-803@test.local');
+  ('00000000-0000-0000-0000-000000000803', 'EX-803', 'Expired Student', 'exception-803@test.local'),
+  ('00000000-0000-0000-0000-000000000806', 'EX-806', 'Expired Attempt Student', 'exception-806@test.local');
 INSERT INTO public.admin (id, email, full_name, role, is_active) VALUES
   ('00000000-0000-0000-0000-000000000804', 'exception-master@test.local', 'Exception Master', 'master_admin', TRUE),
   ('00000000-0000-0000-0000-000000000805', 'exception-admin@test.local', 'Exception Admin', 'admin', TRUE);
@@ -77,6 +78,31 @@ SET LOCAL ROLE authenticated;
 SELECT set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000803', TRUE);
 SELECT is((SELECT exam_state FROM public.get_student_dashboard()), 'completed', 'expired exception does not enable the dashboard');
 SELECT throws_ok($$ SELECT public.start_exam('00000000-0000-0000-0000-000000000831') $$, '23505', 'Student already completed an exam on this CBA business day', 'expired exception cannot be used');
+
+SELECT set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000806', TRUE);
+CREATE TEMP TABLE expiring_attempt AS SELECT public.start_exam('00000000-0000-0000-0000-000000000841') AS payload;
+CREATE TEMP TABLE active_resume AS SELECT public.start_exam('00000000-0000-0000-0000-000000000843') AS payload;
+SELECT is((SELECT payload->>'attempt_id' FROM active_resume), (SELECT payload->>'attempt_id' FROM expiring_attempt), 'active attempt resumes before completion eligibility');
+RESET ROLE;
+UPDATE public.exam
+SET started_at = NOW() - INTERVAL '31 minutes', deadline_at = NOW() - INTERVAL '1 minute'
+WHERE id = (SELECT (payload->>'attempt_id')::UUID FROM expiring_attempt);
+SET LOCAL ROLE authenticated;
+SELECT set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000806', TRUE);
+CREATE TEMP TABLE expired_request_retry AS SELECT public.start_exam('00000000-0000-0000-0000-000000000841') AS payload;
+SELECT is((SELECT payload->>'status' FROM expired_request_retry), 'completed', 'expired request-id retry returns the completed attempt');
+RESET ROLE;
+INSERT INTO public.exam_attempt_exception (student_id, cba_business_date, reason, granted_by, expires_at)
+VALUES ('00000000-0000-0000-0000-000000000806', public.fn_cba_business_date(clock_timestamp()), 'A documented retry after the expired placement attempt.', '00000000-0000-0000-0000-000000000804', clock_timestamp() + INTERVAL '1 hour');
+SET LOCAL ROLE authenticated;
+SELECT set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000806', TRUE);
+CREATE TEMP TABLE granted_retry AS SELECT public.start_exam('00000000-0000-0000-0000-000000000842') AS payload;
+RESET ROLE;
+SELECT is((SELECT state FROM public.exam_attempt_exception WHERE student_id = '00000000-0000-0000-0000-000000000806'), 'consumed', 'pending grant is consumed for the subsequent attempt');
+SET LOCAL ROLE authenticated;
+SELECT set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000806', TRUE);
+SELECT is((SELECT public.start_exam('00000000-0000-0000-0000-000000000842')->>'attempt_id'), (SELECT payload->>'attempt_id' FROM granted_retry), 'second attempt retry remains idempotent after grant consumption');
+
 RESET ROLE;
 SELECT throws_ok($$ UPDATE public.exam_attempt_exception SET reason = 'Changed reason after consumption' WHERE student_id = '00000000-0000-0000-0000-000000000801' $$, '42501', 'Exam attempt exceptions may only be consumed or revoked once', 'exception records are immutable after transition');
 SELECT ok(pg_get_functiondef('public.start_exam(uuid)'::regprocedure) LIKE '%FOR UPDATE%' AND pg_get_functiondef('public.start_exam(uuid)'::regprocedure) LIKE '%student-exam:%', 'start serializes concurrent starts and locks the exception row');

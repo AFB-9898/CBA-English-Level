@@ -1,6 +1,43 @@
+<p align="center">
+  <img src="docs/assets/brand/logo.png" alt="CBA English Level logo" width="220" />
+</p>
+
 # CBA English Level
 
 Sistema web de exámenes de colocación del Centro Boliviano Americano, con identidad visual CBA Tarija. Permite que estudiantes se registren, rindan un examen temporizado y consulten su resultado e historial; el personal administrador gestiona el banco de preguntas, los niveles CEFR, la configuración y los reportes.
+
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-6-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vite.dev/)
+[![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
+[![Vercel](https://img.shields.io/badge/Vercel-Production-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
+
+> Aplicación web para evaluar el nivel de inglés de nuevos estudiantes mediante exámenes configurables, resultados inmediatos e historial verificable.
+
+## Vista previa
+
+<p align="center">
+  <img src="docs/assets/mockup.png" alt="Vista general del sistema CBA English Level" width="760" />
+</p>
+
+| Registro e inicio de sesión | Dashboard administrativo |
+|---|---|
+| <img src="docs/assets/registro.png" alt="Registro de estudiante" width="360" /> | <img src="docs/assets/dashboard.png" alt="Dashboard administrativo" width="360" /> |
+
+| Resultado del examen | Acceso al sistema |
+|---|---|
+| <img src="docs/assets/resultado.png" alt="Resultado del examen" width="360" /> | <img src="docs/assets/login.png" alt="Inicio de sesión" width="360" /> |
+
+## Contenido
+
+- [Inicio rápido](#inicio-rápido)
+- [Qué está implementado](#qué-está-implementado)
+- [Rutas principales](#rutas-principales)
+- [Arquitectura](#arquitectura)
+- [Configuración local](#configuración-local)
+- [Límites operativos conocidos](#límites-operativos-conocidos)
+- [Documentación final](#documentación-final)
+- [Autor](#autor)
 
 ## Inicio rápido
 
@@ -84,3 +121,10 @@ Comandos disponibles: `npm run dev:local`, `npm run dev`, `npm run build`, `npm 
 - [Modelo relacional](database/modelo-relacional.md)
 - [Diccionario de datos](database/data-dictionary.md)
 - [Procedimiento de backups](docs/daily-backups.md)
+
+## Autor
+
+**Abraham Flores Barrionuevo** — Full-Stack Developer
+
+- GitHub: [@AFB-9898](https://github.com/AFB-9898)
+- Proyecto académico desarrollado para el Centro Boliviano Americano (CBA), Tarija.
